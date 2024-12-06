@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './App.css'
+import PalamanderSpawner from './palamander/PalamanderSpawner.tsx'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -12,6 +13,7 @@ function App() {
           count is {count}
         </button>
       </div>
+      <PalamanderSpawner/>
     </>
   )
 }
