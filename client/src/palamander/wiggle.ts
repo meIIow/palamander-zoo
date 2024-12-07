@@ -23,7 +23,7 @@ function generateSynchronizedWiggle(range: number, waveLength: number, segment: 
 }
 
 // Does not wiggle
-const noWiggle: Wiggle = (_: number) => 0;
+const noWiggle: Wiggle = (_: number) => 0; // eslint-disable-line @typescript-eslint/no-unused-vars
 
 export {
   generatePropagatedWiggle,
