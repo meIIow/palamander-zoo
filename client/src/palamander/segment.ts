@@ -1,3 +1,5 @@
+import { Wiggle } from './wiggle.ts'
+
 type Coordinate = {
   x: number;
   y: number;
@@ -9,40 +11,47 @@ type SegmentCircle = {
 }
 
 type SegmentAngle = {
-  fromParent: number;
+  offParent: number;
+  absolute: number;
 }
 
 // Represents one segment of a Palamander.
 //
 // Contains:
-// 1. The circle to render, which changes each update
+// 1. The circle to render, which can change each update based on the Palamander's movement
 // 2. The persistant data that define its relationship to its parent segment (angle, etc)
-// 3. Downstream segments, defined as recursive tree from this segment
+// 3. How to adjust the parent angle to simulate wiggling/curling/squiggling
+// 4. Downstream segments, defined as recursive tree from this segment
 type Segment = {
   circle: SegmentCircle;
   angle: SegmentAngle;
+  wiggle: Wiggle;
   children: Array<Segment>;
 };
 
-function calculateCenter(segment: Segment, parentCircle: SegmentCircle): Coordinate {
-  const xd = Math.sin(segment.angle.fromParent * Math.PI / 180) * (segment.circle.radius + parentCircle.radius);
-  const yd = Math.cos(segment.angle.fromParent * Math.PI / 180) * (segment.circle.radius + parentCircle.radius);
+
+function calculateCenter(segmentCircle: SegmentCircle, parentCircle: SegmentCircle, angle: number): Coordinate {
+  const xd = Math.sin(angle * Math.PI / 180) * (segmentCircle.radius + parentCircle.radius);
+  const yd = Math.cos(angle * Math.PI / 180) * (segmentCircle.radius + parentCircle.radius);
   return {
     x: parentCircle.center.x+xd,
     y: parentCircle.center.y+yd
   }
 }
 
-function updateSegment(segment: Segment, parentCircle: SegmentCircle): Segment {
+function updateSegment(segment: Segment, parentCircle: SegmentCircle, absoluteAngleParent: number, count: number): Segment {
+  const absoluteAngle = absoluteAngleParent + segment.wiggle(count);
   const circle = {
-    center: calculateCenter(segment, parentCircle),
+    center: calculateCenter(segment.circle, parentCircle, absoluteAngle),
     radius: segment.circle.radius
   }
   const angle = {...segment.angle}
+  angle.absolute = absoluteAngleParent;
   return {
     circle,
     angle,
-    children: segment.children.map((child) => updateSegment(child, circle))
+    wiggle: segment.wiggle,
+    children: segment.children.map((child) => updateSegment(child, circle, segment.angle.absolute, count))
   }
 }
 
@@ -51,4 +60,4 @@ function getSegmentCircles(segment: Segment): Array<SegmentCircle> {
 }
 
 export { updateSegment, getSegmentCircles };
-export type { SegmentCircle, Segment };
+export type { Coordinate, SegmentCircle, Segment };
