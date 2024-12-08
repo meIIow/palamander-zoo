@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import SegmentView from './SegmentView.tsx'
 import { SegmentCircle, Segment, updateSegment, getSegmentCircles } from './segment.ts'
 import { createEngineSegmentCircle } from './PalamanderSpawner.tsx';
+import MovementAgent from './movement-agent.ts';
 
 type PalamanderProps = {
   initialSegment: Segment,
@@ -17,18 +18,18 @@ function Palamander({ initialSegment, spawnCircle }: PalamanderProps) {
       // const wiggleIntensity = Math.sin(count * Math.PI / 10); // 10 is a somewhat arbitraty hard-coded value
       return updateSegment(head, engineSegmentCircle, angle, count)
     });
-    console.log(console.timeLog());
   }
 
   useEffect(() => {
     let count = 1;
+    const movementAgent = new MovementAgent(10, 5);
     const intervalId = setInterval(() => {
-      //const engineSegmentCircle = createEngineSegmentCircle(offset);
-      const engineSegmentCircle = createEngineSegmentCircle({x:0,y:0});
-
+      const movement = movementAgent.move();
+      const engineSegmentCircle = createEngineSegmentCircle(movement.delta);
+      console.log(movement.delta)
 
       count += 1
-      animate(count, 0, engineSegmentCircle);
+      animate(count, movement.angle, engineSegmentCircle);
     }, 100);
     return () => clearInterval(intervalId); // Cleanup on unmount
   }, []);
