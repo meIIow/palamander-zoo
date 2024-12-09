@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import './App.css'
-import { PalamanderSpawner } from './palamander/PalamanderSpawner.tsx'
+import PalamanderSpawner from './palamander/PalamanderSpawner.tsx'
 
 function App() {
   const [count, setCount] = useState(0)

@@ -1,6 +1,6 @@
 # Palamander Modules
 
-These modules are a WIP. Currently, this code only renders linear (one child per segment) Palamander with somewhat natural movement.
+These modules are a WIP. This code renders various Palamanders with somewhat natural movement.
 
 A Palamander consists of segments arranged in a tree rooted at its head. This might seem like a limitation, but the option space is actually quite large and flexible - different segment trees can result in vastly different body types.
 
