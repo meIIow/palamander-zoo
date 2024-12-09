@@ -1,61 +1,47 @@
 import Palamander from './Palamander.tsx'
-import { Coordinate, SegmentCircle, Segment } from './segment.ts'
-import { generatePropagatedWiggle, noWiggle } from './wiggle.ts'
-
-function createDummySegmentCircle(radius: number): SegmentCircle {
-  return {
-    radius: radius,
-    center: {
-      x: 0,
-      y: 0
-    }
-  }
-}
-
-function createEngineSegmentCircle(offset: Coordinate): SegmentCircle {
-  return {
-    radius: -20,
-    center: {
-      x: 400 + offset.x,
-      y: 300 + offset.y
-    }
-  }
-}
-
-function createDummySegment(radius: number, total: number, segment: number): Segment {
-  return {
-    circle: createDummySegmentCircle(radius),
-    angle: {
-      offParent: 0,
-      absolute: 0,
-    },
-    wiggle: generatePropagatedWiggle(10, 2*total, segment),
-    children: []
-  }
-}
+import { SegmentCircle } from './segment.ts'
+import {
+  createEngineCircle,
+  createTadpole,
+  createCentipede,
+  createJelly,
+  createOctopus,
+  createStarfish,
+  createHorseshoeCrab,
+  createNewt,
+  createCrawdad,
+  createAxolotl
+} from './create-palamander.ts'
 
 // Convenience Component for describing Palamander Segment trees and behavior.
 // For development / iteration only - Palamanders will ultimately be defined by:
 // 1. data configs
 // 2. server-side random generation code
 function PalamanderSpawner() {
-  const spawnCircle = createEngineSegmentCircle({x: 0, y: 0});
+  const palamanders = [
+    createTadpole(),
+    createCentipede(),
+    createJelly(),
+    createOctopus(),
+    createStarfish(),
+    createHorseshoeCrab(),
+    createNewt(),
+    createCrawdad(),
+    createAxolotl()
+  ];
 
-  const head = createDummySegment(20, 1, 0);
-  head.wiggle = noWiggle;
-  let curr = head;
+  const h = window.innerHeight;
+  const w = window.innerWidth;
+  const createSpawnCircle = (circle: SegmentCircle) => createEngineCircle(circle, {x: Math.random()*h, y: Math.random()*w});
 
-  for (let i=0; i<10; i++) {
-    const next = createDummySegment(10, 10, i);
-    curr.children.push(next);
-    curr = next;
-  }
-
+  Math.random
   return (
     <>
-      <Palamander initialSegment={head} spawnCircle={spawnCircle}/>
+      {palamanders.map((pal) => (
+        <Palamander initialSegment={pal} spawnCircle={createSpawnCircle(pal.circle)}/>
+      ))}
     </>
   )
 }
 
-export { PalamanderSpawner, createEngineSegmentCircle }
+export default PalamanderSpawner
