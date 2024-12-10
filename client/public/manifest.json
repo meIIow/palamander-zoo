@@ -1,0 +1,35 @@
+{
+  "name": "Palamander Zoo",
+  "version": "0.0",
+  "manifest_version": 3,
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Collect Aquatic Buddies!"
+  },
+  "permissions": ["activeTab", "tabs", "scripting"],
+  "background": {
+    "service_worker": "assets/worker.js"
+  },
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "img/*"
+      ],
+      "matches": [
+        "*://*/*"
+      ]
+    }
+  ],
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+B",
+        "mac": "Command+B"
+      }
+    }
+  }
+}
