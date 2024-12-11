@@ -76,7 +76,6 @@ class MovementAgent {
     const speed = MovementAgent.updateSpeed(this.#movement.speed);
     const angle = this.#movement.angle + direction * this.#turnAngle;
     const delta = MovementAgent.updateDelta(this.#movement.delta, angle, speed);
-    console.log(speed)
     this.#movement = {
       angle,
       speed,

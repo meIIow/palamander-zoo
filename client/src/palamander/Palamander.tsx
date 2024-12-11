@@ -14,8 +14,6 @@ function Palamander({ initialSegment, spawnCircle }: PalamanderProps) {
 
   function animate(count: number, angle: number, engineSegmentCircle: SegmentCircle) {   
     setHead((head) => {
-      console.log("animating!")
-      // const wiggleIntensity = Math.sin(count * Math.PI / 10); // 10 is a somewhat arbitraty hard-coded value
       return updateSegment(head, engineSegmentCircle, angle, count)
     });
   }

@@ -1,3 +1,4 @@
+
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
@@ -6,11 +7,11 @@ import { resolve } from 'path'
 export default defineConfig({
   plugins: [react()],
   build: {
+    emptyOutDir: false, // So that main build files don't get deleted
     rollupOptions: {
       input: {
-        popup: resolve(__dirname, 'popup.html'),
-        demo: resolve(__dirname, 'demo.html'),
-        worker: resolve(__dirname, './src/extension/background.ts')
+        content: resolve(__dirname, './src/extension/content.tsx'),
+        'content-wrapper': resolve(__dirname, './src/extension/content-wrapper.ts'),
       },
       output: {
         // Preserve name of entry files for chrome extension manifest reference.

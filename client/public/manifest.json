@@ -8,8 +8,15 @@
   },
   "permissions": ["activeTab", "tabs", "scripting"],
   "background": {
-    "service_worker": "assets/worker.js"
+    "service_worker": "assets/worker.js",
+    "type": "module"
   },
+  "content_scripts": [
+    {
+        "matches": ["<all_urls>"],
+        "js": ["assets/content-wrapper.js"]
+    }
+],
   "host_permissions": [
     "http://*/*",
     "https://*/*"
@@ -17,10 +24,11 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "img/*"
+        "img/*",
+        "assets/content.js"
       ],
       "matches": [
-        "*://*/*"
+        "<all_urls>"
       ]
     }
   ],
