@@ -11,10 +11,6 @@ function SegmentView({ circle }: SegmentViewProps) {
     right: `${(circle.center.x - circle.radius) % window.innerWidth}px`,
     height: `${2*circle.radius}px`,
     width: `${2*circle.radius}px`,
-    position: 'fixed' as 'fixed',
-    'border-radius': '50%',
-    'background-color': 'teal',
-    'z-index': 2147483647,
   };
 
   return (

@@ -21,7 +21,7 @@ chrome.runtime.onMessage.addListener(
           console.log("Injecting Script in response to popup!");
           chrome.scripting.executeScript({
             target: {tabId: tabs[0].id ?? 0},
-            files: ['assets/content.js']
+            files: ['assets/content-wrapper.js']
           });
         }
       });

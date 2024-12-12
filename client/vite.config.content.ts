@@ -15,6 +15,7 @@ export default defineConfig({
       },
       output: {
         // Preserve name of entry files for chrome extension manifest reference.
+        assetFileNames: `assets/[name].css`, // Hack to give CSS a consistent, un-hashed name.
         entryFileNames: `assets/[name].js`,
       },
     },
