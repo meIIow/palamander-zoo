@@ -1,6 +1,7 @@
 (async() => {
   if ((window as any).palamanderScriptActive == true) {
-    return console.log("Palamander Content Script is already Active.");
+    console.log("Palamander Content Script is already Active.");
+    return false;
   }
 
   console.log("Palamander Content Script is not Active.");
@@ -10,4 +11,5 @@
   // Run content script
   const src = chrome.runtime.getURL('assets/content.js');
   await import(src);
+  return true;
 })()

@@ -6,7 +6,7 @@
     "default_popup": "popup.html",
     "default_title": "Collect Aquatic Buddies!"
   },
-  "permissions": ["activeTab", "tabs", "scripting"],
+  "permissions": ["activeTab", "tabs", "scripting", "webNavigation"],
   "background": {
     "service_worker": "assets/worker.js",
     "type": "module"

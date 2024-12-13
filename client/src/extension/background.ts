@@ -4,29 +4,23 @@ chrome.runtime.onInstalled.addListener(() => {
   console.log("I was installed!");
 });
 
-chrome.action.onClicked.addListener((tab) => {
-  console.log("I caught a tab event!");
-  chrome.scripting.executeScript({
-    target: {tabId: tab.id ?? 0},
-    files: ['assets/content.js']
-  });
-});
-
-chrome.runtime.onMessage.addListener(
-  function(request, _sender, _sendResponse) {
-    if (request.greeting === "hello") {
-      console.log("Hello, popup!");
-      chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
-        if (tabs.length == 1) {
-          console.log("Injecting Script in response to popup!");
-          chrome.scripting.executeScript({
-            target: {tabId: tabs[0].id ?? 0},
-            files: ['assets/content-wrapper.js']
-          });
-        }
-      });
-    }
-  }
-);
+// Always seems to get object with 'null' result back from chrome.scripting.executeScript()
+// Consider moving this to get called when extension is turned on in the first place...
+// chrome.tabs.onActivated.addListener(async (info) => {
+//   console.log(`Tab ${info.tabId} was activated`);
+//   const firstExecution = await chrome.scripting.executeScript({
+//     target: {tabId: info.tabId},
+//     files: ['assets/content.js']
+//   });
+//   console.log(firstExecution);
+//   if (firstExecution) {
+//     await chrome.scripting.insertCSS({
+//       target: {tabId: info.tabId},
+//       files: ['assets/content.css']
+//     });
+//     console.log("First Execution!");
+//     await chrome.tabs.sendMessage(info.tabId, 'inject');
+//   }
+// });
 
 console.log("I am a service worker.");
