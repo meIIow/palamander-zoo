@@ -1,10 +1,10 @@
 (async() => {
   if ((window as any).palamanderScriptActive == true) {
-    console.log("Palamander Content Script is already Active.");
+    console.log("PALAMANDER: content script was already active.");
     return false;
   }
 
-  console.log("Palamander Content Script is not Active.");
+  console.log("PALAMANDER: content script is now active.");
   // Prevent content script from running again.
   (window as any).palamanderScriptActive = true;
 
