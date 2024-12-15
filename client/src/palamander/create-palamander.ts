@@ -22,15 +22,17 @@ function createEngineCircle(head: SegmentCircle, spawn: Coordinate): SegmentCirc
   }
 }
 
-function createFocalSegment(radius: number): Segment {
+function createFocalSegment(radius: number, propagationInterval: number = 100): Segment {
   return {
     circle: createEmptyCircle(radius),
-    angle: {
-      offParent: 0,
+    bodyAngle: {
+      relative: 0,
       absolute: 0,
+      curveRange: 0,
     },
     wiggle: noWiggle,
     overlap: 0,
+    propagationInterval: propagationInterval,
     children: [],
   }
 }
@@ -40,10 +42,12 @@ function addLeg(parent: Segment, radius: number, length: number, angle: number, 
   for (let i=0; i < length; i++) {
     const next: Segment = {
       circle: createEmptyCircle(radius),
-      angle: {
-        offParent: angle,
+      bodyAngle: {
+        relative: angle,
         absolute: 0,
+        curveRange: 100,
       },
+      propagationInterval: 100,
       wiggle: generateLinearWiggle(45, 2*length, offset),
       overlap: 0,
       children: [],
@@ -59,10 +63,12 @@ function addSpike(parent: Segment, radius: number, length: number, angle: number
   for (let i=0; i < length; i++) {
     const next: Segment = {
       circle: createEmptyCircle(radius),
-      angle: {
-        offParent: angle,
+      bodyAngle: {
+        relative: angle,
         absolute: 0,
+        curveRange: 100,
       },
+      propagationInterval: 100,
       wiggle: noWiggle,
       overlap: 0,
       children: [],
@@ -84,10 +90,12 @@ function addOctoArm(
     radius = radius * taperFactor;
     const next: Segment = {
       circle: createEmptyCircle(radius),
-      angle: {
-        offParent: angle,
+      bodyAngle: {
+        relative: angle,
         absolute: 0,
+        curveRange: 100,
       },
+      propagationInterval: 100,
       //wiggle: noWiggle,
       wiggle: generateSynchronizedWiggle(120 / length, 2*length, i, offset),
       overlap: radius / 2,
@@ -102,10 +110,12 @@ function addTaperedSnake(curr: Segment, length: number, radius: number, taperFac
     radius = radius * taperFactor
     const next: Segment = {
       circle: createEmptyCircle(radius),
-      angle: {
-        offParent: angle,
+      bodyAngle: {
+        relative: angle,
         absolute: 0,
+        curveRange: 100,
       },
+      propagationInterval: 100,
       wiggle: generatePropagatedWiggle(10, 2*length, i),
       overlap: overlapMult * radius,
       children: []
@@ -121,10 +131,12 @@ function addFrill(curr: Segment, length: number, radius: number, angle: number) 
     radius = radius
     const next: Segment = {
       circle: createEmptyCircle(radius),
-      angle: {
-        offParent: i == 0 ? angle : 0,
+      bodyAngle: {
+        relative: i == 0 ? angle : 0,
         absolute: 0,
+        curveRange: 100,
       },
+      propagationInterval: 100,
       wiggle: generatePropagatedWiggle(10, 10*length, i),
       overlap: 0,
       children: []
@@ -159,10 +171,12 @@ function createCentipede() {
   for (let i=0; i < 10; i++) {
     const next: Segment = {
       circle: createEmptyCircle(10),
-      angle: {
-        offParent: 0,
+      bodyAngle: {
+        relative: 0,
         absolute: 0,
+        curveRange: 100,
       },
+      propagationInterval: 100,
       wiggle: generatePropagatedWiggle(10, 20, i),
       overlap: 0,
       children: []
@@ -199,10 +213,10 @@ function createCrawdad() {
   const tail = createFocalSegment(13);
   tail.overlap = 13;
   const leftTailScale = createFocalSegment(15);
-  leftTailScale.angle.offParent = 45;
+  leftTailScale.bodyAngle.relative = 45;
   leftTailScale.overlap = 15;
   const rightTailScale = createFocalSegment(15);
-  rightTailScale.angle.offParent = -45;
+  rightTailScale.bodyAngle.relative = -45;
   rightTailScale.overlap = 15;
   curr.children.push(leftTailScale);
   curr.children.push(rightTailScale);

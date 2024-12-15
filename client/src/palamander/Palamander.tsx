@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import SegmentView from './SegmentView.tsx'
-import { SegmentCircle, Segment, updateSegment, getSegmentCircles } from './segment.ts'
+import { SegmentCircle, Segment, updateSegment, hydrateSegment, getSegmentCircles } from './segment.ts'
 import { generateUpdateCircle } from './create-palamander.ts';
 import MovementAgent from './movement-agent.ts';
 
@@ -10,30 +10,38 @@ type PalamanderProps = {
 }
 
 function Palamander({ initialSegment, spawnCircle }: PalamanderProps) {
-  const [head, setHead] = useState(updateSegment(initialSegment, spawnCircle, 0, 0));
+  const [head, setHead] = useState(() => hydrateSegment(initialSegment, spawnCircle, 0, Date.now()));
 
-  function animate(count: number, angle: number, engineSegmentCircle: SegmentCircle) {   
+  function animate(
+      angle: number,
+      anglePrev: number,
+      engineCircle: SegmentCircle,
+      currTime: number,
+      interval: number) {
     setHead((head) => {
-      return updateSegment(head, engineSegmentCircle, angle, count)
+      return updateSegment(head, engineCircle, angle, anglePrev, currTime, interval)
     });
   }
 
   useEffect(() => {
-    let count = 1;
     const movementAgent = new MovementAgent(10, 5);
     const updateEngine = generateUpdateCircle(spawnCircle);
+    let anglePrev = 0;
+    let prevTime = Date.now();
     const intervalId = setInterval(() => {
       const movement = movementAgent.move();
-      const engineSegmentCircle = updateEngine(movement.delta);
-      count += 1
-      animate(count, movement.angle, engineSegmentCircle);
-    }, 100);
-    return () => clearInterval(intervalId); // Cleanup on unmount
+      const engineCircle = updateEngine(movement.delta);
+      const currTime = Date.now();
+      animate(movement.angle, anglePrev, engineCircle, currTime, currTime-prevTime);
+      anglePrev = movement.angle;
+      prevTime = currTime;
+    }, 50);
+    return () => clearInterval(intervalId); // cleanup on unmount
   }, []);
 
   return (
     <>
-      {getSegmentCircles(head).map(circle => <SegmentView circle={circle} />)}
+      {getSegmentCircles(head).map((circle) => <SegmentView circle={circle}/>)}
     </>
   )
 }
