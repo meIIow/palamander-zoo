@@ -41,7 +41,7 @@ function Palamander({ initialSegment, spawnCircle }: PalamanderProps) {
 
   return (
     <>
-      {getSegmentCircles(head).map((circle) => <SegmentView circle={circle}/>)}
+      {getSegmentCircles(head).map((circle, i) => <SegmentView circle={circle} key={i}/>)}
     </>
   )
 }

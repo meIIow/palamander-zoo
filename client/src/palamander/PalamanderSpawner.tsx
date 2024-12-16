@@ -37,8 +37,8 @@ function PalamanderSpawner() {
   Math.random
   return (
     <>
-      {palamanders.map((pal) => (
-        <Palamander initialSegment={pal} spawnCircle={createSpawnCircle(pal.circle)}/>
+      {palamanders.map((pal, i) => (
+        <Palamander initialSegment={pal} spawnCircle={createSpawnCircle(pal.circle)} key={i}/>
       ))}
     </>
   )
