@@ -8,7 +8,7 @@
   // Prevent content script from running again.
   (window as any).palamanderScriptActive = true;
 
-  // Run content script
+  // Run content script.
   const src = chrome.runtime.getURL('assets/content.js');
   await import(src);
   return true;

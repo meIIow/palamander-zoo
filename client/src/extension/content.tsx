@@ -1,6 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot, Root } from 'react-dom/client'
-import '../index.css'
+import './content.css'
 import Palamander from '../palamander/Palamander.tsx'
 import { SegmentCircle } from '../palamander/segment.ts'
 import { createEngineCircle, createAxolotl } from '../palamander/create-palamander.ts'
@@ -73,7 +73,7 @@ const [renderPalamander, clearPalamander] = (() => {
 //    If it is now true, we RENDER - if false, we CLEAR.
 // 5. The background worker explicitly tells it to RENDER
 //    This may be necessary if the content script didn't run on tab load...
-//    which may happen if the extension was installed/enabled after the tab was opened, etc
+//    which may happen if the extension was installed/enabled after the tab was opened, etc.
 
 // Case 1
 document.addEventListener("visibilitychange", async function() {

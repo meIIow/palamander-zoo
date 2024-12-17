@@ -13,7 +13,7 @@ chrome.runtime.onInstalled.addListener(() => {
 //    plus that initial mass injection might cause lag.
 // Instead, we will try to execute the script on page navigation.
 // Even though this will run on EVERY page navigation going forward, it should be low impact...
-//    because the operations are no-ops if the content script have already run.
+//    because the operations are no-ops if the content script has already run.
 chrome.tabs.onActivated.addListener(async (info) => {
   console.log(`Tab ${info.tabId} was activated`);
   const scriptHadNotRun = await chrome.scripting.executeScript({
