@@ -23,16 +23,17 @@ function Palamander({ initialSegment, spawnCircle }: PalamanderProps) {
   }
 
   useEffect(() => {
-    const movementAgent = new MovementAgent(10, 5);
+    const movementAgent = new MovementAgent(50); // placeholder pixel speed of 50
     const updateEngine = generateUpdateCircle(spawnCircle);
     let prevTime = Date.now();
     const intervalId = setInterval(() => {
-      const movement = movementAgent.move();
-      const engineCircle = updateEngine(movement.delta);
       const currTime = Date.now();
-      animate(movement.angle, engineCircle, currTime, currTime-prevTime);
+      const interval = currTime-prevTime;
+      const movement = movementAgent.move(interval);
+      const engineCircle = updateEngine(movement.delta);
+      animate(movement.angle, engineCircle, currTime, interval);
       prevTime = currTime;
-    }, 50);
+    }, 50); // 20 FPS
     return () => clearInterval(intervalId); // cleanup on unmount
   }, []);
 
