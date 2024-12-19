@@ -14,26 +14,23 @@ function Palamander({ initialSegment, spawnCircle }: PalamanderProps) {
 
   function animate(
       angle: number,
-      anglePrev: number,
       engineCircle: SegmentCircle,
       currTime: number,
       interval: number) {
     setHead((head) => {
-      return updateSegment(head, engineCircle, angle, anglePrev, currTime, interval)
+      return updateSegment(head, engineCircle, angle, angle, currTime, interval)
     });
   }
 
   useEffect(() => {
     const movementAgent = new MovementAgent(10, 5);
     const updateEngine = generateUpdateCircle(spawnCircle);
-    let anglePrev = 0;
     let prevTime = Date.now();
     const intervalId = setInterval(() => {
       const movement = movementAgent.move();
       const engineCircle = updateEngine(movement.delta);
       const currTime = Date.now();
-      animate(movement.angle, anglePrev, engineCircle, currTime, currTime-prevTime);
-      anglePrev = movement.angle;
+      animate(movement.angle, engineCircle, currTime, currTime-prevTime);
       prevTime = currTime;
     }, 50);
     return () => clearInterval(intervalId); // cleanup on unmount

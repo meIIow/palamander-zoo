@@ -189,8 +189,8 @@ function updateSegment(
       return updateSegment(
         child,
         circle,
-        segment.bodyAngle.absolute,
         bodyAngle.absolute,
+        segment.bodyAngle.absolute,
         updateTime,
         interval
       );
