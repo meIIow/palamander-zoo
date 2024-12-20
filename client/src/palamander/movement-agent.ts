@@ -1,5 +1,22 @@
 import { Coordinate } from './segment.ts'
-import { generateGetSample, generateSampleSpeed, generateSampleAngle, generateSampleInterval } from './movement-sample.ts'
+import { SampleSpec, generateGetSample, generateSampler } from './movement-sample.ts'
+
+// In 'Pal Units' / Second
+type MovementBehavior = {
+  maxSpeed: number;
+  maxAccel: number;
+  maxDecel: number;
+}
+
+type SampleBehavior = {
+  speed: SampleSpec;
+  turn: SampleSpec;
+  interval: {
+    skewMin: number;
+    min: number;
+    max: number;
+  }
+}
 
 type Movement = {
   speed: number;
@@ -10,9 +27,7 @@ type Movement = {
 }
 
 class MovementAgent {
-  #maxSpeed: number;
-  #maxAccel: number;
-  #maxDecel: number;
+  #behavior: MovementBehavior
   #getSpeedPercent: (interval: number)=>number;
   #getTurnPercent: (interval: number)=>number;
   #movement: Movement = {
@@ -23,13 +38,20 @@ class MovementAgent {
     delta: { x: 0, y: 0 }
   };
 
-  constructor(maxSpeed: number) {
-    this.#maxSpeed = maxSpeed;
-    this.#maxAccel = 2; // hard-coded placeholder
-    this.#maxDecel = 4; // hard-coded placeholder
-    // Hard-coded placeholders.
-    this.#getSpeedPercent = generateGetSample(generateSampleSpeed(0, 100, 0.15, 3), generateSampleInterval(200, 5000, 3));
-    this.#getTurnPercent = generateGetSample(generateSampleAngle(0, 100, 0.15, 2), generateSampleInterval(200, 5000, 3));
+  constructor(movementBehavior: MovementBehavior, sampleBehavior: SampleBehavior) {
+    this.#behavior = movementBehavior;
+
+    // Generate Sampling Methods.
+    const sampleInterval = generateSampler(
+      sampleBehavior.interval.min,
+      sampleBehavior.interval.max,
+      {
+        zero: 0,
+        skewMin: sampleBehavior.interval.skewMin,
+        mirror: false
+      });
+    this.#getSpeedPercent = generateGetSample(generateSampler(0, 100, sampleBehavior.speed), sampleInterval);
+    this.#getTurnPercent = generateGetSample(generateSampler(0, 100, sampleBehavior.turn), sampleInterval);
   }
 
   private static updateDelta(delta: Coordinate, angle: number, speed: number): Coordinate {
@@ -40,14 +62,14 @@ class MovementAgent {
   }
 
   private calculateSpeed(speedPercent: number): number {
-    const speed = this.#maxSpeed * speedPercent / 100;
+    const speed = this.#behavior.maxSpeed * speedPercent / 100;
     // Clip speed if delta is too large.
     // PLACEHOLDER - ultimately accel/decel limits should depend on update interval.
-    if (this.#movement.speed - speed > this.#maxDecel) {
-      return this.#movement.speed-this.#maxDecel;
+    if (this.#movement.speed - speed > this.#behavior.maxDecel) {
+      return this.#movement.speed-this.#behavior.maxDecel;
     }
-    if (speed - this.#movement.speed > this.#maxAccel) {
-      return this.#movement.speed+this.#maxAccel;
+    if (speed - this.#movement.speed > this.#behavior.maxAccel) {
+      return this.#movement.speed+this.#behavior.maxAccel;
     }
     return speed;
   }
@@ -72,5 +94,33 @@ class MovementAgent {
   }
 }
 
-export default MovementAgent;
+function getPlaceholderMovementAgent() {
+  const movement = {
+    maxSpeed: 50,
+    maxAccel: 2,
+    maxDecel: 4,
+  }
+
+  const sample = {
+    speed: {
+      zero: 0.15,
+      skewMin: 3,
+      mirror: false,
+    },
+    turn: {
+      zero: 0.15,
+      skewMin: 2,
+      mirror: true,
+    },
+    interval: {
+      skewMin: 3,
+      min: 200, // ms
+      max: 5000, //ms
+    }
+  }
+
+  return new MovementAgent(movement, sample);
+}
+
+export default getPlaceholderMovementAgent;
 export type { Movement }
