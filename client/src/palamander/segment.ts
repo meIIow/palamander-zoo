@@ -1,4 +1,4 @@
-import { Wriggle } from './wiggle.ts'
+import { Wriggle } from './wriggle.ts'
 
 type Coordinate = {
   x: number;

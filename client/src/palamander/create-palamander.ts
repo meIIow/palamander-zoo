@@ -1,5 +1,5 @@
 import { Coordinate, SegmentCircle, Segment } from './segment.ts'
-import { generateSquiggleSpec, generateRotationSpec, generateCurlSpec, generateCompositeWriggle } from './wiggle.ts'
+import { generateSquiggleSpec, generateRotationSpec, generateCurlSpec, generateCompositeWriggle } from './wriggle.ts'
 
 function createEmptyCoordinate(): Coordinate {
   return {
