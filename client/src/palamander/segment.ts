@@ -23,30 +23,12 @@ type BodyAngle = {
   relative: number;
 }
 
-/*
-maximum angle off from parent number
-
-
-
-Instead of just passing absolute angle down one-per-update
-We calculate current position based on
-1. previous position of this segment
-2. prevous position of parent
-3. current position of parent
-
-Each segment has an update interval.
-If update interval is exactly the amount of time that has passed, sgement should take parent's angle
-If it is less than update interval, angle should be somewhere b/w current segment and past parent
-If more than update interval, should be b/w current and past parent
-
-*/
-
 // Represents one segment of a Palamander.
 //
 // Contains:
 // 1. The circle to render, which can change each update based on the Palamander's movement
 // 2. The persistant data that define its relationship to its parent segment (angle, etc)
-// 3. How to adjust the parent angle to simulate wiggling/curling/squiggling
+// 3. How to adjust the parent angle to simulate wriggling/curling/squiggling
 // 4. How close to render this segment to its parent. At overlap 0, the circles are tangent.
 // 5. Downstream segments, defined as recursive tree from this segment
 type Segment = {
