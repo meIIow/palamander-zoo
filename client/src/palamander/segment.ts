@@ -1,4 +1,4 @@
-import { Wiggle } from './wiggle.ts'
+import { Wriggle } from './wiggle.ts'
 
 type Coordinate = {
   x: number;
@@ -52,7 +52,7 @@ If more than update interval, should be b/w current and past parent
 type Segment = {
   circle: SegmentCircle;
   bodyAngle: BodyAngle;
-  wiggle: Wiggle;
+  wriggle: Wriggle;
   overlap: number;
   propagationInterval: number;
   children: Array<Segment>;
@@ -140,7 +140,7 @@ function hydrateSegment(
       segment.circle,
       parentCircle,
       segment.overlap,
-      bodyAngleAbsolute + segment.bodyAngle.relative + segment.wiggle(updateTime/100)),
+      bodyAngleAbsolute + segment.bodyAngle.relative + segment.wriggle(updateTime/100)),
     radius: segment.circle.radius
   }
   const bodyAngle = {...segment.bodyAngle}
@@ -148,7 +148,7 @@ function hydrateSegment(
   return {
     circle,
     bodyAngle,
-    wiggle: segment.wiggle,
+    wriggle: segment.wriggle,
     overlap: segment.overlap,
     propagationInterval: segment.propagationInterval,
     children: segment.children.map(
@@ -176,13 +176,13 @@ function updateSegment(
       segment.circle,
       parentCircle,
       segment.overlap,
-      bodyAngle.absolute + bodyAngle.relative + segment.wiggle(updateTime/100)),
+      bodyAngle.absolute + bodyAngle.relative + segment.wriggle(updateTime)),
     radius: segment.circle.radius
   }
   return {
     circle,
     bodyAngle,
-    wiggle: segment.wiggle,
+    wriggle: segment.wriggle,
     overlap: segment.overlap,
     propagationInterval: segment.propagationInterval,
     children: segment.children.map((child) => {

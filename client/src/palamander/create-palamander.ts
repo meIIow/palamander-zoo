@@ -1,5 +1,5 @@
 import { Coordinate, SegmentCircle, Segment } from './segment.ts'
-import { generatePropagatedWiggle, generateLinearWiggle, noWiggle, generateSynchronizedWiggle } from './wiggle.ts'
+import { generateSquiggleSpec, generateRotationSpec, generateCurlSpec, generateCompositeWriggle } from './wiggle.ts'
 
 function createEmptyCoordinate(): Coordinate {
   return {
@@ -30,7 +30,7 @@ function createFocalSegment(radius: number, propagationInterval: number = 100): 
       absolute: 0,
       curveRange: 0,
     },
-    wiggle: noWiggle,
+    wriggle: generateCompositeWriggle([]),
     overlap: 0,
     propagationInterval: propagationInterval,
     children: [],
@@ -48,7 +48,7 @@ function addLeg(parent: Segment, radius: number, length: number, angle: number, 
         curveRange: 100,
       },
       propagationInterval: 100,
-      wiggle: generateLinearWiggle(45, 2*length, offset),
+      wriggle: generateCompositeWriggle([generateRotationSpec(45, 2, offset)]),
       overlap: 0,
       children: [],
     }
@@ -69,7 +69,7 @@ function addSpike(parent: Segment, radius: number, length: number, angle: number
         curveRange: 100,
       },
       propagationInterval: 100,
-      wiggle: noWiggle,
+      wriggle: generateCompositeWriggle([]),
       overlap: 0,
       children: [],
     }
@@ -96,8 +96,8 @@ function addOctoArm(
         curveRange: 100,
       },
       propagationInterval: 100,
-      //wiggle: noWiggle,
-      wiggle: generateSynchronizedWiggle(120 / length, 2*length, i, offset),
+      //wriggle: noWriggle,
+      wriggle: generateCompositeWriggle([generateCurlSpec(120/length, 2, i, offset)]),
       overlap: radius / 2,
       children: [],
     };
@@ -116,7 +116,7 @@ function addTaperedSnake(curr: Segment, length: number, radius: number, taperFac
         curveRange: 100,
       },
       propagationInterval: 100,
-      wiggle: generatePropagatedWiggle(10, 2*length, i),
+      wriggle: generateCompositeWriggle([generateSquiggleSpec(10, 1, i, length*2)]),
       overlap: overlapMult * radius,
       children: []
     }
@@ -137,7 +137,7 @@ function addFrill(curr: Segment, length: number, radius: number, angle: number) 
         curveRange: 100,
       },
       propagationInterval: 100,
-      wiggle: generatePropagatedWiggle(10, 10*length, i),
+      wriggle: generateCompositeWriggle([generateSquiggleSpec(10, 5, i, length*10)]),
       overlap: 0,
       children: []
     }
@@ -177,7 +177,7 @@ function createCentipede() {
         curveRange: 100,
       },
       propagationInterval: 100,
-      wiggle: generatePropagatedWiggle(10, 20, i),
+      wriggle: generateCompositeWriggle([generateSquiggleSpec(10, 1, i, 20)]),
       overlap: 0,
       children: []
     };
