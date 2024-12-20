@@ -73,4 +73,4 @@ export {
   generateCompositeWriggle,
 }
 
-export type { Wriggle }
+export type { Wriggle, WriggleSpec }

@@ -1,4 +1,4 @@
-import { Coordinate, SegmentCircle, Segment } from './segment.ts'
+import { Coordinate, SegmentCircle, SegmentSpec } from './segment.ts'
 import { generateSquiggleSpec, generateRotationSpec, generateCurlSpec, generateCompositeWriggle } from './wriggle.ts'
 
 function createEmptyCoordinate(): Coordinate {
@@ -22,33 +22,33 @@ function createEngineCircle(head: SegmentCircle, spawn: Coordinate): SegmentCirc
   }
 }
 
-function createFocalSegment(radius: number, propagationInterval: number = 100): Segment {
+function createFocalSegment(radius: number, propagationInterval: number = 100): SegmentSpec {
   return {
-    circle: createEmptyCircle(radius),
+    radius,
     bodyAngle: {
       relative: 0,
       absolute: 0,
       curveRange: 0,
     },
-    wriggle: generateCompositeWriggle([]),
+    wriggle: [],
     overlap: 0,
     propagationInterval: propagationInterval,
     children: [],
   }
 }
 
-function addLeg(parent: Segment, radius: number, length: number, angle: number, offset: number): void {
+function addLeg(parent: SegmentSpec, radius: number, length: number, angle: number, offset: number): void {
   let curr = parent
   for (let i=0; i < length; i++) {
-    const next: Segment = {
-      circle: createEmptyCircle(radius),
+    const next: SegmentSpec = {
+      radius,
       bodyAngle: {
         relative: angle,
         absolute: 0,
         curveRange: 100,
       },
       propagationInterval: 100,
-      wriggle: generateCompositeWriggle([generateRotationSpec(45, 2, offset)]),
+      wriggle: [generateRotationSpec(45, 2, offset)],
       overlap: 0,
       children: [],
     }
@@ -57,19 +57,19 @@ function addLeg(parent: Segment, radius: number, length: number, angle: number, 
   }
 }
 
-function addSpike(parent: Segment, radius: number, length: number, angle: number): void {
+function addSpike(parent: SegmentSpec, radius: number, length: number, angle: number): void {
   let curr = parent
   const taper = radius / length;
   for (let i=0; i < length; i++) {
-    const next: Segment = {
-      circle: createEmptyCircle(radius),
+    const next: SegmentSpec = {
+      radius,
       bodyAngle: {
         relative: angle,
         absolute: 0,
         curveRange: 100,
       },
       propagationInterval: 100,
-      wriggle: generateCompositeWriggle([]),
+      wriggle: [],
       overlap: 0,
       children: [],
     }
@@ -80,7 +80,7 @@ function addSpike(parent: Segment, radius: number, length: number, angle: number
 }
 
 function addOctoArm(
-    curr: Segment,
+    curr: SegmentSpec,
     radius: number,
     taperFactor: number,
     length: number,
@@ -88,16 +88,15 @@ function addOctoArm(
     offset: number): void {
   for (let i=0; i < length; i++) {
     radius = radius * taperFactor;
-    const next: Segment = {
-      circle: createEmptyCircle(radius),
+    const next: SegmentSpec = {
+      radius,
       bodyAngle: {
         relative: angle,
         absolute: 0,
         curveRange: 100,
       },
       propagationInterval: 100,
-      //wriggle: noWriggle,
-      wriggle: generateCompositeWriggle([generateCurlSpec(120/length, 2, i, offset)]),
+      wriggle: [generateCurlSpec(120/length, 2, i, offset)],
       overlap: radius / 2,
       children: [],
     };
@@ -105,18 +104,18 @@ function addOctoArm(
     curr = next;
   }
 }
-function addTaperedSnake(curr: Segment, length: number, radius: number, taperFactor: number, angle: number, overlapMult: number = 0) {
+function addTaperedSnake(curr: SegmentSpec, length: number, radius: number, taperFactor: number, angle: number, overlapMult: number = 0) {
   for (let i=0; i<length; i++) {
     radius = radius * taperFactor
-    const next: Segment = {
-      circle: createEmptyCircle(radius),
+    const next: SegmentSpec = {
+      radius,
       bodyAngle: {
         relative: angle,
         absolute: 0,
         curveRange: 100,
       },
       propagationInterval: 100,
-      wriggle: generateCompositeWriggle([generateSquiggleSpec(10, 1, i, length*2)]),
+      wriggle: [generateSquiggleSpec(10, 1, i, length*2)],
       overlap: overlapMult * radius,
       children: []
     }
@@ -126,18 +125,18 @@ function addTaperedSnake(curr: Segment, length: number, radius: number, taperFac
   return curr;
 }
 
-function addFrill(curr: Segment, length: number, radius: number, angle: number) {
+function addFrill(curr: SegmentSpec, length: number, radius: number, angle: number) {
   for (let i=0; i<length; i++) {
     radius = radius
-    const next: Segment = {
-      circle: createEmptyCircle(radius),
+    const next: SegmentSpec = {
+      radius,
       bodyAngle: {
         relative: i == 0 ? angle : 0,
         absolute: 0,
         curveRange: 100,
       },
       propagationInterval: 100,
-      wriggle: generateCompositeWriggle([generateSquiggleSpec(10, 5, i, length*10)]),
+      wriggle: [generateSquiggleSpec(10, 5, i, length*10)],
       overlap: 0,
       children: []
     }
@@ -159,7 +158,7 @@ function generateUpdateCircle(circle: SegmentCircle) {
   }
 }
 
-function createTadpole(): Segment {
+function createTadpole(): SegmentSpec {
   const head = createFocalSegment(20);
   addTaperedSnake(head, 10, 15, 0.9, 0);
   return head;
@@ -169,15 +168,15 @@ function createCentipede() {
   const head = createFocalSegment(13);
   let curr = head;
   for (let i=0; i < 10; i++) {
-    const next: Segment = {
-      circle: createEmptyCircle(10),
+    const next: SegmentSpec = {
+      radius: 10,
       bodyAngle: {
         relative: 0,
         absolute: 0,
         curveRange: 100,
       },
       propagationInterval: 100,
-      wriggle: generateCompositeWriggle([generateSquiggleSpec(10, 1, i, 20)]),
+      wriggle: [generateSquiggleSpec(10, 1, i, 20)],
       overlap: 0,
       children: []
     };
@@ -228,14 +227,14 @@ function createNewt() {
   addTaperedSnake(head, 15, 10, 0.95, 0, 0.5);
   let curr = head;
   curr = curr.children[0];
-  addTaperedSnake(curr, 5, curr.circle.radius / 2, 0.9, 45, 0.5);
-  addTaperedSnake(curr, 5, curr.circle.radius / 2, 0.9, -45, 0.5);
+  addTaperedSnake(curr, 5, curr.radius / 2, 0.9, 45, 0.5);
+  addTaperedSnake(curr, 5, curr.radius / 2, 0.9, -45, 0.5);
 
   for (let i=0; i<2; i++) {
     curr = curr.children[0];
   }
-  addTaperedSnake(curr, 5, curr.circle.radius / 2, 0.9, 45, 0.5);
-  addTaperedSnake(curr, 5, curr.circle.radius / 2, 0.9, -45, 0.5);
+  addTaperedSnake(curr, 5, curr.radius / 2, 0.9, 45, 0.5);
+  addTaperedSnake(curr, 5, curr.radius / 2, 0.9, -45, 0.5);
 
   return head;
 }
@@ -281,14 +280,14 @@ function createAxolotl() {
   addTaperedSnake(head, 15, 10, 0.95, 0, 0.5);
   let curr = head;
   curr = curr.children[0];
-  addTaperedSnake(curr, 5, curr.circle.radius / 2, 0.9, 45, 0.5);
-  addTaperedSnake(curr, 5, curr.circle.radius / 2, 0.9, -45, 0.5);
+  addTaperedSnake(curr, 5, curr.radius / 2, 0.9, 45, 0.5);
+  addTaperedSnake(curr, 5, curr.radius / 2, 0.9, -45, 0.5);
 
   for (let i=0; i<2; i++) {
     curr = curr.children[0];
   }
-  addTaperedSnake(curr, 5, curr.circle.radius / 2, 0.9, 45, 0.5);
-  addTaperedSnake(curr, 5, curr.circle.radius / 2, 0.9, -45, 0.5);
+  addTaperedSnake(curr, 5, curr.radius / 2, 0.9, 45, 0.5);
+  addTaperedSnake(curr, 5, curr.radius / 2, 0.9, -45, 0.5);
 
   for (let i=0; i<6; i++) {
     const angle = 30 + 60 * i;

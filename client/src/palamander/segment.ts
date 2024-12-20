@@ -1,4 +1,4 @@
-import { Wriggle } from './wriggle.ts'
+import { Wriggle, WriggleSpec, generateCompositeWriggle } from './wriggle.ts'
 
 type Coordinate = {
   x: number;
@@ -22,6 +22,15 @@ type BodyAngle = {
   // Ex: 0 for spine, 30 for arm
   relative: number;
 }
+
+type SegmentSpec = {
+  radius: number;
+  bodyAngle: BodyAngle;
+  wriggle: Array<WriggleSpec>;
+  overlap: number;
+  propagationInterval: number;
+  children: Array<SegmentSpec>;
+};
 
 // Represents one segment of a Palamander.
 //
@@ -113,24 +122,25 @@ function updateBodyAngle(
 
 // Initialize segments with consistent spawn data 
 function hydrateSegment(
-    segment: Segment,
+    segment: SegmentSpec,
     parentCircle: SegmentCircle,
     bodyAngleAbsolute: number,
     updateTime: number): Segment {
+  const wriggle = generateCompositeWriggle(segment.wriggle);
   const circle = {
     center: calculateCenter(
-      segment.circle,
+      { radius: segment.radius, center: { x: 0, y: 0 } },
       parentCircle,
       segment.overlap,
-      bodyAngleAbsolute + segment.bodyAngle.relative + segment.wriggle(updateTime/100)),
-    radius: segment.circle.radius
+      bodyAngleAbsolute + segment.bodyAngle.relative + wriggle(updateTime/100)),
+    radius: segment.radius
   }
   const bodyAngle = {...segment.bodyAngle}
   bodyAngle.absolute = bodyAngleAbsolute;
   return {
     circle,
     bodyAngle,
-    wriggle: segment.wriggle,
+    wriggle,
     overlap: segment.overlap,
     propagationInterval: segment.propagationInterval,
     children: segment.children.map(
@@ -185,4 +195,4 @@ function getSegmentCircles(segment: Segment): Array<SegmentCircle> {
 }
 
 export { updateSegment, hydrateSegment, getSegmentCircles };
-export type { Coordinate, SegmentCircle, Segment };
+export type { Coordinate, SegmentCircle, Segment, SegmentSpec };

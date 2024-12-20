@@ -32,13 +32,16 @@ function PalamanderSpawner() {
 
   const h = window.innerHeight;
   const w = window.innerWidth;
-  const createSpawnCircle = (circle: SegmentCircle) => createEngineCircle(circle, {x: Math.random()*h, y: Math.random()*w});
+  const createSpawnCircle = (radius: number) => {
+    const circle = { radius, center: { x: 0, y: 0 } };
+    return createEngineCircle(circle, {x: Math.random()*h, y: Math.random()*w})
+  };
 
   Math.random
   return (
     <>
       {palamanders.map((pal, i) => (
-        <Palamander initialSegment={pal} spawnCircle={createSpawnCircle(pal.circle)} key={i}/>
+        <Palamander segmentSpec={pal} spawnCircle={createSpawnCircle(pal.radius)} key={i}/>
       ))}
     </>
   )
