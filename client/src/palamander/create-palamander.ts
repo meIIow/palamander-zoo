@@ -1,19 +1,5 @@
 import { Coordinate, SegmentCircle, SegmentSpec } from './segment.ts'
-import { generateSquiggleSpec, generateRotationSpec, generateCurlSpec, generateCompositeWriggle } from './wriggle.ts'
-
-function createEmptyCoordinate(): Coordinate {
-  return {
-    x: 0,
-    y: 0,
-  };
-}
-
-function createEmptyCircle(radius: number): SegmentCircle {
-  return {
-    radius,
-    center: createEmptyCoordinate(),
-  }
-}
+import { generateSquiggleSpec, generateRotationSpec, generateCurlSpec } from './wriggle.ts'
 
 function createEngineCircle(head: SegmentCircle, spawn: Coordinate): SegmentCircle {
   return {
@@ -297,6 +283,13 @@ function createAxolotl() {
   return head;
 }
 
+async function getAxolotl(): Promise<SegmentSpec> {
+  const rawData = await fetch('./../pal.json')
+  const axolotl = JSON.parse(await rawData.text())
+  console.log(axolotl)
+  return axolotl.axolotl
+}
+
 export {
   createEngineCircle,
   generateUpdateCircle,
@@ -308,5 +301,6 @@ export {
   createHorseshoeCrab,
   createNewt,
   createCrawdad,
-  createAxolotl
+  createAxolotl,
+  getAxolotl
 };

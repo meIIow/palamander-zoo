@@ -1,5 +1,7 @@
+import { useState, useEffect } from 'react';
+
 import Palamander from './Palamander.tsx'
-import { SegmentCircle } from './segment.ts'
+import { SegmentCircle, SegmentSpec } from './segment.ts'
 import {
   createEngineCircle,
   createTadpole,
@@ -10,7 +12,8 @@ import {
   createHorseshoeCrab,
   createNewt,
   createCrawdad,
-  createAxolotl
+  createAxolotl,
+  getAxolotl
 } from './create-palamander.ts'
 
 // Convenience Component for describing Palamander Segment trees and behavior.
@@ -18,17 +21,36 @@ import {
 // 1. data configs
 // 2. server-side random generation code
 function PalamanderSpawner() {
-  const palamanders = [
-    createTadpole(),
-    createCentipede(),
-    createJelly(),
-    createOctopus(),
-    createStarfish(),
-    createHorseshoeCrab(),
-    createNewt(),
-    createCrawdad(),
-    createAxolotl()
-  ];
+  const [palamanders, setPalamanders] = useState<Array<SegmentSpec>>(() => []);
+
+  // const palamanders = [
+  //   // createTadpole(),
+  //   // createCentipede(),
+  //   // createJelly(),
+  //   // createOctopus(),
+  //   // createStarfish(),
+  //   // createHorseshoeCrab(),
+  //   // createNewt(),
+  //   // createCrawdad(),
+  //   // createAxolotl()
+  //   await getAxolotl()
+  // ];
+
+  useEffect(()=> {
+    const getPals = async () => {
+      const x = await getAxolotl();
+      console.log(x);
+      setPalamanders([x]);
+    };
+
+    getPals();
+
+    // const intervalId = setInterval(async () => {
+    //   console.log(palamanders[0]);
+    //   await getPals();
+    // }, 2000);
+    // return () => clearInterval(intervalId); // cleanup on unmount
+  }, []);
 
   const h = window.innerHeight;
   const w = window.innerWidth;
@@ -37,10 +59,9 @@ function PalamanderSpawner() {
     return createEngineCircle(circle, {x: Math.random()*h, y: Math.random()*w})
   };
 
-  Math.random
   return (
     <>
-      {palamanders.map((pal, i) => (
+      {palamanders.length <= 0 ? null : palamanders.map((pal, i) => (
         <Palamander segmentSpec={pal} spawnCircle={createSpawnCircle(pal.radius)} key={i}/>
       ))}
     </>
