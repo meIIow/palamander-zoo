@@ -1,6 +1,6 @@
-import { Segment } from "./segment"
+import { Segment, createDefaultSegment } from "./segment"
 import { Section } from "./section"
-import { SegmentationFunc, getDefaultSegmentationMap, createDefaultSegment } from "./segmentation"
+import { SegmentationFunc, getDefaultSegmentationMap } from "./segmentation"
 
 export default function segmentate(sectionTree: Section): Segment {
   const segmentationMap = getDefaultSegmentationMap();

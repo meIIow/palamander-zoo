@@ -1,4 +1,4 @@
-import { Segment, SegmentCircle } from "./segment";
+import { Segment, createDefaultSegment } from "./segment";
 import { Section } from "./section";
 import { generateCompositeWriggle, generateSquiggleSpec } from './wriggle';
 
@@ -86,31 +86,5 @@ function generateNewtLegSection(parentIndex: number, mirror: boolean): Section {
   };
 }
 
-function createDefaultSegment(radius: number, propagationInterval: number = 100): Segment {
-  return {
-    circle: generateCircle(radius),
-    bodyAngle: {
-      relative: 0,
-      absolute: 0,
-      curveRange: 360,
-    },
-    wriggle: generateCompositeWriggle([]),
-    overlap: 0,
-    propagationInterval: propagationInterval,
-    children: [],
-  }
-}
-
-// TODO(mellow): move all Circle logic (including from segment.ts) into dedicated module.
-function generateCircle(radius: number): SegmentCircle {
-  return {
-    radius,
-    center: {
-      x: 0,
-      y: 0,
-    },
-  }
-}
-
 export type { SegmentationFunc, SegmentationMap };
-export { getDefaultSegmentationMap, createDefaultSegment };
+export { getDefaultSegmentationMap };

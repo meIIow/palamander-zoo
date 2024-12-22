@@ -1,8 +1,8 @@
 import './SegmentView.css'
-import { SegmentCircle } from './segment.ts'
+import { Circle } from './circle.ts'
 
 type SegmentViewProps = {
-  circle: SegmentCircle
+  circle: Circle
 }
 
 function SegmentView({ circle }: SegmentViewProps) {

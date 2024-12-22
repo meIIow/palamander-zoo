@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 import SegmentView from './SegmentView.tsx'
-import { SegmentCircle, Segment, updateSegment, hydrateSegment, getSegmentCircles } from './segment.ts'
-import { generateUpdateCircle } from './create-palamander.ts';
+import { Circle, generateUpdateCircle } from './circle.ts'
+import { Segment, updateSegment, hydrateSegment, getSegmentCircles } from './segment.ts'
 import getPlaceholderMovementAgent from './movement-agent.ts';
 
 type PalamanderProps = {
   segment: Segment,
-  spawnCircle: SegmentCircle,
+  spawnCircle: Circle,
 }
 
 function Palamander({ segment, spawnCircle }: PalamanderProps) {
@@ -14,7 +14,7 @@ function Palamander({ segment, spawnCircle }: PalamanderProps) {
 
   function animate(
       angle: number,
-      engineCircle: SegmentCircle,
+      engineCircle: Circle,
       currTime: number,
       interval: number) {
     setHead((head) => {

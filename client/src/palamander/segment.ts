@@ -1,15 +1,5 @@
-import { Wriggle, WriggleSpec } from './wriggle.ts'
-
-type Coordinate = {
-  x: number;
-  y: number;
-}
-
-type SegmentCircle = {
-  radius: number;
-  center: Coordinate;
-}
-
+import { Wriggle, WriggleSpec, generateCompositeWriggle } from './wriggle.ts';
+import { Circle, Coordinate, calculateCenter, createDefaultCircle } from './circle.ts';
 
 type BodyAngle = {
   // Overall body angle at this segment
@@ -41,26 +31,13 @@ type SegmentSpec = {
 // 4. How close to render this segment to its parent. At overlap 0, the circles are tangent.
 // 5. Downstream segments, defined as recursive tree from this segment
 type Segment = {
-  circle: SegmentCircle;
+  circle: Circle;
   bodyAngle: BodyAngle;
   wriggle: Wriggle;
   overlap: number;
   propagationInterval: number;
   children: Array<Segment>;
 };
-
-function calculateCenter(
-    segmentCircle: SegmentCircle,
-    parentCircle: SegmentCircle,
-    overlap: number,
-    angle: number): Coordinate {
-  const xd = Math.sin(angle * Math.PI / 180) * (segmentCircle.radius + parentCircle.radius - overlap);
-  const yd = Math.cos(angle * Math.PI / 180) * (segmentCircle.radius + parentCircle.radius - overlap);
-  return {
-    x: parentCircle.center.x+xd,
-    y: parentCircle.center.y+yd
-  }
-}
 
 // We calculate the absolute body angle for this segment from:
 // 1. previous absolute body angle of this segment
@@ -123,7 +100,7 @@ function updateBodyAngle(
 // Initialize segments with consistent spawn data 
 function hydrateSegment(
     segment: Segment,
-    parentCircle: SegmentCircle,
+    parentCircle: Circle,
     bodyAngleAbsolute: number,
     updateTime: number,
     depth = 0): Segment {
@@ -152,7 +129,7 @@ function hydrateSegment(
 
 function updateSegment(
     segment: Segment,
-    parentCircle: SegmentCircle,
+    parentCircle: Circle,
     parentAbsoluteBodyAngle: number,
     parentAbsoluteBodyAnglePrev: number,
     updateTime: number,
@@ -191,9 +168,24 @@ function updateSegment(
   }
 }
 
-function getSegmentCircles(segment: Segment): Array<SegmentCircle> {
+function getSegmentCircles(segment: Segment): Array<Circle> {
   return [segment.circle, ...segment.children.map(child => getSegmentCircles(child)).flat()]
 }
 
-export { updateSegment, hydrateSegment, getSegmentCircles };
-export type { Coordinate, SegmentCircle, Segment, SegmentSpec };
+function createDefaultSegment(radius: number, propagationInterval: number = 100): Segment {
+  return {
+    circle: createDefaultCircle(radius),
+    bodyAngle: {
+      relative: 0,
+      absolute: 0,
+      curveRange: 360,
+    },
+    wriggle: generateCompositeWriggle([]),
+    overlap: 0,
+    propagationInterval: propagationInterval,
+    children: [],
+  }
+}
+
+export { updateSegment, hydrateSegment, getSegmentCircles, createDefaultSegment };
+export type { Coordinate, Segment, SegmentSpec };

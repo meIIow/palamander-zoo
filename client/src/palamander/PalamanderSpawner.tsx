@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import Palamander from './Palamander.tsx';
 import { Segment } from './segment.ts';
 import segmentate from './segmentate.ts';
-import { createEngineCircle } from './create-palamander.ts';
+import { createEngineCircle } from './circle.ts';
 
 async function createNewtTemp() {
   return segmentate({

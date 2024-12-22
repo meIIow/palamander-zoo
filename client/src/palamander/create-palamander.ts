@@ -1,12 +1,5 @@
-import { Coordinate, SegmentCircle, SegmentSpec } from './segment.ts'
+import { SegmentSpec } from './segment.ts'
 import { generateSquiggleSpec, generateRotationSpec, generateCurlSpec } from './wriggle.ts'
-
-function createEngineCircle(head: SegmentCircle, spawn: Coordinate): SegmentCircle {
-  return {
-    radius: -1 * head.radius,
-    center: spawn,
-  }
-}
 
 function createFocalSegment(radius: number, propagationInterval: number = 100): SegmentSpec {
   return {
@@ -130,18 +123,6 @@ function addFrill(curr: SegmentSpec, length: number, radius: number, angle: numb
     curr = next;
   }
   return curr;
-}
-
-function generateUpdateCircle(circle: SegmentCircle) {
-  return (delta: Coordinate) => {
-    return {
-      radius: circle.radius,
-      center: {
-        x: circle.center.x + delta.x,
-        y: circle.center.y + delta.y,
-      }
-    }
-  }
 }
 
 function createTadpole(): SegmentSpec {
@@ -291,8 +272,6 @@ async function getAxolotl(): Promise<SegmentSpec> {
 }
 
 export {
-  createEngineCircle,
-  generateUpdateCircle,
   createTadpole,
   createCentipede,
   createJelly,
