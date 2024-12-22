@@ -9,6 +9,10 @@ export default function segmentate(sectionTree: Section): Segment {
       parent: Segment,
       section: Section,
       processSection: SegmentationFunc): Segment[] => {
+    if (section.type == 'passthru') {
+      processChildren([parent], section.children);
+      return [];
+    }
     if (!(section.type in segmentationMap)) {
       console.log(`${section.type} not present in segmentation map, skipping section ${section}`);
       return []

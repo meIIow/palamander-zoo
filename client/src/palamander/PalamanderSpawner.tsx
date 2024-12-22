@@ -7,11 +7,12 @@ import { createEngineCircle } from './circle.ts';
 
 async function createNewtTemp() {
   return segmentate({
-    type: 'newt',
+    type: 'axolotl',
     length: 15,
     parentIndex: 0,
     size: 10,
     angle: 0,
+    seed: 0,
     children: [],
   })
 }
