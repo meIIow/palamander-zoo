@@ -1,4 +1,4 @@
-import { Wriggle, WriggleSpec, generateCompositeWriggle } from './wriggle.ts'
+import { Wriggle, WriggleSpec } from './wriggle.ts'
 
 type Coordinate = {
   x: number;
@@ -122,29 +122,30 @@ function updateBodyAngle(
 
 // Initialize segments with consistent spawn data 
 function hydrateSegment(
-    segment: SegmentSpec,
+    segment: Segment,
     parentCircle: SegmentCircle,
     bodyAngleAbsolute: number,
-    updateTime: number): Segment {
-  const wriggle = generateCompositeWriggle(segment.wriggle);
+    updateTime: number,
+    depth = 0): Segment {
+  console.log('hydrating!', segment, depth);
   const circle = {
     center: calculateCenter(
-      { radius: segment.radius, center: { x: 0, y: 0 } },
+      segment.circle,
       parentCircle,
       segment.overlap,
-      bodyAngleAbsolute + segment.bodyAngle.relative + wriggle(updateTime/100)),
-    radius: segment.radius
+      bodyAngleAbsolute + segment.bodyAngle.relative + segment.wriggle(updateTime/100)),
+    radius: segment.circle.radius
   }
   const bodyAngle = {...segment.bodyAngle}
   bodyAngle.absolute = bodyAngleAbsolute;
   return {
     circle,
     bodyAngle,
-    wriggle,
+    wriggle: segment.wriggle,
     overlap: segment.overlap,
     propagationInterval: segment.propagationInterval,
     children: segment.children.map(
-      (child) => hydrateSegment(child, circle, bodyAngleAbsolute, updateTime)
+      (child) => hydrateSegment(child, circle, bodyAngleAbsolute, updateTime, depth+1)
     )
   }
 }

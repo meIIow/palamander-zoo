@@ -1,55 +1,35 @@
 import { useState, useEffect } from 'react';
 
-import Palamander from './Palamander.tsx'
-import { SegmentCircle, SegmentSpec } from './segment.ts'
-import {
-  createEngineCircle,
-  createTadpole,
-  createCentipede,
-  createJelly,
-  createOctopus,
-  createStarfish,
-  createHorseshoeCrab,
-  createNewt,
-  createCrawdad,
-  createAxolotl,
-  getAxolotl
-} from './create-palamander.ts'
+import Palamander from './Palamander.tsx';
+import { Segment } from './segment.ts';
+import segmentate from './segmentate.ts';
+import { createEngineCircle } from './create-palamander.ts';
+
+async function createNewtTemp() {
+  return segmentate({
+    type: 'newt',
+    length: 15,
+    parentIndex: 0,
+    size: 10,
+    angle: 0,
+    children: [],
+  })
+}
 
 // Convenience Component for describing Palamander Segment trees and behavior.
 // For development / iteration only - Palamanders will ultimately be defined by:
 // 1. data configs
 // 2. server-side random generation code
 function PalamanderSpawner() {
-  const [palamanders, setPalamanders] = useState<Array<SegmentSpec>>(() => []);
-
-  // const palamanders = [
-  //   // createTadpole(),
-  //   // createCentipede(),
-  //   // createJelly(),
-  //   // createOctopus(),
-  //   // createStarfish(),
-  //   // createHorseshoeCrab(),
-  //   // createNewt(),
-  //   // createCrawdad(),
-  //   // createAxolotl()
-  //   await getAxolotl()
-  // ];
+  const [palamanders, setPalamanders] = useState<Array<Segment>>(() => []);
 
   useEffect(()=> {
     const getPals = async () => {
-      const x = await getAxolotl();
+      const x = await createNewtTemp();
       console.log(x);
       setPalamanders([x]);
     };
-
     getPals();
-
-    // const intervalId = setInterval(async () => {
-    //   console.log(palamanders[0]);
-    //   await getPals();
-    // }, 2000);
-    // return () => clearInterval(intervalId); // cleanup on unmount
   }, []);
 
   const h = window.innerHeight;
@@ -62,7 +42,7 @@ function PalamanderSpawner() {
   return (
     <>
       {palamanders.length <= 0 ? null : palamanders.map((pal, i) => (
-        <Palamander segmentSpec={pal} spawnCircle={createSpawnCircle(pal.radius)} key={i}/>
+        <Palamander segment={pal} spawnCircle={createSpawnCircle(pal.circle.radius)} key={i}/>
       ))}
     </>
   )
