@@ -1,20 +1,26 @@
 import { useState, useEffect } from 'react';
 
-import Palamander from './Palamander.tsx';
-import { Segment } from './segment.ts';
+import PalamanderView from './PalamanderView.tsx';
+import { Palamander } from './palamander.ts';
 import segmentate from './segmentate.ts';
 import { createSpawnCoord } from './circle.ts';
+import { getPlaceholderMovementAgent } from './movement-agent.ts';
 
-async function createNewtTemp() {
-  return segmentate({
-    type: 'axolotl',
-    length: 15,
-    parentIndex: 0,
-    size: 100,
-    angle: 0,
-    seed: 0,
-    children: [],
-  })
+async function createAxolotlTemp(): Promise<Palamander> {
+  return {
+    head: segmentate({
+      type: 'axolotl',
+      length: 15,
+      parentIndex: 0,
+      size: 100,
+      angle: 0,
+      seed: 0,
+      children: [],
+    }),
+    updateInterval: 50,
+    magnification: 20,
+    movementAgent: getPlaceholderMovementAgent()
+  };
 }
 
 // Convenience Component for describing Palamander Segment trees and behavior.
@@ -22,11 +28,11 @@ async function createNewtTemp() {
 // 1. data configs
 // 2. server-side random generation code
 function PalamanderSpawner() {
-  const [palamanders, setPalamanders] = useState<Array<Segment>>(() => []);
+  const [palamanders, setPalamanders] = useState<Array<Palamander>>(() => []);
 
   useEffect(()=> {
     const getPals = async () => {
-      const x = await createNewtTemp();
+      const x = await createAxolotlTemp();
       console.log(x);
       setPalamanders([x]);
     };
@@ -38,7 +44,7 @@ function PalamanderSpawner() {
   return (
     <>
       {palamanders.length <= 0 ? null : palamanders.map((pal, i) => (
-        <Palamander segment={pal} spawnCoord={createSpawnCoord(w, h)} key={i}/>
+        <PalamanderView pal={pal} spawnCoord={createSpawnCoord(w, h)} key={i}/>
       ))}
     </>
   )

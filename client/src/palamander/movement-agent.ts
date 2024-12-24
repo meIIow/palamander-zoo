@@ -133,5 +133,5 @@ function getPlaceholderMovementAgent() {
   return new MovementAgent(movement, sample);
 }
 
-export default getPlaceholderMovementAgent;
+export { MovementAgent, getPlaceholderMovementAgent };
 export type { Movement }

@@ -1,9 +1,11 @@
 import { StrictMode } from 'react'
 import { createRoot, Root } from 'react-dom/client'
 import './content.css'
-import Palamander from '../palamander/Palamander.tsx'
+import PalamanderView from '../palamander/PalamanderView.tsx'
+import { Palamander } from '../palamander/palamander.ts'
 import segmentate from '../palamander/segmentate.ts'
 import { showPals } from './storage.ts'
+import { getPlaceholderMovementAgent } from '../palamander/movement-agent.ts'
 
 const PALAMANDER_ROOT_ID = 'palamander-root';
 
@@ -25,6 +27,23 @@ const getPalamanderRoot = (() => {
   };
 })();
 
+async function createAxolotlTemp(): Promise<Palamander> {
+  return {
+    head: segmentate({
+      type: 'axolotl',
+      length: 15,
+      parentIndex: 0,
+      size: 100,
+      angle: 0,
+      seed: 0,
+      children: [],
+    }),
+    updateInterval: 50,
+    magnification: 20,
+    movementAgent: getPlaceholderMovementAgent()
+  };
+}
+
 const [renderPalamander, clearPalamander] = (() => {
   let rendered = false; // protect rendered variable in closure
   return [
@@ -34,18 +53,10 @@ const [renderPalamander, clearPalamander] = (() => {
       if (! (await showPals())) return;
       rendered = true;
       console.log("PALAMANDER: (re-)rendering pal");
-      const pal = segmentate({
-        type: 'axolotl',
-        length: 15,
-        parentIndex: 0,
-        size: 10,
-        angle: 0,
-        seed: 0,
-        children: [],
-      });
+      const pal = await createAxolotlTemp();
       getPalamanderRoot().render(
         <StrictMode>
-          <Palamander segment={pal} spawnCoord={{ x: 400, y: 400 }}/>
+          <PalamanderView pal={pal} spawnCoord={{ x: 400, y: 400 }}/>
         </StrictMode>,
       )
     },
