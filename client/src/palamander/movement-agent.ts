@@ -106,10 +106,10 @@ class MovementAgent {
 
 function getPlaceholderMovementAgent() {
   const movement = {
-    speedCap: 500,
+    speedCap: 2500,
     turnCap: 720,
-    maxAccel: 200,
-    maxDecel: 400,
+    maxAccel: 1000,
+    maxDecel: 2000,
   }
 
   const sample = {

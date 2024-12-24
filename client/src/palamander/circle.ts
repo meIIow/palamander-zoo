@@ -8,22 +8,27 @@ type Coordinate = {
   y: number;
 };
 
+function createOrigin(): Coordinate {
+  return { x: 0, y: 0 }
+}
+
+function createSpawnCoord(width: number, height: number): Coordinate {
+  return { x: Math.random()*width, y: Math.random()*height };
+}
+
 function createDefaultCircle(radius: number): Circle {
   return {
     radius,
-    center: {
-      x: 0,
-      y: 0,
-    },
+    center: createOrigin()
   }
 }
 
 // Creates a circle corresponding to a phantom Engine Segment that leads a Pal's head.
 // Feed in movement updates to this circle in order to update the Pal appropriately.
-function createEngineCircle(head: Circle, spawn: Coordinate): Circle {
+function createEngineCircle(head: Circle, origin: Coordinate = createOrigin()): Circle {
   return {
     radius: -1 * head.radius,
-    center: spawn,
+    center: origin,
   }
 }
 
@@ -55,4 +60,4 @@ function calculateCenter(
 }
 
 export type { Circle, Coordinate };
-export { createDefaultCircle, createEngineCircle, generateUpdateCircle, calculateCenter }
+export { createOrigin, createSpawnCoord, createDefaultCircle, createEngineCircle, generateUpdateCircle, calculateCenter }

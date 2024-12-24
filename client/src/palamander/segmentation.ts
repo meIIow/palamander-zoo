@@ -52,10 +52,10 @@ const segmentateTadpole: SegmentationFunc = (
     _parent: Segment,
     section: Section,
     _processSection: SegmentationFunc): Segment[] => {
-  const head = createDefaultSegment(20);
+  const head = createDefaultSegment(section.size);
   const spec: TaperedSegmentSpec = {
     count: section.length,
-    radius: section.size,
+    radius: section.size / 2,
     taperFactor: 0.95,
     angle: 0,
     overlapMult: 0.5,
@@ -85,7 +85,7 @@ const segmentateLeg: SegmentationFunc = (
     _processSection: SegmentationFunc): Segment[] => {
   const spec: TaperedSegmentSpec = {
     count: section.length,
-    radius: parent.circle.radius * section.size,
+    radius: parent.circle.radius * section.size / 100,
     taperFactor: 0.9,
     angle: section.angle,
     overlapMult: 0.5,
@@ -114,7 +114,7 @@ const segmentateGill: SegmentationFunc = (
     _processSection: SegmentationFunc): Segment[] => {
   const spec: TaperedSegmentSpec = {
     count: section.length,
-    radius: section.size,
+    radius: parent.circle.radius * section.size / 100,
     taperFactor: 0.9,
     angle: section.angle,
     overlapMult: 0.5,
@@ -132,7 +132,7 @@ function generateNewtLegs(parentIndex: number): Section {
     type: 'legs',
     parentIndex,
     length: 5,
-    size: 0.5,
+    size: 50,
     angle: 45,
     seed: 0,
     children: []
@@ -144,7 +144,7 @@ function generateGills(): Section {
     type: 'gills',
     parentIndex: 0,
     length: 5,
-    size: 2,
+    size: 10,
     angle: 60,
     seed: 0,
     children: []

@@ -3,14 +3,14 @@ import { useState, useEffect } from 'react';
 import Palamander from './Palamander.tsx';
 import { Segment } from './segment.ts';
 import segmentate from './segmentate.ts';
-import { createEngineCircle } from './circle.ts';
+import { createSpawnCoord } from './circle.ts';
 
 async function createNewtTemp() {
   return segmentate({
     type: 'axolotl',
     length: 15,
     parentIndex: 0,
-    size: 10,
+    size: 100,
     angle: 0,
     seed: 0,
     children: [],
@@ -35,15 +35,10 @@ function PalamanderSpawner() {
 
   const h = window.innerHeight;
   const w = window.innerWidth;
-  const createSpawnCircle = (radius: number) => {
-    const circle = { radius, center: { x: 0, y: 0 } };
-    return createEngineCircle(circle, {x: Math.random()*h, y: Math.random()*w})
-  };
-
   return (
     <>
       {palamanders.length <= 0 ? null : palamanders.map((pal, i) => (
-        <Palamander segment={pal} spawnCircle={createSpawnCircle(pal.circle.radius)} key={i}/>
+        <Palamander segment={pal} spawnCoord={createSpawnCoord(w, h)} key={i}/>
       ))}
     </>
   )

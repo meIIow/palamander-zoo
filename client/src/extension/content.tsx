@@ -2,7 +2,6 @@ import { StrictMode } from 'react'
 import { createRoot, Root } from 'react-dom/client'
 import './content.css'
 import Palamander from '../palamander/Palamander.tsx'
-import { Circle, createEngineCircle } from '../palamander/circle.ts'
 import segmentate from '../palamander/segmentate.ts'
 import { showPals } from './storage.ts'
 
@@ -35,7 +34,6 @@ const [renderPalamander, clearPalamander] = (() => {
       if (! (await showPals())) return;
       rendered = true;
       console.log("PALAMANDER: (re-)rendering pal");
-      const createSpawnCircle = (circle: Circle) => createEngineCircle(circle, {x: 400, y: 400});
       const pal = segmentate({
         type: 'axolotl',
         length: 15,
@@ -47,7 +45,7 @@ const [renderPalamander, clearPalamander] = (() => {
       });
       getPalamanderRoot().render(
         <StrictMode>
-          <Palamander segment={pal} spawnCircle={createSpawnCircle(pal.circle)}/>
+          <Palamander segment={pal} spawnCoord={{ x: 400, y: 400 }}/>
         </StrictMode>,
       )
     },

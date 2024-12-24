@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'react'
 import SegmentView from './SegmentView.tsx'
-import { Circle, generateUpdateCircle } from './circle.ts'
+import { Circle, Coordinate, createEngineCircle, generateUpdateCircle } from './circle.ts'
 import { Segment, updateSegment, hydrateSegment, getSegmentCircles } from './segment.ts'
 import getPlaceholderMovementAgent from './movement-agent.ts';
 
 type PalamanderProps = {
   segment: Segment,
-  spawnCircle: Circle,
+  spawnCoord: Coordinate,
 }
 
-function Palamander({ segment, spawnCircle }: PalamanderProps) {
-  const [head, setHead] = useState(() => hydrateSegment(segment, spawnCircle, 0, Date.now()));
+function Palamander({ segment, spawnCoord }: PalamanderProps) {
+  const [head, setHead] = useState(
+    () => hydrateSegment(segment, createEngineCircle(segment.circle), 0, Date.now())
+  );
 
   function animate(
       angle: number,
@@ -18,14 +20,14 @@ function Palamander({ segment, spawnCircle }: PalamanderProps) {
       currTime: number,
       interval: number,
       speed: number) {
-    setHead((head) => {
+    setHead((head: Segment) => {
       return updateSegment(head, engineCircle, angle, angle, currTime, interval, speed);
     });
   }
 
   useEffect(() => {
     const movementAgent = getPlaceholderMovementAgent();
-    const updateEngine = generateUpdateCircle(spawnCircle);
+    const updateEngine = generateUpdateCircle(createEngineCircle(segment.circle));
     let prevTime = Date.now();
     const intervalId = setInterval(() => {
       const currTime = Date.now();
@@ -40,7 +42,7 @@ function Palamander({ segment, spawnCircle }: PalamanderProps) {
 
   return (
     <>
-      {getSegmentCircles(head).map((circle, i) => <SegmentView circle={circle} key={i}/>)}
+      {getSegmentCircles(head).map((circle, i) => <SegmentView circle={circle} spawn={spawnCoord} key={i}/>)}
     </>
   )
 }
