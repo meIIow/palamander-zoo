@@ -16,9 +16,10 @@ function Palamander({ segment, spawnCircle }: PalamanderProps) {
       angle: number,
       engineCircle: Circle,
       currTime: number,
-      interval: number) {
+      interval: number,
+      speed: number) {
     setHead((head) => {
-      return updateSegment(head, engineCircle, angle, angle, currTime, interval)
+      return updateSegment(head, engineCircle, angle, angle, currTime, interval, speed);
     });
   }
 
@@ -31,7 +32,8 @@ function Palamander({ segment, spawnCircle }: PalamanderProps) {
       const interval = currTime-prevTime;
       const movement = movementAgent.move(interval);
       const engineCircle = updateEngine(movement.delta);
-      animate(movement.angle, engineCircle, currTime, interval);
+      console.log(movement.speedPercent)
+      animate(movement.angle, engineCircle, currTime, interval, movement.speedPercent);
       prevTime = currTime;
     }, 50); // 20 FPS
     return () => clearInterval(intervalId); // cleanup on unmount

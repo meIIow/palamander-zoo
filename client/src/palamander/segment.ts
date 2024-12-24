@@ -104,13 +104,12 @@ function hydrateSegment(
     bodyAngleAbsolute: number,
     updateTime: number,
     depth = 0): Segment {
-  console.log('hydrating!', segment, depth);
   const circle = {
     center: calculateCenter(
       segment.circle,
       parentCircle,
       segment.overlap,
-      bodyAngleAbsolute + segment.bodyAngle.relative + segment.wriggle(updateTime/100)),
+      bodyAngleAbsolute + segment.bodyAngle.relative + segment.wriggle(updateTime/100, 0)),
     radius: segment.circle.radius
   }
   const bodyAngle = {...segment.bodyAngle}
@@ -133,7 +132,8 @@ function updateSegment(
     parentAbsoluteBodyAngle: number,
     parentAbsoluteBodyAnglePrev: number,
     updateTime: number,
-    interval: number): Segment {
+    interval: number,
+    speed: number): Segment {
   const stepMagnitude = interval / segment.propagationInterval;
   const bodyAngle = updateBodyAngle(
     stepMagnitude,
@@ -146,7 +146,7 @@ function updateSegment(
       segment.circle,
       parentCircle,
       segment.overlap,
-      bodyAngle.absolute + bodyAngle.relative + segment.wriggle(updateTime)),
+      bodyAngle.absolute + bodyAngle.relative + segment.wriggle(updateTime, speed)),
     radius: segment.circle.radius
   }
   return {
@@ -162,7 +162,8 @@ function updateSegment(
         bodyAngle.absolute,
         segment.bodyAngle.absolute,
         updateTime,
-        interval
+        interval,
+        speed
       );
     })
   }
