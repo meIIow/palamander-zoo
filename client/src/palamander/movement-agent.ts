@@ -1,11 +1,11 @@
 import { Coordinate } from './segment.ts'
 import { SampleSpec, generateGetSample, generateSampler } from './movement-sample.ts'
 
-// In 'Pal Units' / Second
 type MovementBehavior = {
-  maxSpeed: number;
-  maxAccel: number;
-  maxDecel: number;
+  speedCap: number; // (Pal Units) / Second
+  turnCap: number;  // (Angle* Delta) / Second
+  maxAccel: number; // (Speed% Delta) / Second
+  maxDecel: number; // (Speed% Delta) / Second
 }
 
 type SampleBehavior = {
@@ -19,10 +19,10 @@ type SampleBehavior = {
 }
 
 type Movement = {
-  speed: number;
+  dist: number;
   angle: number;
-  speedPercent: number,
-  turnPercent: number,
+  speed: number,
+  turn: number,
   delta: Coordinate,
 }
 
@@ -32,9 +32,9 @@ class MovementAgent {
   #getTurnPercent: (interval: number)=>number;
   #movement: Movement = {
     angle: 0,
+    dist: 0,
+    turn: 0,
     speed: 0,
-    turnPercent: 0,
-    speedPercent: 0,
     delta: { x: 0, y: 0 }
   };
 
@@ -54,40 +54,50 @@ class MovementAgent {
     this.#getTurnPercent = generateGetSample(generateSampler(0, 100, sampleBehavior.turn), sampleInterval);
   }
 
-  private static updateDelta(delta: Coordinate, angle: number, speed: number): Coordinate {
+  private static updateDelta(delta: Coordinate, angle: number, dist: number): Coordinate {
     return {
-      x: delta.x - Math.sin(angle * Math.PI / 180) * speed,
-      y: delta.y - Math.cos(angle * Math.PI / 180) * speed,
+      x: delta.x - Math.sin(angle * Math.PI / 180) * dist,
+      y: delta.y - Math.cos(angle * Math.PI / 180) * dist,
     }
   }
 
-  private calculateSpeed(speedPercent: number): number {
-    const speed = this.#behavior.maxSpeed * speedPercent / 100;
-    // Clip speed if delta is too large.
-    // PLACEHOLDER - ultimately accel/decel limits should depend on update interval.
-    if (this.#movement.speed - speed > this.#behavior.maxDecel) {
-      return this.#movement.speed-this.#behavior.maxDecel;
+  private clipSpeed(interval: number, speed: number): number {
+    const maxDecel = this.#behavior.maxDecel * (interval / 1000);
+    const maxAccel = this.#behavior.maxAccel * (interval / 1000);
+
+    // Clip speed if (acc/dec)eleration are outside max range for this interval.
+    if (this.#movement.speed - speed > maxDecel) {
+      return this.#movement.speed-maxDecel;
     }
-    if (speed - this.#movement.speed > this.#behavior.maxAccel) {
-      return this.#movement.speed+this.#behavior.maxAccel;
+    if (speed - this.#movement.speed > maxAccel) {
+      return this.#movement.speed+maxAccel;
     }
     return speed;
   }
 
-  move(interval: number): Movement {
-    const speedPercent = this.#getSpeedPercent(interval);
-    const turnPercent = this.#getTurnPercent(interval);
-    const speed = this.calculateSpeed(speedPercent);
+  private calculateDist(interval: number, speed: number): number {
+    return (speed / 100) * (interval / 1000) * this.#behavior.speedCap;
+  }
 
-    // PLACEHOLDER - ultimately angle should depend on speed
-    const angle = this.#movement.angle + turnPercent / 2;
-    const delta = MovementAgent.updateDelta(this.#movement.delta, angle, speed);
+  private calculateAngle(interval: number, turn: number, speed: number): number {
+    const turnAngle = (interval / 1000) * this.#behavior.turnCap * (turn / 100);
+    // Cannot turn as well at speed.
+    return this.#movement.angle + turnAngle * (1 - speed / 100);
+  }
+
+  move(interval: number): Movement {
+    const speed = this.clipSpeed(interval, this.#getSpeedPercent(interval));
+    const turn = this.#getTurnPercent(interval);
+    const dist = this.calculateDist(interval, speed);
+
+    const angle = this.calculateAngle(interval, turn, speed);
+    const delta = MovementAgent.updateDelta(this.#movement.delta, angle, dist);
 
     this.#movement = {
       angle,
+      dist,
       speed,
-      speedPercent,
-      turnPercent,
+      turn,
       delta,
     }
     return this.#movement;
@@ -96,15 +106,16 @@ class MovementAgent {
 
 function getPlaceholderMovementAgent() {
   const movement = {
-    maxSpeed: 50,
-    maxAccel: 2,
-    maxDecel: 4,
+    speedCap: 500,
+    turnCap: 720,
+    maxAccel: 200,
+    maxDecel: 400,
   }
 
   const sample = {
     speed: {
       zero: 0.15,
-      skewMin: 3,
+      skewMin: 2,
       mirror: false,
     },
     turn: {

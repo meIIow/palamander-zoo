@@ -4,7 +4,6 @@ import { generateCompositeWriggle, generateSquiggleSpec, generateCurlSpec } from
 
 // A function that breaks down a given Section into its component Segments.
 type SegmentationFunc = (parent: Segment, section: Section, segmentate: SegmentationFunc) => Segment[];
-// type SegmentationFuncArgs = { parent: Segment, section: Section, segmentate: SegmentationFunc };
 
 interface SegmentationMap {
   [key: string]: SegmentationFunc;
@@ -25,15 +24,15 @@ function getDefaultSegmentationMap(): SegmentationMap{
 /* TOP-LEVEL SEGMENTATION FUNCTIONS */
 
 const segmantateAxolotl: SegmentationFunc = (
-  parent: Segment,
-  section: Section,
-  processSection: SegmentationFunc): Segment[] => {
-const sectionTree = {...section};
-sectionTree.type = 'newt';
-sectionTree.children = [
-  generateGills(),
-];
-return processSection(parent, sectionTree, processSection);
+    parent: Segment,
+    section: Section,
+    processSection: SegmentationFunc): Segment[] => {
+  const sectionTree = {...section};
+  sectionTree.type = 'newt';
+  sectionTree.children = [
+    generateGills(),
+  ];
+  return processSection(parent, sectionTree, processSection);
 }
 
 const segmantateNewt: SegmentationFunc = (
@@ -174,14 +173,15 @@ function createTaperedCurlSegments(parent: Segment, spec: TaperedSegmentSpec): S
 function createTadpoleSegments(parent: Segment, spec: TaperedSegmentSpec): Segment[] {
   const tailStart = spec.count / 3;
   const speedTransformation = (angle: number, speed: number): number => {
-    return angle * (1 + speed / 200);
+    return angle * (1 - speed / 50);
   };
   const segments = createTaperedSegments(parent, spec);
   segments.forEach((segment, i) => {
-    const squiggleRange = 15;
-    const squiggleSpec = generateSquiggleSpec(squiggleRange, 1.5, i, spec.count*2)
-    if (i >= tailStart) squiggleSpec.speedTransformation = speedTransformation;
+    const squiggleRange = (i >= tailStart) ? 20 : 10;
+    const squiggleSpec = generateSquiggleSpec(squiggleRange, 3, i, spec.count*2)
+    squiggleSpec.speedTransformation = speedTransformation;
     segment.wriggle = generateCompositeWriggle([squiggleSpec]);
+    segment.bodyAngle.curveRange = 20;
   });
   return segments;
 }
@@ -189,15 +189,16 @@ function createTadpoleSegments(parent: Segment, spec: TaperedSegmentSpec): Segme
 function createLegSegments(parent: Segment, spec: TaperedSegmentSpec): Segment[] {
   const segments = createTaperedSegments(parent, spec);
   let speedAdd = 0;
-  if (spec.angle < 0) speedAdd = 10
-  if (spec.angle > 0) speedAdd = -10
+  if (spec.angle < 0) speedAdd = 18
+  if (spec.angle > 0) speedAdd = -18
   const speedTransformation = (angle: number, speed: number): number => {
     return angle * (100 - speed) / 100 + speedAdd * speed / 100;
   };
   segments.forEach((segment, i) => {
-    const squiggleSpec = generateSquiggleSpec(10, 1.5, i, spec.count*2);
+    const squiggleSpec = generateSquiggleSpec(10, 3, i, spec.count*2);
     squiggleSpec.speedTransformation = speedTransformation;
     segment.wriggle = generateCompositeWriggle([squiggleSpec]);
+    segment.bodyAngle.curveRange = 25;
   });
   return segments;
 }
