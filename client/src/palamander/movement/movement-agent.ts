@@ -1,4 +1,4 @@
-import { Coordinate } from './segment.ts'
+import { Coordinate } from '../common/circle.ts'
 import { SampleSpec, generateGetSample, generateSampler } from './movement-sample.ts'
 
 type MovementBehavior = {

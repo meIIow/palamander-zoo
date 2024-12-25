@@ -1,6 +1,6 @@
-import { createEngineCircle, generateUpdateCircle } from './circle.ts'
-import { Segment, updateSegment } from './segment.ts'
-import { MovementAgent } from './movement-agent.ts';
+import { createEngineCircle, generateUpdateCircle } from './common/circle.ts'
+import { Segment, updateSegment } from './morphology/segment.ts'
+import { MovementAgent } from './movement/movement-agent.ts';
 
 type Palamander = {
   head: Segment;

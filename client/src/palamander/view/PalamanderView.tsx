@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import SegmentView from './SegmentView.tsx'
-import { Coordinate, createEngineCircle } from './circle.ts'
-import { hydrateSegment, getSegmentCircles } from './segment.ts'
-import { Palamander, initializeUpdateLoop } from './palamander.ts'
+import { Coordinate, createEngineCircle } from '../common/circle.ts'
+import { hydrateSegment, getSegmentCircles } from '../morphology/segment.ts'
+import { Palamander, initializeUpdateLoop } from '../palamander.ts'
 
 type PalamanderProps = {
   pal: Palamander,

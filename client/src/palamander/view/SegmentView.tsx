@@ -1,5 +1,5 @@
 import './SegmentView.css'
-import { Circle, Coordinate } from './circle.ts'
+import { Circle, Coordinate } from '../common/circle.ts'
 
 type SegmentViewProps = {
   circle: Circle,

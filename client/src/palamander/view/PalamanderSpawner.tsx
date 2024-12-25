@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 
 import PalamanderView from './PalamanderView.tsx';
-import { Palamander } from './palamander.ts';
-import segmentate from './segmentate.ts';
-import { createSpawnCoord } from './circle.ts';
-import { getPlaceholderMovementAgent } from './movement-agent.ts';
+import { Palamander } from '../palamander.ts';
+import segmentate from '../morphology/segmentate.ts';
+import { createSpawnCoord } from '../common/circle.ts';
+import { getPlaceholderMovementAgent } from '../movement/movement-agent.ts';
 
 async function createAxolotlTemp(): Promise<Palamander> {
   return {

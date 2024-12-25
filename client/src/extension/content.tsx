@@ -1,11 +1,11 @@
 import { StrictMode } from 'react'
 import { createRoot, Root } from 'react-dom/client'
 import './content.css'
-import PalamanderView from '../palamander/PalamanderView.tsx'
+import PalamanderView from '../palamander/view/PalamanderView.tsx'
 import { Palamander } from '../palamander/palamander.ts'
-import segmentate from '../palamander/segmentate.ts'
+import segmentate from '../palamander/morphology/segmentate.ts'
 import { showPals } from './storage.ts'
-import { getPlaceholderMovementAgent } from '../palamander/movement-agent.ts'
+import { getPlaceholderMovementAgent } from '../palamander/movement/movement-agent.ts'
 
 const PALAMANDER_ROOT_ID = 'palamander-root';
 

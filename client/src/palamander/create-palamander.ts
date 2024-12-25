@@ -1,5 +1,5 @@
-import { SegmentSpec } from './segment.ts'
-import { generateSquiggleSpec, generateRotationSpec, generateCurlSpec } from './wriggle.ts'
+import { SegmentSpec } from './morphology/segment.ts'
+import { generateSquiggleSpec, generateRotationSpec, generateCurlSpec } from './morphology/wriggle.ts'
 
 function createFocalSegment(radius: number, propagationInterval: number = 100): SegmentSpec {
   return {

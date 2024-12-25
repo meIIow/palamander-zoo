@@ -1,5 +1,5 @@
 import { Wriggle, WriggleSpec, generateCompositeWriggle } from './wriggle.ts';
-import { Circle, Coordinate, calculateCenter, createDefaultCircle } from './circle.ts';
+import { Circle, calculateCenter, createDefaultCircle } from '../common/circle.ts';
 
 type BodyAngle = {
   // Overall body angle at this segment
@@ -189,4 +189,4 @@ function createDefaultSegment(radius: number, propagationInterval: number = 100)
 }
 
 export { updateSegment, hydrateSegment, getSegmentCircles, createDefaultSegment };
-export type { Coordinate, Segment, SegmentSpec };
+export type { Segment, SegmentSpec };
