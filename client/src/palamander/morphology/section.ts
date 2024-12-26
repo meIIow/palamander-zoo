@@ -5,6 +5,7 @@ type Section = {
   size: number; // precent relative to parent Segment
   angle: number; // angle off parent Segment (degrees)
   seed: number; // differentiates otherwise identical sections - for offsets, etc
+  // next: Section | null; // sub-Section that continues this section
   children: Section[]; // offshoot sub-Sections
 };
 

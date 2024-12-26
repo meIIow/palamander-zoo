@@ -62,7 +62,7 @@ function generateWriggle(spec: WriggleSpec): Wriggle {
   const squiggleOffset = 2 * Math.PI * spec.i * spec.squiggleRate;
   const rangeMult = spec.synchronize ? spec.range*spec.i : spec.range;
   return (interval: number, speed: number) => {
-    const wriggleFrac = Math.sin(spec.offset + squiggleOffset + interval*intervalMult)
+    const wriggleFrac = Math.sin(squiggleOffset - spec.offset + interval*intervalMult)
     return spec.speedTransformation(wriggleFrac * rangeMult, speed);
   };
 }
