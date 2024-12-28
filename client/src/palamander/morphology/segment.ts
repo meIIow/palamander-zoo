@@ -188,5 +188,16 @@ function createDefaultSegment(radius: number, propagationInterval: number = 100)
   }
 }
 
-export { updateSegment, hydrateSegment, getSegmentCircles, createDefaultSegment };
+function createSegment(
+    radius: number,
+    angle: number,
+    overlapMult: number,
+    propagationInterval: number = 100): Segment {
+  const segment = createDefaultSegment(radius, propagationInterval);
+  segment.bodyAngle.relative = angle;
+  segment.overlap = radius * overlapMult;
+  return segment;
+}
+
+export { updateSegment, hydrateSegment, getSegmentCircles, createDefaultSegment, createSegment };
 export type { Segment, SegmentSpec };

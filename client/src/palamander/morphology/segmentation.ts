@@ -1,5 +1,5 @@
-import { Segment, createDefaultSegment } from "./segment";
-import { Section, createPassthruSection, toPassthruChild } from "./section";
+import { Segment, createSegment, createDefaultSegment } from "./segment";
+import { Section, createEmptySection, createPassthruSection, toPassthruChild } from "./section";
 import { generateCompositeWriggle, generateSquiggleSpec, generateCurlSpec, WriggleSpec, generateRotationSpec } from './wriggle';
 
 // A function that breaks down a given Section into its component Segments.
@@ -16,6 +16,10 @@ function getDefaultSegmentationMap(): SegmentationMap{
       'tadpole': segmentateTadpole,
       'centipede': segmentateCentipede,
       'caterpillar': segmentateCaterpillar,
+      'sea-monkey': segmentateSeaMonkey,
+      'monkey-head': segmentateMonkeyHead,
+      'monkey-arms': segmentateMonkeyArms,
+      'fish-tail': segmentateFishTail,
       'feeler': segmentateFeeler,
       'leg': segmentateLeg,
       'legs': segmentateLegs,
@@ -89,6 +93,21 @@ const segmentateCentipede: SegmentationFunc = (
   return processSection(parent, sectionTree, processSection);
 }
 
+const segmentateSeaMonkey: SegmentationFunc = (
+    parent: Segment,
+    section: Section,
+    processSection: SegmentationFunc): Segment[] => {
+  const headSection = { ...createEmptySection(), type: 'monkey-head', size: section.size };
+  const [head, neck] = processSection(parent, headSection, processSection);
+
+  const torsoSectionSpec = { ...createEmptySection(), type: 'fish-tail', size: section.size };
+  const tail = processSection(neck, torsoSectionSpec, processSection);
+
+  const armsSpec = { ...createEmptySection(), type: 'monkey-arms', size: section.size };
+  processSection(tail[0], armsSpec, processSection);
+  return [head, neck, ...tail];
+}
+
 const segmentateCaterpillar: SegmentationFunc = (
     _parent: Segment,
     section: Section,
@@ -105,6 +124,89 @@ const segmentateCaterpillar: SegmentationFunc = (
   const generateWriggleSpec = (i: number) => [generateSquiggleSpec(10, 5, i, section.length*2)];
   const body = createTaperedSegments(head, spec, generateWriggleSpec);
   return [ head, ...body];
+}
+
+const segmentateMonkeyHead: SegmentationFunc = (
+    _parent: Segment,
+    section: Section,
+    _processSection: SegmentationFunc): Segment[] => {
+  const head = createDefaultSegment(section.size);
+
+  [-1,1].forEach((i) => {
+    const ear = createSegment(section.size * 0.4, 90*i, 0.6);
+    ear.bodyAngle.curveRange = 0;
+    head.children.push(ear);
+  });
+
+  const neck = createSegment(section.size * 0.4, 0, 0.8);
+  neck.bodyAngle.curveRange = 0;
+  head.children.push(neck)
+
+  return [head, neck];
+}
+
+const segmentateFishTail: SegmentationFunc = (
+    parent: Segment,
+    section: Section,
+    _processSection: SegmentationFunc): Segment[] => {
+  const count = 6;
+  const torsoSpec: TaperedSegmentSpec = {
+    count,
+    radius: section.size,
+    taperFactor: .88,
+    angle: 0,
+    overlapMult: 0.6,
+    offset: 0
+  };
+  const torsoWriggle = (i: number) => [generateCurlSpec(30/count, 2, i)];
+  const torso = createTaperedSegments(parent, torsoSpec, torsoWriggle);
+  torso.forEach((segment) => segment.bodyAngle.curveRange = 10);
+  [-1, 1].forEach((i) => {
+    const fin = createSegment(section.size * 0.5, 30*i, 0.5)
+    fin.wriggle = generateCompositeWriggle(torsoWriggle(count+1));
+    torso[count-1].children.push(fin)
+  });
+  return torso;
+}
+
+const segmentateMonkeyArms: SegmentationFunc = (
+    parent: Segment,
+    section: Section,
+    _processSection: SegmentationFunc): Segment[] => {
+  [-1,1].forEach((i) => {
+    const pec = createSegment(section.size * 0.75, 70*i, 1);
+    pec.bodyAngle.curveRange = 0;
+    parent.children.push(pec);
+
+    const shoulder = createSegment(section.size * 0.7, 130*i, 0.6);
+    shoulder.bodyAngle.curveRange = 0;
+    pec.children.push(shoulder);
+
+    const bicepSpec: TaperedSegmentSpec = {
+      count: 2,
+      radius: section.size * 0.45,
+      taperFactor: .9,
+      angle: 75*i,
+      overlapMult: 0.8,
+      offset: 0
+    };
+    const upperArm = createRotationSegments(shoulder, bicepSpec, 45, 2);
+
+    const forearmSpec: TaperedSegmentSpec = {
+      count: 3,
+      radius: section.size * 0.45,
+      taperFactor: .9,
+      angle: -40*i,
+      overlapMult: 0.8,
+      offset: Math.PI // forearm should swing the opposive way as bicep
+    };
+    const lowerArm = createRotationSegments(upperArm[1], forearmSpec, 20, 2);
+
+    // Turn final forearm segment into fist: bigger, with less overlap
+    lowerArm[2].circle.radius = section.size * 0.6;
+    lowerArm[2].overlap = 0.3*section.size;
+  });
+  return [];
 }
 
 const segmentateLegs: SegmentationFunc = (
@@ -251,14 +353,15 @@ function generateNewtLegs(parentIndex: number): Section {
   };
 }
 
-function generateRigidLegs(parentIndex: number, count: number): Section {
+function generateRigidLegs(parentIndex: number, _count: number): Section {
   return {
     type: 'rigid_legs',
     parentIndex,
     length: 2,
     size: 20,
     angle: 90,
-    seed: (2 * Math.PI) / (count * 3) * parentIndex, // cascade offset down segment
+    seed: (2 * Math.PI / 2)* parentIndex, // alternating offset
+    //seed: (2 * Math.PI) / (count * 3) * parentIndex, // cascade offset down segment
     children: []
   };
 }
@@ -371,7 +474,7 @@ function createRigidSegment(
   segments.forEach((segment) => {
     segment.bodyAngle.curveRange = 0;
   });
-    return segments;
+  return segments;
 }
 
 function createRotationSegments(

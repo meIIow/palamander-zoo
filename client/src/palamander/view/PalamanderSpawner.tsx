@@ -9,10 +9,10 @@ import { getPlaceholderMovementAgent } from '../movement/movement-agent.ts';
 async function createAxolotlTemp(): Promise<Palamander> {
   return {
     head: segmentate({
-      type: 'centipede',
+      type: 'sea-monkey',
       length: 10,
       parentIndex: 0,
-      size: 60,
+      size: 100,
       angle: 0,
       seed: 0,
       children: [],
