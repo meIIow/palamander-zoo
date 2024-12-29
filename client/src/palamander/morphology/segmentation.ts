@@ -1,9 +1,14 @@
 import { Segment, createSegment, createDefaultSegment } from "./segment";
 import { Section, createEmptySection, createPassthruSection, toPassthruChild } from "./section";
-import { generateCompositeWriggle, generateSquiggleSpec, generateCurlSpec, WriggleSpec, generateRotationSpec } from './wriggle';
+import { generateCompositeWriggle, generateSquiggleSpec, generateCurlSpec } from './wriggle';
+import { SegmentsSpec, addCurve, createSquiggleGradient, createSimpleLimb , createRotation, createDefault} from "./segments";
 
 // A function that breaks down a given Section into its component Segments.
 type SegmentationFunc = (parent: Segment, section: Section, segmentate: SegmentationFunc) => Segment[];
+
+const DEFAULT_SQUIGGLY_CURVE = 20;
+const MUSCLEY_CURVE = 10;
+const RELAXED_PERIOD = 2.5;
 
 interface SegmentationMap {
   [key: string]: SegmentationFunc;
@@ -11,25 +16,25 @@ interface SegmentationMap {
 
 function getDefaultSegmentationMap(): SegmentationMap{
   return {
-      'axolotl': segmantateAxolotl,
-      'newt': segmantateNewt,
-      'tadpole': segmentateTadpole,
-      'centipede': segmentateCentipede,
-      'caterpillar': segmentateCaterpillar,
-      'sea-monkey': segmentateSeaMonkey,
-      'monkey-head': segmentateMonkeyHead,
-      'monkey-arms': segmentateMonkeyArms,
-      'fish-tail': segmentateFishTail,
-      'feeler': segmentateFeeler,
-      'leg': segmentateLeg,
-      'legs': segmentateLegs,
-      'rigid_legs': segmentateRigidLegs,
-      'rigid_leg': segmentateRigidLeg,
-      'mandible': segmentateMandible,
-      'mandibles': segmentateMandibles,
-      'gill': segmentateGill,
-      'gills': segmentateGills,
-    }
+    'axolotl': segmantateAxolotl,
+    'newt': segmantateNewt,
+    'tadpole': segmentateTadpole,
+    'centipede': segmentateCentipede,
+    'caterpillar': segmentateCaterpillar,
+    'sea-monkey': segmentateSeaMonkey,
+    'monkey-head': segmentateMonkeyHead,
+    'monkey-arms': segmentateMonkeyArms,
+    'fish-tail': segmentateFishTail,
+    'feeler': segmentateFeeler,
+    'leg': segmentateLeg,
+    'legs': segmentateLegs,
+    'rigid_legs': segmentateRigidLegs,
+    'rigid_leg': segmentateRigidLeg,
+    'mandible': segmentateMandible,
+    'mandibles': segmentateMandibles,
+    'gill': segmentateGill,
+    'gills': segmentateGills,
+  };
 }
 
 /* TOP-LEVEL SEGMENTATION FUNCTIONS */
@@ -64,15 +69,16 @@ const segmentateTadpole: SegmentationFunc = (
     section: Section,
     _processSection: SegmentationFunc): Segment[] => {
   const head = createDefaultSegment(section.size);
-  const spec: TaperedSegmentSpec = {
+  const spec: SegmentsSpec = {
     count: section.length,
     radius: section.size / 2,
     taperFactor: 0.95,
     angle: 0,
     overlapMult: 0.5,
+    curveRange: DEFAULT_SQUIGGLY_CURVE,
     offset: 0
   }
-  const body = createTadpoleSegments(head, spec);
+  const body = createSquiggleGradient(head, spec, RELAXED_PERIOD, 10, 25, 0.5);
   return [ head, ...body];
 }
 
@@ -113,16 +119,17 @@ const segmentateCaterpillar: SegmentationFunc = (
     section: Section,
     _processSection: SegmentationFunc): Segment[] => {
   const head = createDefaultSegment(section.size);
-  const spec: TaperedSegmentSpec = {
+  const spec: SegmentsSpec = {
     count: section.length,
     radius: section.size * 0.75,
     taperFactor: 1,
     angle: 0,
     overlapMult: 0.1,
+    curveRange: 360 / section.length,
     offset: 0
   }
-  const generateWriggleSpec = (i: number) => [generateSquiggleSpec(10, 5, i, section.length*2)];
-  const body = createTaperedSegments(head, spec, generateWriggleSpec);
+  const generateWriggleSpec = (i: number) => [generateSquiggleSpec(20, RELAXED_PERIOD, i, section.length+1)];
+  const body = createDefault(head, spec, generateWriggleSpec);
   return [ head, ...body];
 }
 
@@ -150,17 +157,17 @@ const segmentateFishTail: SegmentationFunc = (
     section: Section,
     _processSection: SegmentationFunc): Segment[] => {
   const count = 6;
-  const torsoSpec: TaperedSegmentSpec = {
+  const torsoSpec: SegmentsSpec = {
     count,
     radius: section.size,
     taperFactor: .88,
     angle: 0,
     overlapMult: 0.6,
+    curveRange: MUSCLEY_CURVE,
     offset: 0
   };
   const torsoWriggle = (i: number) => [generateCurlSpec(30/count, 2, i)];
-  const torso = createTaperedSegments(parent, torsoSpec, torsoWriggle);
-  torso.forEach((segment) => segment.bodyAngle.curveRange = 10);
+  const torso = createDefault(parent, torsoSpec, torsoWriggle);
   [-1, 1].forEach((i) => {
     const fin = createSegment(section.size * 0.5, 30*i, 0.5)
     fin.wriggle = generateCompositeWriggle(torsoWriggle(count+1));
@@ -182,25 +189,27 @@ const segmentateMonkeyArms: SegmentationFunc = (
     shoulder.bodyAngle.curveRange = 0;
     pec.children.push(shoulder);
 
-    const bicepSpec: TaperedSegmentSpec = {
+    const bicepSpec: SegmentsSpec = {
       count: 2,
       radius: section.size * 0.45,
       taperFactor: .9,
       angle: 75*i,
       overlapMult: 0.8,
+      curveRange: 0,
       offset: 0
     };
-    const upperArm = createRotationSegments(shoulder, bicepSpec, 45, 2);
+    const upperArm = createRotation(shoulder, bicepSpec, 45, 2);
 
-    const forearmSpec: TaperedSegmentSpec = {
+    const forearmSpec: SegmentsSpec = {
       count: 3,
       radius: section.size * 0.45,
       taperFactor: .9,
       angle: -40*i,
       overlapMult: 0.8,
+      curveRange: 0,
       offset: Math.PI // forearm should swing the opposive way as bicep
     };
-    const lowerArm = createRotationSegments(upperArm[1], forearmSpec, 20, 2);
+    const lowerArm = createRotation(upperArm[1], forearmSpec, 20, 2);
 
     // Turn final forearm segment into fist: bigger, with less overlap
     lowerArm[2].circle.radius = section.size * 0.6;
@@ -262,15 +271,16 @@ const segmentateLeg: SegmentationFunc = (
     parent: Segment,
     section: Section,
     _processSection: SegmentationFunc): Segment[] => {
-  const spec: TaperedSegmentSpec = {
+  const spec: SegmentsSpec = {
     count: section.length,
     radius: parent.circle.radius * section.size / 100,
     taperFactor: 0.9,
     angle: section.angle,
     overlapMult: 0.5,
+    curveRange: DEFAULT_SQUIGGLY_CURVE,
     offset: 0
   }
-  const segments = createLegSegments(parent, spec);
+  const segments = createSimpleLimb(parent, spec, 10, RELAXED_PERIOD, 18);
   return segments;
 }
 
@@ -278,15 +288,16 @@ const segmentateRigidLeg: SegmentationFunc = (
     parent: Segment,
     section: Section,
     _processSection: SegmentationFunc): Segment[] => {
-  const spec: TaperedSegmentSpec = {
+  const spec: SegmentsSpec = {
     count: section.length,
     radius: parent.circle.radius * section.size / 100,
     taperFactor: 1,
     angle: section.angle,
     overlapMult: 0.2,
+    curveRange: 0,
     offset: section.seed,
   }
-  const segments = createRotationSegments(parent, spec, 30, 1);
+  const segments = createRotation(parent, spec, 30, 1);
   return segments;
 }
 
@@ -294,15 +305,17 @@ const segmentateGill: SegmentationFunc = (
     parent: Segment,
     section: Section,
     _processSection: SegmentationFunc): Segment[] => {
-  const spec: TaperedSegmentSpec = {
+  const spec: SegmentsSpec = {
     count: section.length,
     radius: parent.circle.radius * section.size / 100,
     taperFactor: 0.9,
     angle: section.angle,
     overlapMult: 0.5,
+    curveRange: 360 / section.length,
     offset: section.seed,
   };
-  const segments = createTaperedCurlSegments(parent, spec);
+  const generateGentleCurl = (i: number) => [generateCurlSpec(120/spec.count, 2, i, spec.offset)]
+  const segments = createDefault(parent, spec, generateGentleCurl);
   return segments;
 }
 
@@ -311,15 +324,16 @@ const segmentateMandible: SegmentationFunc = (
     section: Section,
     _processSection: SegmentationFunc): Segment[] => {
   const curve = (section.angle < 0) ? -10 : 10;
-  const spec: TaperedSegmentSpec = {
+  const spec: SegmentsSpec = {
     count: section.length,
     radius: parent.circle.radius * section.size / 100,
     taperFactor: 0.8,
     angle: section.angle,
     overlapMult: 0.5,
+    curveRange: 0,
     offset: section.seed,
   }
-  const segments = createMandibleSegments(parent, spec, 5, 1, curve);
+  const segments = addCurve(createRotation(parent, spec, 5, 1), curve);
 return segments;
 }
 
@@ -327,15 +341,16 @@ const segmentateFeeler: SegmentationFunc = (
   parent: Segment,
   section: Section,
   _processSection: SegmentationFunc): Segment[] => {
-const spec: TaperedSegmentSpec = {
+const spec: SegmentsSpec = {
   count: section.length,
   radius: parent.circle.radius * section.size / 100,
   taperFactor: 0.9,
   angle: section.angle,
   overlapMult: 0.2,
+  curveRange: 0,
   offset: section.seed,
 }
-const segments = createRigidSegment(parent, spec);
+const segments = createDefault(parent, spec);
 return segments;
 }
 
@@ -400,115 +415,6 @@ function generateFeeler(i: number, angle: number): Section {
     seed: 0,
     children: []
   };
-}
-
-/* LOWER LEVEL HELPER & SEGMENT-CREATION FUNCTIONS */
-
-type TaperedSegmentSpec = {
-  count: number;
-  radius: number;
-  taperFactor: number;
-  angle: number;
-  overlapMult: number;
-  offset: number;
-}
-
-function createTaperedCurlSegments(parent: Segment, spec: TaperedSegmentSpec): Segment[] {
-  const segments = createTaperedSegments(parent, spec);
-  segments.forEach((segment, i) => {
-    segment.wriggle = generateCompositeWriggle([generateCurlSpec(120/spec.count, 2, i, spec.offset)]);
-  });
-  return segments;
-}
-
-function createTadpoleSegments(parent: Segment, spec: TaperedSegmentSpec): Segment[] {
-  const tailStart = spec.count / 3;
-  const speedTransformation = (angle: number, speed: number): number => {
-    return angle * (1 - speed / 50);
-  };
-  const segments = createTaperedSegments(parent, spec);
-  segments.forEach((segment, i) => {
-    const squiggleRange = (i >= tailStart) ? 20 : 10;
-    const squiggleSpec = generateSquiggleSpec(squiggleRange, 3, i, spec.count*2)
-    squiggleSpec.speedTransformation = speedTransformation;
-    segment.wriggle = generateCompositeWriggle([squiggleSpec]);
-    segment.bodyAngle.curveRange = 20;
-  });
-  return segments;
-}
-
-function createLegSegments(parent: Segment, spec: TaperedSegmentSpec): Segment[] {
-  const segments = createTaperedSegments(parent, spec);
-  let speedAdd = 0;
-  if (spec.angle < 0) speedAdd = 18
-  if (spec.angle > 0) speedAdd = -18
-  const speedTransformation = (angle: number, speed: number): number => {
-    return angle * (100 - speed) / 100 + speedAdd * speed / 100;
-  };
-  segments.forEach((segment, i) => {
-    const squiggleSpec = generateSquiggleSpec(10, 3, i, spec.count*2);
-    squiggleSpec.speedTransformation = speedTransformation;
-    segment.wriggle = generateCompositeWriggle([squiggleSpec]);
-    segment.bodyAngle.curveRange = 25;
-  });
-  return segments;
-}
-
-function createMandibleSegments(
-    parent: Segment,
-    spec: TaperedSegmentSpec,
-    angle: number,
-    period: number,
-    curve: number): Segment[] {
-  const segments = createRotationSegments(parent, spec, angle, period);
-  segments.forEach((segment, i) => {
-    segment.bodyAngle.relative += i * curve;
-  });
-  return segments;
-}
-
-function createRigidSegment(
-  parent: Segment,
-  spec: TaperedSegmentSpec): Segment[] {
-  const segments = createTaperedSegments(parent, spec);
-  segments.forEach((segment) => {
-    segment.bodyAngle.curveRange = 0;
-  });
-  return segments;
-}
-
-function createRotationSegments(
-    parent: Segment,
-    spec: TaperedSegmentSpec,
-    angle: number,
-    period: number): Segment[] {
-  const generateWriggleSpec = (_: number) => [generateRotationSpec(angle, period, spec.offset)];
-  const segments = createTaperedSegments(parent, spec, generateWriggleSpec);
-  segments.forEach((segment) => {
-    segment.bodyAngle.curveRange = 0;
-  });
-  return segments;
-}
-
-function createTaperedSegments(
-    parent: Segment,
-    spec: TaperedSegmentSpec,
-    generateWriggleSpec: (i: number) => WriggleSpec[] = (_: number) => [] ): Segment[] {
-  const segments = [];
-  let curr = parent;
-  let radius = spec.radius;
-  for (let i=0; i < spec.count; i++) {
-    radius = radius * spec.taperFactor;
-    const next = createDefaultSegment(radius);
-    next.bodyAngle.relative = spec.angle;
-    next.bodyAngle.curveRange = 360 / spec.count;
-    next.wriggle = generateCompositeWriggle(generateWriggleSpec(i)),
-    next.overlap = radius * spec.overlapMult;
-    curr.children.push(next);
-    curr = next;
-    segments.push(curr);
-  }
-  return segments;
 }
 
 export type { SegmentationFunc, SegmentationMap };

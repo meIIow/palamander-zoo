@@ -75,11 +75,22 @@ function generateCompositeWriggle(specs: Array<WriggleSpec>): Wriggle {
 
 const noopSpeedTransformation: SpeedTransformation = (angle: number, _: number,) => angle;
 
+function generatePullInAtSpeed(pullTowards: number, pullFactor: number, angle: number): SpeedTransformation {
+  let speedDelta = 0;
+  if (angle < pullTowards) speedDelta = pullFactor
+  if (angle > pullTowards) speedDelta = -pullFactor
+  return (angle: number, speed: number): number => {
+    return angle * (100 - speed) / 100 + speedDelta * speed / 100;
+  };
+}
+
 export {
   generateCurlSpec,
   generateSquiggleSpec,
   generateRotationSpec,
+  generateWriggle,
   generateCompositeWriggle,
+  generatePullInAtSpeed,
 }
 
 export type { Wriggle, WriggleSpec }
