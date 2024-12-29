@@ -26,8 +26,8 @@ function getDefaultSegmentationMap(): SegmentationMap{
     'monkey-arms': segmentateMonkeyArms,
     'fish-tail': segmentateFishTail,
     'feeler': segmentateFeeler,
-    'leg': segmentateLeg,
-    'legs': segmentateLegs,
+    'simple-limb': segmentateSimpleLimb,
+    'simple-limbs': segmentateSimpleLimbs,
     'rigid_legs': segmentateRigidLegs,
     'rigid_leg': segmentateRigidLeg,
     'mandible': segmentateMandible,
@@ -37,7 +37,9 @@ function getDefaultSegmentationMap(): SegmentationMap{
   };
 }
 
-/* TOP-LEVEL SEGMENTATION FUNCTIONS */
+/* -------------------------------------------------------
+ * Entry-Level Segmentations: Define entire Palamanders
+ * ------------------------------------------------------- */
 
 const segmantateAxolotl: SegmentationFunc = (
     parent: Segment,
@@ -133,6 +135,65 @@ const segmentateCaterpillar: SegmentationFunc = (
   return [ head, ...body];
 }
 
+/* ----------------------------------------------------------------------
+ * Duplication Segmentations: Define Sets of Lower-Level Segmentations
+ * ---------------------------------------------------------------------- */
+
+// Internal Segmentation utility that defines a mirrored set of offshoots.
+const segmentatePair = (
+    parent: Segment,
+    section: Section,
+    processSection: SegmentationFunc,
+    type: string,
+    mirror: boolean=true): Segment[] => {
+  const passthru = createPassthruSection();
+  passthru.children = [
+    {...section, type, parentIndex: 0},
+    {...section, type, parentIndex: 0},
+  ];
+  passthru.children[1].angle *= -1;
+  if (mirror) passthru.children[1].seed -= Math.PI;
+  return processSection(parent, passthru, processSection);
+}
+
+const segmentateSimpleLimbs: SegmentationFunc = (
+    parent: Segment,
+    section: Section,
+    processSection: SegmentationFunc): Segment[] => {
+  return segmentatePair(parent, section, processSection, 'simple-limb');
+}
+
+const segmentateRigidLegs: SegmentationFunc = (
+    parent: Segment,
+    section: Section,
+    processSection: SegmentationFunc): Segment[] => {
+  return segmentatePair(parent, section, processSection, 'rigid_leg');
+}
+
+const segmentateMandibles: SegmentationFunc = (
+    parent: Segment,
+    section: Section,
+    processSection: SegmentationFunc): Segment[] => {
+  return segmentatePair(parent, section, processSection, 'mandible');
+}
+
+const segmentateGills: SegmentationFunc = (
+    parent: Segment,
+    section: Section,
+    processSection: SegmentationFunc): Segment[] => {
+  const passthru = createPassthruSection();
+  const gillAngles = [-1,0,1].map((offset) => section.angle + 30*offset);
+  const gillAnglesMirror = [-1,0,1].map((offset) => -1*section.angle + 30*offset);
+  passthru.children = gillAngles.concat(gillAnglesMirror).map((angle) => {
+    return { ...toPassthruChild(section, 'gill'), angle };
+  });
+  return processSection(parent, passthru, processSection);
+}
+
+/* ------------------------------------------------------------
+ * Lower-Level Segmentations: Re-usable (in Pals or Chimera)
+ * ------------------------------------------------------------ */
+
 const segmentateMonkeyHead: SegmentationFunc = (
     _parent: Segment,
     section: Section,
@@ -176,6 +237,7 @@ const segmentateFishTail: SegmentationFunc = (
   return torso;
 }
 
+// Creates Sea Monkey arms - separated for readibility, not really that re-usable.
 const segmentateMonkeyArms: SegmentationFunc = (
     parent: Segment,
     section: Section,
@@ -218,56 +280,7 @@ const segmentateMonkeyArms: SegmentationFunc = (
   return [];
 }
 
-const segmentateLegs: SegmentationFunc = (
-    parent: Segment,
-    section: Section,
-    processSection: SegmentationFunc): Segment[] => {
-  return segmentateMirroredPair(parent, section, processSection, 'leg');
-}
-
-const segmentateRigidLegs: SegmentationFunc = (
-    parent: Segment,
-    section: Section,
-    processSection: SegmentationFunc): Segment[] => {
-  return segmentateMirroredPair(parent, section, processSection, 'rigid_leg');
-}
-
-const segmentateMandibles: SegmentationFunc = (
-    parent: Segment,
-    section: Section,
-    processSection: SegmentationFunc): Segment[] => {
-  return segmentateMirroredPair(parent, section, processSection, 'mandible');
-}
-
-const segmentateMirroredPair = (
-    parent: Segment,
-    section: Section,
-    processSection: SegmentationFunc,
-    type: string): Segment[] => {
-  const passthru = createPassthruSection();
-  passthru.children = [
-    {...section, type, parentIndex: 0},
-    {...section, type, parentIndex: 0},
-  ];
-  passthru.children[1].angle *= -1;
-  passthru.children[1].seed -= Math.PI;
-  return processSection(parent, passthru, processSection);
-}
-
-const segmentateGills: SegmentationFunc = (
-    parent: Segment,
-    section: Section,
-    processSection: SegmentationFunc): Segment[] => {
-  const passthru = createPassthruSection();
-  const gillAngles = [-1,0,1].map((offset) => section.angle + 30*offset);
-  const gillAnglesMirror = [-1,0,1].map((offset) => -1*section.angle + 30*offset);
-  passthru.children = gillAngles.concat(gillAnglesMirror).map((angle) => {
-    return { ...toPassthruChild(section, 'gill'), angle };
-  });
-  return processSection(parent, passthru, processSection);
-}
-
-const segmentateLeg: SegmentationFunc = (
+const segmentateSimpleLimb: SegmentationFunc = (
     parent: Segment,
     section: Section,
     _processSection: SegmentationFunc): Segment[] => {
@@ -354,11 +367,13 @@ const segments = createDefault(parent, spec);
 return segments;
 }
 
-/* LOWER LEVEL SECTION-CREATION FUNCTIONS */
+/* ----------------------------------------------------------
+ * Granular Section-Creatin Functions: Minimally re-usable
+ * ---------------------------------------------------------- */
 
 function generateNewtLegs(parentIndex: number): Section {
   return {
-    type: 'legs',
+    type: 'simple-limb',
     parentIndex,
     length: 5,
     size: 50,
