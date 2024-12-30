@@ -36,8 +36,8 @@ export function createSquiggleGradient(
   return createDefault(parent, spec, generateWiggleSpec);
 }
 
-// Creates a squiggly limb that pulls inward at high speed.
-export function createSimpleLimb(
+// Creates a noodly limb that pulls inward at high speed.
+export function createNoodleLimb(
     parent: Segment,
     spec: SegmentsSpec,
     range: number,

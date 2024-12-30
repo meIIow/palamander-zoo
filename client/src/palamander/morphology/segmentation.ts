@@ -1,7 +1,7 @@
 import { Segment, createSegment, createDefaultSegment } from "./segment";
 import { Section, createEmptySection, createPassthruSection } from "./section";
 import { generateCompositeWriggle, generateSquiggleSpec, generateCurlSpec } from './wriggle';
-import { SegmentsSpec, addCurve, createSquiggleGradient, createSimpleLimb , createRotation, createDefault} from "./segments";
+import { SegmentsSpec, addCurve, createSquiggleGradient, createNoodleLimb , createRotation, createDefault} from "./segments";
 
 // A function that breaks down a given Section into its component Segments.
 type SegmentationFunc = (parent: Segment, section: Section, segmentate: SegmentationFunc) => Segment[];
@@ -21,6 +21,7 @@ function getDefaultSegmentationMap(): SegmentationMap{
     'caterpillar': segmentateCaterpillar,
     'centipede': segmentateCentipede,
     'crawdad': segmentateCrawdad,
+    'frog': segmentateFrog,
     'jellyfish': segmentateJellyfish,
     'horshoe-crab': segmentateHorshoeCrab,
     'newt': segmantateNewt,
@@ -30,9 +31,11 @@ function getDefaultSegmentationMap(): SegmentationMap{
     'tadpole': segmentateTadpole,
     // Composite
     'buggy-legs': segmentateBuggyLegs,
+    'frog-arms': segmentateFrogArms,
     'gill-pair': segmentateGillPair,
     'gills': segmentateGills,
     'mandibles': segmentateMandibles,
+    'noodle-limbs': segmentateNoodleLimbs,
     'nubby-legs': segmentateNubbyLegs,
     'octo-arms': segmentateOctoArms,
     'simple-limbs': segmentateSimpleLimbs,
@@ -42,9 +45,11 @@ function getDefaultSegmentationMap(): SegmentationMap{
     'curl': segmentateCurl,
     'feeler': segmentateFeeler,
     'fish-tail': segmentateFishTail,
+    'frog-legs': segmentateFrogLegs,
     'mandible': segmentateMandible,
     'monkey-arms': segmentateMonkeyArms,
     'monkey-head': segmentateMonkeyHead,
+    'noodle-limb': segmentateNoodleLimb,
     'rigid_leg': segmentateRigidLeg,
     'simple-limb': segmentateSimpleLimb,
   };
@@ -144,6 +149,37 @@ const segmentateCrawdad: SegmentationFunc = (
   return [head, spacer, ...body];
 }
 
+const segmentateFrog: SegmentationFunc = (
+    _parent: Segment,
+    section: Section,
+    _processSection: SegmentationFunc): Segment[] => {
+  const head = createDefaultSegment(section.size);
+  [-1, 1].forEach((dir)=> {
+    const eye = createSegment(section.size*0.4, 150*dir, 1.2);
+    head.children.push(eye);
+  })
+
+  const bodyLen = 4;
+  const bodySpec = {
+    count: bodyLen,
+    radius: section.size,
+    taperFactor: 0.75,
+    angle: section.angle,
+    overlapMult: 1.2,
+    curveRange: 5,
+    offset: 0
+  }
+  const generateFrogWiggle = (i: number) => [generateSquiggleSpec(2, RELAXED_PERIOD, i, bodyLen)];
+  const body  = createDefault(head, bodySpec, generateFrogWiggle);
+  const arms = { ...section, type: 'simple-limbs', length: 5, size: 50, children: [] };
+  section.children.push({ ...arms, size: section.size*0.2, parentIndex: 0, angle: section.angle+45 });
+
+  const legs = { ...section, parentIndex: bodyLen, type: 'frog-legs', children: [] };
+  section.children.push(legs);
+
+  return [head, ...body];
+}
+
 const segmentateJellyfish: SegmentationFunc = (
     _parent: Segment,
     section: Section,
@@ -192,7 +228,7 @@ const segmantateNewt: SegmentationFunc = (
     processSection: SegmentationFunc): Segment[] => {
   const sectionTree = {...section};
   sectionTree.type = 'tadpole';
-  const legs = { ...section, type: 'simple-limbs', length: 5, size: 50, children: [] };
+  const legs = { ...section, type: 'noodle-limbs', length: 5, size: 50, children: [] };
   sectionTree.children = [
     { ...legs, parentIndex: 1, angle: section.angle+45 },
     { ...legs, parentIndex: 3, angle: section.angle+45 },
@@ -326,6 +362,14 @@ const segmentateBuggyLegs: SegmentationFunc = (
   return segmentatePair(parent, legs, processSection, 'rigid_leg');
 }
 
+const segmentateFrogArms: SegmentationFunc = (
+    parent: Segment,
+    section: Section,
+    processSection: SegmentationFunc): Segment[] => {
+  const legs = { ...section, length: 5, size: 20, angle: 90+section.angle };
+  return segmentatePair(parent, legs, processSection, 'rigid_leg');
+}
+
 const segmentateGillPair: SegmentationFunc = (
     parent: Segment,
     section: Section,
@@ -348,6 +392,13 @@ const segmentateMandibles: SegmentationFunc = (
     processSection: SegmentationFunc): Segment[] => {
   const mandible = { ...section, length: 5, size: 20, angle: 165 };
   return segmentatePair(parent, mandible, processSection, 'mandible');
+}
+
+const segmentateNoodleLimbs: SegmentationFunc = (
+    parent: Segment,
+    section: Section,
+    processSection: SegmentationFunc): Segment[] => {
+  return segmentatePair(parent, section, processSection, 'noodle-limb');
 }
 
 const segmentateOctoArms: SegmentationFunc = (
@@ -468,6 +519,42 @@ const segmentateFishTail: SegmentationFunc = (
   return tail;
 }
 
+const segmentateFrogLegs: SegmentationFunc = (
+    parent: Segment,
+    _section: Section,
+    _processSection: SegmentationFunc): Segment[] => {
+  [-1,1].forEach((dir) => {
+    const upperLegSpec: SegmentsSpec = {
+      count: 3,
+      radius: parent.circle.radius,
+      taperFactor: 0.85,
+      angle: parent.bodyAngle.relative + 75*dir,
+      overlapMult: 0.3,
+      curveRange: 2,
+      offset: 0
+    };
+    const lowerArm = createRotation(parent, upperLegSpec, 45*dir, RELAXED_PERIOD);
+
+    const lowerLegSpec: SegmentsSpec = {
+      ...upperLegSpec,
+      radius: parent.circle.radius * 0.7,
+      angle: parent.bodyAngle.relative + 10*dir
+    };
+    const lowerLeg = createRotation(lowerArm[2], lowerLegSpec, 20*dir, RELAXED_PERIOD);
+
+    // Add frog foot
+    const pad = createSegment(parent.circle.radius*0.6, parent.bodyAngle.relative+10*dir, 0.5);
+    let toe = createSegment(pad.circle.radius, pad.bodyAngle.relative+10, 0.5);
+    toe.children.push(createSegment(toe.circle.radius, toe.bodyAngle.relative, 0.5));
+    pad.children.push(toe);
+    toe = createSegment(pad.circle.radius, pad.bodyAngle.relative-10, 0.5);
+    toe.children.push(createSegment(toe.circle.radius, toe.bodyAngle.relative, 0.5));
+    pad.children.push(toe);
+    lowerLeg[2].children.push(pad);
+  });
+  return [];
+}
+
 const segmentateMandible: SegmentationFunc = (
     parent: Segment,
     section: Section,
@@ -548,6 +635,23 @@ const segmentateMonkeyHead: SegmentationFunc = (
   return [head, neck];
 }
 
+const segmentateNoodleLimb: SegmentationFunc = (
+    parent: Segment,
+    section: Section,
+    _processSection: SegmentationFunc): Segment[] => {
+  const spec: SegmentsSpec = {
+    count: section.length,
+    radius: parent.circle.radius * section.size / 100,
+    taperFactor: 0.9,
+    angle: section.angle,
+    overlapMult: 0.5,
+    curveRange: DEFAULT_SQUIGGLY_CURVE,
+    offset: 0
+  }
+  const segments = createNoodleLimb(parent, spec, 10, parent.bodyAngle.relative, RELAXED_PERIOD);
+  return segments;
+}
+
 const segmentateRigidLeg: SegmentationFunc = (
     parent: Segment,
     section: Section,
@@ -575,10 +679,11 @@ const segmentateSimpleLimb: SegmentationFunc = (
     taperFactor: 0.9,
     angle: section.angle,
     overlapMult: 0.5,
-    curveRange: DEFAULT_SQUIGGLY_CURVE,
-    offset: 0
+    curveRange: 5,
+    offset: section.seed
   }
-  const segments = createSimpleLimb(parent, spec, 10, parent.bodyAngle.relative, RELAXED_PERIOD);
+  const curve = (section.seed % (Math.PI * 2) == 0) ? 15: -15; // mirror curve
+  const segments = addCurve(createRotation(parent, spec, 10, RELAXED_PERIOD), curve);
   return segments;
 }
 
