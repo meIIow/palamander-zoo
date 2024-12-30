@@ -41,11 +41,11 @@ export function createSimpleLimb(
     parent: Segment,
     spec: SegmentsSpec,
     range: number,
-    period: number,
-    pullFactor: number): Segment[] {
+    pullTowards: number,
+    period: number): Segment[] {
   const generateWiggleSpec = (i: number) => {
     const wiggleSpec = generateSquiggleSpec(range, period, i, spec.count*2);
-    wiggleSpec.speedTransformation = generatePullInAtSpeed(0, pullFactor, spec.angle);
+    wiggleSpec.speedTransformation = generatePullInAtSpeed(pullTowards, spec.angle);
     return [wiggleSpec];
   }
   return createDefault(parent, spec, generateWiggleSpec);
