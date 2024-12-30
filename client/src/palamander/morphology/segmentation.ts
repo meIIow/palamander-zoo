@@ -21,6 +21,7 @@ function getDefaultSegmentationMap(): SegmentationMap{
     'caterpillar': segmentateCaterpillar,
     'centipede': segmentateCentipede,
     'crawdad': segmentateCrawdad,
+    'jellyfish': segmentateJellyfish,
     'horshoe-crab': segmentateHorshoeCrab,
     'newt': segmantateNewt,
     'octopus': segmentateOctopus,
@@ -141,6 +142,33 @@ const segmentateCrawdad: SegmentationFunc = (
   section.children.push(claws);
 
   return [head, spacer, ...body];
+}
+
+const segmentateJellyfish: SegmentationFunc = (
+    _parent: Segment,
+    section: Section,
+    _processSection: SegmentationFunc): Segment[] => {
+  const head = createDefaultSegment(section.size);
+
+  const tentacleSpec = {
+    count: 5,
+    radius: section.size * .2,
+    taperFactor: 1,
+    angle: section.angle,
+    overlapMult: 0,
+    curveRange: 30 / 5,
+    offset: 0,
+  };
+  for (let i=0; i<4; i++) {
+    const generateWriggleSpec = (i: number) => [generateSquiggleSpec(20, RELAXED_PERIOD, i, section.length*2)];
+    const spawn = -60 + i*40;
+    const root = createSegment(1, spawn, section.size / 20);
+
+    head.children.push(root);
+    createDefault(root, tentacleSpec, generateWriggleSpec);
+  }
+
+  return [head];
 }
 
 const segmentateHorshoeCrab: SegmentationFunc = (
@@ -438,7 +466,7 @@ const segmentateFishTail: SegmentationFunc = (
     tail[count-1].children.push(fin)
   });
   return tail;
-} 
+}
 
 const segmentateMandible: SegmentationFunc = (
     parent: Segment,

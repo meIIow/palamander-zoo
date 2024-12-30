@@ -179,7 +179,7 @@ function createDefaultSegment(radius: number, propagationInterval: number = 100)
     bodyAngle: {
       relative: 0,
       absolute: 0,
-      curveRange: 360,
+      curveRange: 0,
     },
     wriggle: generateCompositeWriggle([]),
     overlap: 0,
