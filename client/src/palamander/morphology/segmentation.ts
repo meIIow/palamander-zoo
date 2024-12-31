@@ -17,14 +17,14 @@ interface SegmentationMap {
 function getDefaultSegmentationMap(): SegmentationMap{
   return {
     // Entry-level
-    'axolotl': segmantateAxolotl,
+    'axolotl': segmentateAxolotl,
     'caterpillar': segmentateCaterpillar,
     'centipede': segmentateCentipede,
     'crawdad': segmentateCrawdad,
     'frog': segmentateFrog,
     'jellyfish': segmentateJellyfish,
     'horshoe-crab': segmentateHorshoeCrab,
-    'newt': segmantateNewt,
+    'newt': segmentateNewt,
     'octopus': segmentateOctopus,
     'sea-monkey': segmentateSeaMonkey,
     'starfish': segmentateStarfish,
@@ -50,7 +50,7 @@ function getDefaultSegmentationMap(): SegmentationMap{
     'monkey-arms': segmentateMonkeyArms,
     'monkey-head': segmentateMonkeyHead,
     'noodle-limb': segmentateNoodleLimb,
-    'rigid_leg': segmentateRigidLeg,
+    'rigid-leg': segmentateRigidLeg,
     'simple-limb': segmentateSimpleLimb,
   };
 }
@@ -59,7 +59,7 @@ function getDefaultSegmentationMap(): SegmentationMap{
  * Entry-Level Segmentations: Define entire Palamanders
  * ------------------------------------------------------- */
 
-const segmantateAxolotl: SegmentationFunc = (
+const segmentateAxolotl: SegmentationFunc = (
     parent: Segment,
     section: Section,
     processSection: SegmentationFunc): Segment[] => {
@@ -222,7 +222,7 @@ const segmentateHorshoeCrab: SegmentationFunc = (
   return [head, body, ...processSection(body, tailSpike, processSection)];
 }
 
-const segmantateNewt: SegmentationFunc = (
+const segmentateNewt: SegmentationFunc = (
     parent: Segment,
     section: Section,
     processSection: SegmentationFunc): Segment[] => {
@@ -351,7 +351,7 @@ const segmentateNubbyLegs: SegmentationFunc = (
     section: Section,
     processSection: SegmentationFunc): Segment[] => {
   const legs = { ...section, length: 1, size: 30, angle: 90+section.angle };
-  return segmentatePair(parent, legs, processSection, 'rigid_leg');
+  return segmentatePair(parent, legs, processSection, 'rigid-leg');
 }
 
 const segmentateBuggyLegs: SegmentationFunc = (
@@ -359,7 +359,7 @@ const segmentateBuggyLegs: SegmentationFunc = (
     section: Section,
     processSection: SegmentationFunc): Segment[] => {
   const legs = { ...section, length: 2, size: 20, angle: 90+section.angle };
-  return segmentatePair(parent, legs, processSection, 'rigid_leg');
+  return segmentatePair(parent, legs, processSection, 'rigid-leg');
 }
 
 const segmentateFrogArms: SegmentationFunc = (
@@ -367,7 +367,7 @@ const segmentateFrogArms: SegmentationFunc = (
     section: Section,
     processSection: SegmentationFunc): Segment[] => {
   const legs = { ...section, length: 5, size: 20, angle: 90+section.angle };
-  return segmentatePair(parent, legs, processSection, 'rigid_leg');
+  return segmentatePair(parent, legs, processSection, 'rigid-leg');
 }
 
 const segmentateGillPair: SegmentationFunc = (
