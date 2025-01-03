@@ -36,6 +36,7 @@ async function createAxolotlTemp(): Promise<Palamander> {
       size: 100,
       angle: 0,
       seed: 0,
+      mirror: false,
       children: [],
     }),
     updateInterval: 50,

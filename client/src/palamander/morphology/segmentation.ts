@@ -32,27 +32,30 @@ function getDefaultSegmentationMap(): SegmentationMap{
     'tadpole': segmentateTadpole,
     // Composite
     'buggy-legs': segmentateBuggyLegs,
+    'claws': segmentateClaws,
     'frog-arms': segmentateFrogArms,
+    'frog-legs': segmentateFrogLegs,
     'gill-pair': segmentateGillPair,
     'gills': segmentateGills,
     'mane': segmentateMane,
     'mandibles': segmentateMandibles,
+    'monkey-arms': segmentateMonkeyArms,
     'noodle-limbs': segmentateNoodleLimbs,
     'nubby-legs': segmentateNubbyLegs,
     'octo-arms': segmentateOctoArms,
     'simple-limbs': segmentateSimpleLimbs,
     'starfish-arms': segmentateStarfishArms,
     // Granular
-    'claws': segmentateClaws,
+    'claw': segmentateClaw,
     'curl': segmentateCurl,
     'feeler': segmentateFeeler,
     'fish-tail': segmentateFishTail,
     'flipper': segmentateFlipper,
-    'frog-legs': segmentateFrogLegs,
+    'frog-leg': segmentateFrogLeg,
     'hair': segmentateHair,
     'lion-head': segmentateLionHead,
     'mandible': segmentateMandible,
-    'monkey-arms': segmentateMonkeyArms,
+    'monkey-arm': segmentateMonkeyArm,
     'monkey-head': segmentateMonkeyHead,
     'noodle-limb': segmentateNoodleLimb,
     'rigid-leg': segmentateRigidLeg,
@@ -273,7 +276,7 @@ const segmentateSeaLion: SegmentationFunc = (
     angle: 90,
     parentIndex: 0,
   };
-  tailSectionSpec.children = [flipper, { ...flipper, angle:-90, seed: Math.PI }];
+  tailSectionSpec.children = [flipper, { ...flipper, mirror: true, seed: Math.PI }];
   const tail = processSection(neck, tailSectionSpec, processSection);
 
   return [head, neck, ...tail];
@@ -336,14 +339,14 @@ const segmentatePair = (
     section: Section,
     processSection: SegmentationFunc,
     type: string,
-    mirror: boolean=true): Segment[] => {
+    sync: boolean=true): Segment[] => {
   const passthru = createPassthruSection();
+  const flippedAngle = parent.bodyAngle.relative - (section.angle - parent.bodyAngle.relative);
   passthru.children = [
-    {...section, type, parentIndex: 0},
-    {...section, type, parentIndex: 0},
+    { ...section, type, parentIndex: 0 },
+    { ...section, type, parentIndex: 0, mirror: !section.mirror, angle: flippedAngle },
   ];
-  passthru.children[1].angle *= -1;
-  if (mirror) passthru.children[1].seed -= Math.PI;
+  if (sync) passthru.children[1].seed -= Math.PI;
   return processSection(parent, passthru, processSection);
 }
 
@@ -380,6 +383,21 @@ const segmentateRadialDistribution = (
   return segmentateEqualDistribution(parent, section, processSection, type, count, range);
 }
 
+const segmentateBuggyLegs: SegmentationFunc = (
+    parent: Segment,
+    section: Section,
+    processSection: SegmentationFunc): Segment[] => {
+  const legs = { ...section, length: 2, size: 20, angle: 90+section.angle };
+  return segmentatePair(parent, legs, processSection, 'rigid-leg');
+}
+
+const segmentateClaws: SegmentationFunc = (
+    parent: Segment,
+    section: Section,
+    processSection: SegmentationFunc): Segment[] => {
+  return segmentatePair(parent, section, processSection, 'claw', false);
+}
+
 const segmentateMane: SegmentationFunc = (
     parent: Segment,
     section: Section,
@@ -396,20 +414,19 @@ const segmentateNubbyLegs: SegmentationFunc = (
   return segmentatePair(parent, legs, processSection, 'rigid-leg');
 }
 
-const segmentateBuggyLegs: SegmentationFunc = (
-    parent: Segment,
-    section: Section,
-    processSection: SegmentationFunc): Segment[] => {
-  const legs = { ...section, length: 2, size: 20, angle: 90+section.angle };
-  return segmentatePair(parent, legs, processSection, 'rigid-leg');
-}
-
 const segmentateFrogArms: SegmentationFunc = (
     parent: Segment,
     section: Section,
     processSection: SegmentationFunc): Segment[] => {
   const legs = { ...section, length: 5, size: 20, angle: 90+section.angle };
   return segmentatePair(parent, legs, processSection, 'rigid-leg');
+}
+
+const segmentateFrogLegs: SegmentationFunc = (
+    parent: Segment,
+    section: Section,
+    processSection: SegmentationFunc): Segment[] => {
+  return segmentatePair(parent, section, processSection, 'frog-leg');
 }
 
 const segmentateGillPair: SegmentationFunc = (
@@ -434,6 +451,13 @@ const segmentateMandibles: SegmentationFunc = (
     processSection: SegmentationFunc): Segment[] => {
   const mandible = { ...section, length: 5, size: 20, angle: 165 };
   return segmentatePair(parent, mandible, processSection, 'mandible');
+}
+
+const segmentateMonkeyArms: SegmentationFunc = (
+    parent: Segment,
+    section: Section,
+    processSection: SegmentationFunc): Segment[] => {
+  return segmentatePair(parent, section, processSection, 'monkey-arm', false);
 }
 
 const segmentateNoodleLimbs: SegmentationFunc = (
@@ -470,36 +494,34 @@ const segmentateStarfishArms: SegmentationFunc = (
  * Lower-Level Segmentations: Re-usable (in Pals or Chimera)
  * ------------------------------------------------------------ */
 
-const segmentateClaws: SegmentationFunc = (
+const segmentateClaw: SegmentationFunc = (
     parent: Segment,
     section: Section,
     _processSection: SegmentationFunc): Segment[] => {
-  // Segmentate left and right claws as together, always.
-  [-1,1].forEach((i) => {
-    const lowerArmSpec: SegmentsSpec = {
-      count: 3,
-      radius: section.size * 0.4,
-      taperFactor: 1,
-      angle: parent.bodyAngle.relative + 105*i,
-      overlapMult: 0.3,
-      curveRange: 0,
-      offset: 0
-    };
-    const lowerArm = createRotation(parent, lowerArmSpec, 30, 2);
+  const dir = section.mirror ? -1 : 1;
+  const upperArmSpec: SegmentsSpec = {
+    count: 3,
+    radius: section.size * 0.4,
+    taperFactor: 1,
+    angle: parent.bodyAngle.relative + 105 * dir,
+    overlapMult: 0.3,
+    curveRange: 0,
+    offset: 0
+  };
+  const upperArm = createRotation(parent, upperArmSpec, 30, 2);
 
-    const upperArmSpec: SegmentsSpec = {
-      ...lowerArmSpec,
-      angle: lowerArmSpec.angle + 45*i
-    };
-    const upperArm = createDefault(lowerArm[2], upperArmSpec);
+  const lowerArmSpec: SegmentsSpec = {
+    ...upperArmSpec,
+    angle: upperArmSpec.angle + 45 * dir
+  };
+  const lowerArm = createDefault(upperArm[2], lowerArmSpec);
 
-    // Add actual claw.
-    const big = createSegment(section.size * 0.7, upperArmSpec.angle, 0.2);
-    const small = createSegment(section.size * 0.6, upperArmSpec.angle + 40*i, 0.2);
-    upperArm[2].children.push(big);
-    upperArm[2].children.push(small);
-  });
-  return [];
+  // Add actual claw.
+  const big = createSegment(section.size * 0.7, lowerArmSpec.angle, 0.2);
+  const small = createSegment(section.size * 0.6, lowerArmSpec.angle + 40*dir, 0.2);
+  lowerArm[2].children.push(big);
+  lowerArm[2].children.push(small);
+  return [ ...upperArm, ...lowerArm ];
 }
 
 const segmentateCurl: SegmentationFunc = (
@@ -565,54 +587,54 @@ const segmentateFlipper: SegmentationFunc = (
     parent: Segment,
     section: Section,
     _processSection: SegmentationFunc): Segment[] => {
-
+  const dir = section.mirror ? -1 : 1;
   const sizes = [40, 50, 60, 70, 40, 20];
-  const curve = section.angle < 0 ? -15 : 15;
+  const curve = 15 * dir;
   let curr = parent;
-  const flipper = sizes.map((size, i) => createSegment(section.size*size/100, section.angle-i*curve, 1.2));
+  const flipper = sizes.map((size, i) => {
+    const angle = section.angle*dir - i*curve;
+    return createSegment(section.size*size/100, angle, 1.2);
+  });
   flipper.forEach((segment) => {
     curr.children.push(segment);
     segment.wriggle = generateWriggle(generateRotationSpec(20, RELAXED_PERIOD, section.seed));
     curr = segment;
   });
-
   return flipper;
 }
 
-const segmentateFrogLegs: SegmentationFunc = (
+const segmentateFrogLeg: SegmentationFunc = (
     parent: Segment,
-    _section: Section,
+    section: Section,
     _processSection: SegmentationFunc): Segment[] => {
-  [-1,1].forEach((dir) => {
-    const upperLegSpec: SegmentsSpec = {
-      count: 3,
-      radius: parent.circle.radius,
-      taperFactor: 0.85,
-      angle: parent.bodyAngle.relative + 75*dir,
-      overlapMult: 0.3,
-      curveRange: 2,
-      offset: 0
-    };
-    const lowerArm = createRotation(parent, upperLegSpec, 45*dir, RELAXED_PERIOD);
+  const dir = section.mirror ? -1 : 1;
+  const upperLegSpec: SegmentsSpec = {
+    count: 3,
+    radius: parent.circle.radius,
+    taperFactor: 0.85,
+    angle: parent.bodyAngle.relative + 75*dir,
+    overlapMult: 0.3,
+    curveRange: 2,
+    offset: 0
+  };
+  const upperLeg = createRotation(parent, upperLegSpec, 45*dir, RELAXED_PERIOD);
 
-    const lowerLegSpec: SegmentsSpec = {
-      ...upperLegSpec,
-      radius: parent.circle.radius * 0.7,
-      angle: parent.bodyAngle.relative + 10*dir
-    };
-    const lowerLeg = createRotation(lowerArm[2], lowerLegSpec, 20*dir, RELAXED_PERIOD);
+  const lowerLegSpec: SegmentsSpec = {
+    ...upperLegSpec,
+    radius: parent.circle.radius * 0.7,
+    angle: parent.bodyAngle.relative + 10*dir
+  };
+  const lowerLeg = createRotation(upperLeg[2], lowerLegSpec, 20*dir, RELAXED_PERIOD);
 
-    // Add frog foot
-    const pad = createSegment(parent.circle.radius*0.6, parent.bodyAngle.relative+10*dir, 0.5);
-    let toe = createSegment(pad.circle.radius, pad.bodyAngle.relative+10, 0.5);
+  // Add frog foot
+  const pad = createSegment(parent.circle.radius*0.6, parent.bodyAngle.relative+10*dir, 0.5);
+  [1, -1].forEach((toeDir) => {
+    const toe = createSegment(pad.circle.radius, pad.bodyAngle.relative+10*toeDir, 0.5);
     toe.children.push(createSegment(toe.circle.radius, toe.bodyAngle.relative, 0.5));
     pad.children.push(toe);
-    toe = createSegment(pad.circle.radius, pad.bodyAngle.relative-10, 0.5);
-    toe.children.push(createSegment(toe.circle.radius, toe.bodyAngle.relative, 0.5));
-    pad.children.push(toe);
-    lowerLeg[2].children.push(pad);
   });
-  return [];
+  lowerLeg[2].children.push(pad);
+  return [...upperLeg, ...lowerLeg, pad];
 }
 
 const segmentateHair: SegmentationFunc = (
@@ -677,47 +699,44 @@ const segmentateMandible: SegmentationFunc = (
   return segments;
 }
 
-// Creates Sea Monkey arms - separated for readibility, not really that re-usable.
-const segmentateMonkeyArms: SegmentationFunc = (
+const segmentateMonkeyArm: SegmentationFunc = (
     parent: Segment,
     section: Section,
     _processSection: SegmentationFunc): Segment[] => {
-  [-1,1].forEach((i) => {
-    const pec = createSegment(section.size * 0.75, 70*i, 1);
-    pec.bodyAngle.curveRange = 0;
-    parent.children.push(pec);
+  const dir = section.mirror ? -1 : 1;
 
-    const shoulder = createSegment(section.size * 0.7, 130*i, 0.6);
-    shoulder.bodyAngle.curveRange = 0;
-    pec.children.push(shoulder);
+  const pec = createSegment(section.size * 0.75, 70 * dir, 1);
+  parent.children.push(pec);
 
-    const bicepSpec: SegmentsSpec = {
-      count: 2,
-      radius: section.size * 0.45,
-      taperFactor: .9,
-      angle: 75*i,
-      overlapMult: 0.8,
-      curveRange: 0,
-      offset: 0
-    };
-    const upperArm = createRotation(shoulder, bicepSpec, 45, 2);
+  const shoulder = createSegment(section.size * 0.7, 130 * dir, 0.6);
+  pec.children.push(shoulder);
 
-    const forearmSpec: SegmentsSpec = {
-      count: 3,
-      radius: section.size * 0.45,
-      taperFactor: .9,
-      angle: -40*i,
-      overlapMult: 0.8,
-      curveRange: 0,
-      offset: Math.PI // forearm should swing the opposive way as bicep
-    };
-    const lowerArm = createRotation(upperArm[1], forearmSpec, 20, 2);
+  const upperArmSpec: SegmentsSpec = {
+    count: 2,
+    radius: section.size * 0.45,
+    taperFactor: .9,
+    angle: 75 * dir,
+    overlapMult: 0.8,
+    curveRange: 0,
+    offset: 0
+  };
+  const upperArm = createRotation(shoulder, upperArmSpec, 45, 2);
 
-    // Turn final forearm segment into fist: bigger, with less overlap
-    lowerArm[2].circle.radius = section.size * 0.6;
-    lowerArm[2].overlap = 0.3*section.size;
-  });
-  return [];
+  const forearmSpec: SegmentsSpec = {
+    count: 3,
+    radius: section.size * 0.45,
+    taperFactor: .9,
+    angle: -40 * dir,
+    overlapMult: 0.8,
+    curveRange: 0,
+    offset: Math.PI // forearm should swing the opposive way as bicep
+  };
+  const forearm = createRotation(upperArm[1], forearmSpec, 20, 2);
+
+  // Turn final forearm segment into fist: bigger, with less overlap
+  forearm[2].circle.radius = section.size * 0.6;
+  forearm[2].overlap = 0.3*section.size;
+  return [ pec, shoulder, ...upperArm, ...forearm ];
 }
 
 const segmentateMonkeyHead: SegmentationFunc = (

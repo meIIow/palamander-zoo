@@ -5,7 +5,7 @@ type Section = {
   size: number; // precent relative to parent Segment
   angle: number; // angle off parent Segment (degrees)
   seed: number; // differentiates otherwise identical sections - for offsets, etc
-  // next: Section | null; // sub-Section that continues this section
+  mirror: boolean; // mirror this section across parent.angle axis
   children: Section[]; // offshoot sub-Sections
 };
 
@@ -17,12 +17,17 @@ function createEmptySection(): Section {
     size: 0,
     angle: 0,
     seed: 0,
+    mirror: false,
     children: [],
-  }
+  };
 }
 
 function createPassthruSection(): Section {
-  return { ...createEmptySection(), type: 'passthru'}
+  return { ...createEmptySection(), type: 'passthru'};
+}
+
+function createChild(section: Section, type: string): Section {
+  return { ...section, type, children: [],  };
 }
 
 function toPassthruChild(passthru: Section, type: string): Section {
@@ -30,8 +35,8 @@ function toPassthruChild(passthru: Section, type: string): Section {
     ...passthru,
     type,
     parentIndex: 0
-  }
+  };
 }
 
 export type { Section }
-export { createEmptySection, createPassthruSection, toPassthruChild }
+export { createChild, createEmptySection, createPassthruSection, toPassthruChild }
