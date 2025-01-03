@@ -10,6 +10,7 @@ export default defineConfig({
       input: {
         popup: resolve(__dirname, 'popup.html'),
         demo: resolve(__dirname, 'demo.html'),
+        test: resolve(__dirname, 'test.html'),
         worker: resolve(__dirname, './src/extension/background.ts')
       },
       output: {

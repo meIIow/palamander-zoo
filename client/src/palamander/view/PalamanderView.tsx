@@ -17,7 +17,7 @@ function PalamanderView({ pal }: PalamanderProps) {
     // Initialize loop that triggers new render by updating the 'head' Segment state.
     const intervalId = initializeUpdateLoop(pal, setHead);
     return () => clearInterval(intervalId); // cleanup on unmount
-  }, []);
+  }, [pal]);
 
   pal.range.sync();
   return (

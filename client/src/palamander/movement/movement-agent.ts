@@ -26,8 +26,14 @@ type Movement = {
   delta: Coordinate,
 }
 
+type SuppressMove = {
+  turn: boolean;
+  speed: boolean;
+}
+
 class MovementAgent {
-  #behavior: MovementBehavior
+  #behavior: MovementBehavior;
+  #supress: SuppressMove;
   #getSpeedPercent: (interval: number)=>number;
   #getTurnPercent: (interval: number)=>number;
   #movement: Movement = {
@@ -38,8 +44,9 @@ class MovementAgent {
     delta: { x: 0, y: 0 }
   };
 
-  constructor(movementBehavior: MovementBehavior, sampleBehavior: SampleBehavior) {
+  constructor(movementBehavior: MovementBehavior, sampleBehavior: SampleBehavior, supress: SuppressMove) {
     this.#behavior = movementBehavior;
+    this.#supress = supress;
 
     // Generate Sampling Methods.
     const sampleInterval = generateSampler(
@@ -88,9 +95,9 @@ class MovementAgent {
   move(interval: number): Movement {
     const speed = this.clipSpeed(interval, this.#getSpeedPercent(interval));
     const turn = this.#getTurnPercent(interval);
-    const dist = this.calculateDist(interval, speed);
+    const dist = this.#supress.speed ? 0 : this.calculateDist(interval, speed);
 
-    const angle = this.calculateAngle(interval, turn, speed);
+    const angle = this.#supress.turn ? 0 : this.calculateAngle(interval, turn, speed);
     const delta = MovementAgent.updateDelta(this.#movement.delta, angle, dist);
 
     this.#movement = {
@@ -104,7 +111,7 @@ class MovementAgent {
   }
 }
 
-function getPlaceholderMovementAgent() {
+function getPlaceholderMovementAgent(supress: SuppressMove = { turn: false, speed: false }) {
   const movement = {
     speedCap: 2500,
     turnCap: 720,
@@ -130,8 +137,8 @@ function getPlaceholderMovementAgent() {
     }
   }
 
-  return new MovementAgent(movement, sample);
+  return new MovementAgent(movement, sample, supress);
 }
 
 export { MovementAgent, getPlaceholderMovementAgent };
-export type { Movement }
+export type { Movement, SuppressMove }
