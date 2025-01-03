@@ -3,6 +3,7 @@ import { createRoot, Root } from 'react-dom/client'
 import './content.css'
 import PalamanderView from '../palamander/view/PalamanderView.tsx'
 import { Palamander } from '../palamander/palamander.ts'
+import { IndexedWindowRange } from '../palamander/palamander-range.ts'
 import segmentate from '../palamander/morphology/segmentate.ts'
 import { showPals } from './storage.ts'
 import { getPlaceholderMovementAgent } from '../palamander/movement/movement-agent.ts'
@@ -40,7 +41,7 @@ async function createAxolotlTemp(): Promise<Palamander> {
       children: [],
     }),
     updateInterval: 50,
-    magnification: 20,
+    range: new IndexedWindowRange(1, 0, 0, 20, { x: 0.5, y: 0.5 }),
     movementAgent: getPlaceholderMovementAgent()
   };
 }
@@ -57,7 +58,7 @@ const [renderPalamander, clearPalamander] = (() => {
       const pal = await createAxolotlTemp();
       getPalamanderRoot().render(
         <StrictMode>
-          <PalamanderView pal={pal} spawnCoord={{ x: 400, y: 400 }}/>
+          <PalamanderView pal={pal}/>
         </StrictMode>,
       )
     },

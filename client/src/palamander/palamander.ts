@@ -1,12 +1,13 @@
 import { createEngineCircle, generateUpdateCircle } from './common/circle.ts'
 import { Segment, updateSegment } from './morphology/segment.ts'
-import { MovementAgent } from './movement/movement-agent.ts';
+import { MovementAgent } from './movement/movement-agent.ts'
+import { PalamanderRange } from './palamander-range.ts'
 
 type Palamander = {
   head: Segment;
   updateInterval: number;
   movementAgent: MovementAgent;
-  magnification: number; // pixels per 100 Pal Units
+  range: PalamanderRange; // pixels per 100 Pal Units
 };
 
 type AnimationFunc = (update: (head: Segment) => Segment) => void;

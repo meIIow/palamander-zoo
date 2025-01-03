@@ -1,15 +1,14 @@
 import { useEffect, useState } from 'react'
 import SegmentView from './SegmentView.tsx'
-import { Coordinate, createEngineCircle } from '../common/circle.ts'
+import { createEngineCircle } from '../common/circle.ts'
 import { hydrateSegment, getSegmentCircles } from '../morphology/segment.ts'
 import { Palamander, initializeUpdateLoop } from '../palamander.ts'
 
 type PalamanderProps = {
   pal: Palamander,
-  spawnCoord: Coordinate,
 }
 
-function PalamanderView({ pal, spawnCoord }: PalamanderProps) {
+function PalamanderView({ pal }: PalamanderProps) {
   const [head, setHead] = useState(
     () => hydrateSegment(pal.head, createEngineCircle(pal.head.circle), 0, Date.now())
   );
@@ -20,9 +19,12 @@ function PalamanderView({ pal, spawnCoord }: PalamanderProps) {
     return () => clearInterval(intervalId); // cleanup on unmount
   }, []);
 
+  pal.range.sync();
   return (
     <>
-      {getSegmentCircles(head).map((circle, i) => <SegmentView circle={circle} spawn={spawnCoord} magnification={pal.magnification} key={i}/>)}
+      {getSegmentCircles(head).map((circle, i) => {
+        return <SegmentView circle={circle} range={pal.range} key={i} />
+      })}
     </>
   )
 }

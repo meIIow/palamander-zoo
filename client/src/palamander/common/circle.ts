@@ -12,8 +12,8 @@ function createOrigin(): Coordinate {
   return { x: 0, y: 0 }
 }
 
-function createSpawnCoord(width: number, height: number): Coordinate {
-  return { x: Math.random()*width, y: Math.random()*height };
+function createSpawnMult(): Coordinate {
+  return { x: Math.random(), y: Math.random() };
 }
 
 function createDefaultCircle(radius: number): Circle {
@@ -60,4 +60,4 @@ function calculateCenter(
 }
 
 export type { Circle, Coordinate };
-export { createOrigin, createSpawnCoord, createDefaultCircle, createEngineCircle, generateUpdateCircle, calculateCenter }
+export { createOrigin, createSpawnMult, createDefaultCircle, createEngineCircle, generateUpdateCircle, calculateCenter }
