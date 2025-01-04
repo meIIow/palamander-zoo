@@ -22,17 +22,18 @@ const palTypes = [
 
 async function createPalList(types: string[], count: number, supressMoves: SuppressMove): Promise<Palamander[]> {
   return types.map((type, i) => {
-    const mag = (type == 'crawdad' ? 10 : 20) / count;
+    const mag = (type == 'crawdad' ? 10 : 20) / 2;
     return {
       head: segmentate({
         type,
-        length: type == 'axolotl' ? 15 : 10,
-        parentIndex: 0,
+        count: type == 'axolotl' ? 15 : 10,
+        index: 0,
         size: 100,
         angle: 0,
-        seed: 0,
+        offset: 0,
         mirror: false,
-        children: [],
+        next: null,
+        branches: [],
       }),
       updateInterval: 50,
       range: new IndexedWindowRange(count, Math.floor(i/count), i % count, mag, { x: 0.5, y: 0.5 }),

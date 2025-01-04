@@ -1,42 +1,49 @@
+import { Segment } from './segment.ts'
+
+// Represents a Palamander Section, which is used to generate a corresponding list of Segments.
+// Some of these fields may be irrelevant (ignored) for some Section types.
+// Some fields may be interpreted differently for some Section types.
 type Section = {
   type: string; // ID that determines corresponding Segment tree structure and behavior
-  length: number; // how many Segments compose this Section
-  parentIndex: number; // index of parent Segment within parent Section
-  size: number; // precent relative to parent Segment
+  count: number; // how many Segments compose this Section
+  index: number; // index of parent Segment within parent Section
+  size: number; // percent relative to parent Segment
   angle: number; // angle off parent Segment (degrees)
-  seed: number; // differentiates otherwise identical sections - for offsets, etc
-  mirror: boolean; // mirror this section across parent.angle axis
-  children: Section[]; // offshoot sub-Sections
+  offset: number; // for timings animations (sync or not?), etc
+  mirror: boolean; // mirror any asymmetry in this section
+  next: Section | null; // continuation sub-Section
+  branches: Section[]; // offshoot sub-Sections
 };
 
-function createEmptySection(): Section {
+function createSection(): Section {
   return {
     type: 'empty',
-    length: 0,
-    parentIndex: 0,
+    count: 0,
+    index: 0,
     size: 0,
     angle: 0,
-    seed: 0,
+    offset: 0,
     mirror: false,
-    children: [],
+    next: null,
+    branches: [],
   };
 }
 
-function createPassthruSection(): Section {
-  return { ...createEmptySection(), type: 'passthru'};
+function createBranch(section: Section, type: string): Section {
+  return { ...section, type, next: null, branches: [] };
 }
 
-function createChild(section: Section, type: string): Section {
-  return { ...section, type, children: [],  };
+function createPassthru(): Section {
+  return { ...createSection(), type: 'passthru'};
 }
 
-function toPassthruChild(passthru: Section, type: string): Section {
-  return {
-    ...passthru,
-    type,
-    parentIndex: 0
-  };
+function createPassthruBranch(passthru: Section, type: string): Section {
+  return { ...createBranch(passthru, type), index: 0 };
+}
+
+function calculateRadius(parent: Segment, section: Section): number {
+  return parent.circle.radius * section.size / 100;
 }
 
 export type { Section }
-export { createChild, createEmptySection, createPassthruSection, toPassthruChild }
+export { calculateRadius, createSection, createBranch, createPassthru, createPassthruBranch }

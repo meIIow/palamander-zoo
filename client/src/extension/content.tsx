@@ -32,13 +32,14 @@ async function createAxolotlTemp(): Promise<Palamander> {
   return {
     head: segmentate({
       type: 'axolotl',
-      length: 15,
-      parentIndex: 0,
+      count: 15,
+      index: 0,
       size: 100,
       angle: 0,
-      seed: 0,
+      offset: 0,
       mirror: false,
-      children: [],
+      next: null,
+      branches: [],
     }),
     updateInterval: 50,
     range: new IndexedWindowRange(1, 0, 0, 20, { x: 0.5, y: 0.5 }),

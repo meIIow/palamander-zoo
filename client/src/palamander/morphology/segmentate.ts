@@ -10,27 +10,29 @@ export default function segmentate(sectionTree: Section): Segment {
       section: Section,
       processSection: SegmentationFunc): Segment[] => {
     if (section.type == 'passthru') {
-      processChildren([parent], section.children);
+      processChildren([parent], section.next, section.branches);
       return [];
     }
     if (!(section.type in segmentationMap)) {
       console.log(`${section.type} not present in segmentation map, skipping section ${section}`);
       return []
     }
-    let segments = segmentationMap[section.type](parent, section, processSection)
-    processChildren(segments, section.children);
-    return segments;
+    const segments = segmentationMap[section.type](parent, section, processSection)
+    return [ ...segments, ...processChildren(segments, section.next, section.branches) ];
   }
 
-  const processChildren = (parentSegmentation: Segment[], children: Section[]) => {
-    children.forEach((child)=> {
-      const parentSegment = parentSegmentation[child.parentIndex];
-      const childSegments = processSection(parentSegment, child, processSection);
-      if (!childSegments.length) return;
-      parentSegment.children.push(childSegments[0]);
+  const processChildren = (
+      segmentation: Segment[],
+      next: Section | null,
+      branches: Section[]): Segment[] => {
+    branches.forEach((branch)=> {
+      const parent = segmentation[branch.index];
+      processSection(parent, branch, processSection);
     });
+    const parent = segmentation[segmentation.length-1];
+    return (next == null) ? [] : processSection(parent, next, processSection);
   }
 
   // Return head segment from segmentation of sectionTree
-  return processSection(createDefaultSegment(0), sectionTree, processSection)[0];
+  return processSection(createDefaultSegment(100), sectionTree, processSection)[0];
 }

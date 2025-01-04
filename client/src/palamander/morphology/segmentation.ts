@@ -1,5 +1,5 @@
 import { Segment, createSegment, createDefaultSegment } from "./segment";
-import { Section, createEmptySection, createPassthruSection } from "./section";
+import { Section, calculateRadius, createBranch, createSection, createPassthru } from "./section";
 import { generateCompositeWriggle, generateSquiggleSpec, generateCurlSpec, generateRotationSpec, generateWriggle } from './wriggle';
 import { SegmentsSpec, addCurve, createSquiggleGradient, createNoodleLimb , createRotation, createDefault} from "./segments";
 
@@ -67,55 +67,58 @@ function getDefaultSegmentationMap(): SegmentationMap{
  * Entry-Level Segmentations: Define entire Palamanders
  * ------------------------------------------------------- */
 
+// An axolotl is a newt with a gill-pair on its head.
 const segmentateAxolotl: SegmentationFunc = (
     parent: Segment,
     section: Section,
     processSection: SegmentationFunc): Segment[] => {
   const sectionTree = {...section};
   sectionTree.type = 'newt';
-  sectionTree.children = [ { ...section, type: 'gill-pair', parentIndex: 0} ];
+  sectionTree.branches = [ { ...createBranch(section, 'gill-pair'), index: 0 } ];
   return processSection(parent, sectionTree, processSection);
 }
 
+// A caterpillar is a caterpillar.
 const segmentateCaterpillar: SegmentationFunc = (
-    _parent: Segment,
+    parent: Segment,
     section: Section,
     _processSection: SegmentationFunc): Segment[] => {
-  const head = createDefaultSegment(section.size);
+  const head = createDefaultSegment(parent.circle.radius);
   const spec: SegmentsSpec = {
-    count: section.length,
-    radius: section.size * 0.75,
+    count: section.count,
+    radius: calculateRadius(parent, section),
     taperFactor: 1,
     angle: 0,
     overlapMult: 0.1,
-    curveRange: 360 / section.length,
+    curveRange: 360 / section.count,
     offset: 0
-  }
-  const generateWriggleSpec = (i: number) => [generateSquiggleSpec(20, RELAXED_PERIOD, i, section.length*2)];
+  };
+  const generateWriggleSpec = (i: number) => [generateSquiggleSpec(20, RELAXED_PERIOD, i, section.count*2)];
   const body = createDefault(head, spec, generateWriggleSpec);
   return [ head, ...body];
 }
 
+// A centipede is a caterpillar with mandibles, legs, and a final-segment feeler.
 const segmentateCentipede: SegmentationFunc = (
     parent: Segment,
     section: Section,
     processSection: SegmentationFunc): Segment[] => {
-  const sectionTree = {...section};
-  sectionTree.type = 'caterpillar';
-  sectionTree.children = [];
-  for (let i = 1; i <= section.length; i++) {
-    const seed = section.seed + (2 * Math.PI / 2) * i; // alternating offset
+  const caterpillar = { ...createBranch(section, 'caterpillar'), size: 75 };
+  for (let i = 1; i <= section.count; i++) {
+    const offset = section.offset + (2 * Math.PI / 2) * i; // alternating offset
     //const seed = section.seed + (2 * Math.PI) / (count * 3) * parentIndex, // cascade offset down segment
-    const legs = { ...section, type: 'buggy-legs', parentIndex: i, seed, children: [] };
-    sectionTree.children.push(legs);
+    const legs = { ...createBranch(section, 'buggy-legs'), index: i, offset };
+    caterpillar.branches.push(legs);
   }
-  const feeler = { ...section, type: 'feeler', parentIndex: section.length, children: [] };
-  sectionTree.children.push({ ...feeler, angle: section.angle + 12 });
-  sectionTree.children.push({ ...feeler, angle: section.angle - 12 });
-  section.children.push({ ...section, type: 'mandibles', children: [] });
-  return processSection(parent, sectionTree, processSection);
+  // TODO(mellow): add antennae Section.
+  const feeler = { ...createBranch(section, 'feeler'), index: section.count };
+  caterpillar.branches.push({ ...feeler, angle: section.angle + 12 });
+  caterpillar.branches.push({ ...feeler, angle: section.angle - 12 });
+  caterpillar.branches.push({ ...createBranch(section, 'mandibles') });
+  return processSection(parent, caterpillar, processSection);
 }
 
+// A crawdad is a crawdad.
 const segmentateCrawdad: SegmentationFunc = (
     _parent: Segment,
     section: Section,
@@ -123,6 +126,8 @@ const segmentateCrawdad: SegmentationFunc = (
   const head = createDefaultSegment(section.size);
   const spacer = createSegment(section.size, section.angle, 1);
   head.children.push(spacer);
+
+  // Create carapace.
   const body = createDefault(spacer, {
     count: 3,
     radius: section.size * 1.5,
@@ -130,33 +135,35 @@ const segmentateCrawdad: SegmentationFunc = (
     angle: section.angle,
     overlapMult: 1,
     curveRange: 0,
-    offset: section.seed,
+    offset: section.offset,
   });
 
   // Process tail, legs, antennae and claws as children.
-  section.children.push({
-    ...createEmptySection(),
+  section.branches.push({
+    ...createSection(),
     type: 'fish-tail',
-    length: 3,
-    parentIndex: 4,
+    count: 3,
+    index: 4,
     size: section.size*1.5
   });
 
-  const legs = { ...section, type: 'buggy-legs', children: [] };
+  const legs = createBranch(section, 'buggy-legs');
   for (let i = 2; i <= 4; i++) {
-    section.children.push({ ...legs, parentIndex: i });
+    section.branches.push({ ...legs, index: i });
   }
 
-  const feeler = { ...section, type: 'feeler', parentIndex: 0, children: [] };
-  section.children.push({ ...feeler, angle: section.angle + 210 });
-  section.children.push({ ...feeler, angle: section.angle + 150 });
+  // TODO(mellow): add antennae Section.
+  const feeler = { ...createBranch(section, 'feeler'), parentIndex: 0 };
+  section.branches.push({ ...feeler, angle: section.angle + 210 });
+  section.branches.push({ ...feeler, angle: section.angle + 150 });
 
-  const claws = { ...section, type: 'claws', parentIndex: 2, children: [] };
-  section.children.push(claws);
+  const claws = { ...createBranch(section, 'claws'), parentIndex: 2 };
+  section.branches.push(claws);
 
   return [head, spacer, ...body];
 }
 
+// A frog is a frog.
 const segmentateFrog: SegmentationFunc = (
     _parent: Segment,
     section: Section,
@@ -179,15 +186,16 @@ const segmentateFrog: SegmentationFunc = (
   }
   const generateFrogWiggle = (i: number) => [generateSquiggleSpec(2, RELAXED_PERIOD, i, bodyLen)];
   const body  = createDefault(head, bodySpec, generateFrogWiggle);
-  const arms = { ...section, type: 'simple-limbs', length: 5, size: 50, children: [] };
-  section.children.push({ ...arms, size: section.size*0.2, parentIndex: 0, angle: section.angle+45 });
+  const arms = { ...createBranch(section, 'simple-limbs'), count: 5, size: 50 };
+  section.branches.push({ ...arms, size: section.size*0.2, index: 0, angle: section.angle+45 });
 
-  const legs = { ...section, parentIndex: bodyLen, type: 'frog-legs', children: [] };
-  section.children.push(legs);
+  const legs = { ...createBranch(section, 'frog-legs'), index: bodyLen };
+  section.branches.push(legs);
 
   return [head, ...body];
 }
 
+// A jellyfish is a jellyfish.
 const segmentateJellyfish: SegmentationFunc = (
     _parent: Segment,
     section: Section,
@@ -204,7 +212,7 @@ const segmentateJellyfish: SegmentationFunc = (
     offset: 0,
   };
   for (let i=0; i<4; i++) {
-    const generateWriggleSpec = (i: number) => [generateSquiggleSpec(20, RELAXED_PERIOD, i, section.length*2)];
+    const generateWriggleSpec = (i: number) => [generateSquiggleSpec(20, RELAXED_PERIOD, i, section.count*2)];
     const spawn = -60 + i*40;
     const root = createSegment(1, spawn, section.size / 20);
 
@@ -215,109 +223,116 @@ const segmentateJellyfish: SegmentationFunc = (
   return [head];
 }
 
+// A horshoe crab is a horseshoe crab.
 const segmentateHorshoeCrab: SegmentationFunc = (
     _parent: Segment,
     section: Section,
     processSection: SegmentationFunc): Segment[] => {
   const head = createDefaultSegment(section.size);
   const body = createSegment(section.size*0.75, 0, 1.2);
-  const legPair = { ...section, type: 'nubby-legs', parentIndex: 0, children: [] };
+  const legPair = { ...createBranch(section, 'nubby-legs'), index: 0 };
   [-30, 0, 30].forEach((n) => {
     processSection(body, { ...legPair, angle: section.angle + n } , processSection);
   });
   head.children.push(body);
-  const tailSpike = { ...section, type: 'feeler', parentIndex: 0, children: [] }
+  const tailSpike = { ...createBranch(section, 'feeler'), index: 0 }
   return [head, body, ...processSection(body, tailSpike, processSection)];
 }
 
+// A newt is a tadpole with noodle limbs.
 const segmentateNewt: SegmentationFunc = (
     parent: Segment,
     section: Section,
     processSection: SegmentationFunc): Segment[] => {
   const sectionTree = {...section};
   sectionTree.type = 'tadpole';
-  const legs = { ...section, type: 'noodle-limbs', length: 5, size: 50, children: [] };
-  sectionTree.children = [
-    { ...legs, parentIndex: 1, angle: section.angle+45 },
-    { ...legs, parentIndex: 3, angle: section.angle+45 },
+  const legs = { ...createBranch(section, 'noodle-limbs'), count: 5, size: 50 };
+  sectionTree.branches = [
+    { ...legs, index: 1, angle: section.angle+45 },
+    { ...legs, index: 3, angle: section.angle+45 },
   ];
   return processSection(parent, sectionTree, processSection);
 }
 
+// An octopus is an octopus.
 const segmentateOctopus: SegmentationFunc = (
     _parent: Segment,
     section: Section,
     processSection: SegmentationFunc): Segment[] => {
   const head = createDefaultSegment(section.size);
-  processSection(head, { ...section, type: 'octo-arms' }, processSection);
+  processSection(head, createBranch(section, 'octo-arms'), processSection);
   return [ head];
 }
 
+// A sea lion is a sea lion.
 const segmentateSeaLion: SegmentationFunc = (
     parent: Segment,
     section: Section,
     processSection: SegmentationFunc): Segment[] => {
-  const headSection = { ...createEmptySection(), type: 'lion-head', size: section.size };
+  const headSection = { ...createSection(), type: 'lion-head', size: section.size };
   const [head] = processSection(parent, headSection, processSection);
 
   const neck = createSegment(section.size * 0.5, 0, 0.8);
   head.children.push(neck)
 
   const tailSectionSpec = {
-    ...createEmptySection(),
+    ...createSection(),
     type: 'fish-tail',
-    length: 6,
+    count: 6,
     size: section.size * 0.75
   };
   const flipper = {
-    ...createEmptySection(),
+    ...createSection(),
     type: 'flipper',
     size: section.size * 0.75,
     angle: 90,
     parentIndex: 0,
   };
-  tailSectionSpec.children = [flipper, { ...flipper, mirror: true, seed: Math.PI }];
+  tailSectionSpec.branches = [flipper, { ...flipper, mirror: true, offset: Math.PI }];
   const tail = processSection(neck, tailSectionSpec, processSection);
 
   return [head, neck, ...tail];
 }
 
+// A sea monkey is a sea monkey.
 const segmentateSeaMonkey: SegmentationFunc = (
     parent: Segment,
     section: Section,
     processSection: SegmentationFunc): Segment[] => {
-  const headSection = { ...createEmptySection(), type: 'monkey-head', size: section.size };
+  const headSection = { ...createSection(), type: 'monkey-head', size: section.size };
   const [head, neck] = processSection(parent, headSection, processSection);
 
   const torsoSectionSpec = {
-    ...createEmptySection(),
+    ...createSection(),
     type: 'fish-tail',
-    length: 6,
+    count: 6,
     size: section.size
   };
   const tail = processSection(neck, torsoSectionSpec, processSection);
 
-  const armsSpec = { ...createEmptySection(), type: 'monkey-arms', size: section.size };
+  const armsSpec = { ...createSection(), type: 'monkey-arms', size: section.size };
   processSection(tail[0], armsSpec, processSection);
   return [head, neck, ...tail];
 }
 
+// A starfish is a starfish.
 const segmentateStarfish: SegmentationFunc = (
     _parent: Segment,
     section: Section,
     processSection: SegmentationFunc): Segment[] => {
   const head = createDefaultSegment(section.size);
-  processSection(head, { ...section, type: 'starfish-arms' }, processSection);
+  processSection(head, createBranch(section, 'starfish-arms'), processSection);
   return [ head];
 }
 
+// A tadpole is a tadpole.
 const segmentateTadpole: SegmentationFunc = (
     _parent: Segment,
     section: Section,
     _processSection: SegmentationFunc): Segment[] => {
   const head = createDefaultSegment(section.size);
   const spec: SegmentsSpec = {
-    count: section.length,
+    count: section.count,
     radius: section.size / 2,
     taperFactor: 0.95,
     angle: 0,
@@ -340,13 +355,13 @@ const segmentatePair = (
     processSection: SegmentationFunc,
     type: string,
     sync: boolean=true): Segment[] => {
-  const passthru = createPassthruSection();
+  const passthru = createPassthru();
   const flippedAngle = parent.bodyAngle.relative - (section.angle - parent.bodyAngle.relative);
-  passthru.children = [
-    { ...section, type, parentIndex: 0 },
-    { ...section, type, parentIndex: 0, mirror: !section.mirror, angle: flippedAngle },
+  passthru.branches = [
+    { ...section, type, index: 0 },
+    { ...section, type, index: 0, mirror: !section.mirror, angle: flippedAngle },
   ];
-  if (sync) passthru.children[1].seed -= Math.PI;
+  if (sync) passthru.branches[1].offset -= Math.PI;
   return processSection(parent, passthru, processSection);
 }
 
@@ -360,13 +375,13 @@ const segmentateEqualDistribution = (
     range: number,
     stagger: boolean = false): Segment[] => {
   if (count <= 1) processSection(parent, { ...section, type }, processSection);
-  const passthru = createPassthruSection();
+  const passthru = createPassthru();
   const between = range / (count-1);
   for (let i=0; i<count; i++) {
     const angle = section.angle - range/2 + i*between;
-    const seed = stagger ? section.seed + 29 * i % 17 : section.seed; // random-ish bump
-    const child = { ...section, type, parentIndex: 0, angle, seed };
-    passthru.children.push(child);
+    const offset = stagger ? section.offset + 29 * i % 17 : section.offset; // random-ish bump
+    const child = { ...section, type, index: 0, angle, offset };
+    passthru.branches.push(child);
   }
   return processSection(parent, passthru, processSection);
 }
@@ -387,7 +402,7 @@ const segmentateBuggyLegs: SegmentationFunc = (
     parent: Segment,
     section: Section,
     processSection: SegmentationFunc): Segment[] => {
-  const legs = { ...section, length: 2, size: 20, angle: 90+section.angle };
+  const legs = { ...section, count: 2, size: 20, angle: 90+section.angle };
   return segmentatePair(parent, legs, processSection, 'rigid-leg');
 }
 
@@ -402,7 +417,7 @@ const segmentateMane: SegmentationFunc = (
     parent: Segment,
     section: Section,
     processSection: SegmentationFunc): Segment[] => {
-  const hair = { ...section, length: 2, size: 7 };
+  const hair = { ...section, count: 2, size: 7 };
   return segmentateEqualDistribution(parent, hair, processSection, 'hair', 30, 240, true);
 }
 
@@ -410,7 +425,7 @@ const segmentateNubbyLegs: SegmentationFunc = (
     parent: Segment,
     section: Section,
     processSection: SegmentationFunc): Segment[] => {
-  const legs = { ...section, length: 1, size: 30, angle: 90+section.angle };
+  const legs = { ...section, count: 1, size: 30, angle: 90+section.angle };
   return segmentatePair(parent, legs, processSection, 'rigid-leg');
 }
 
@@ -418,7 +433,7 @@ const segmentateFrogArms: SegmentationFunc = (
     parent: Segment,
     section: Section,
     processSection: SegmentationFunc): Segment[] => {
-  const legs = { ...section, length: 5, size: 20, angle: 90+section.angle };
+  const legs = { ...section, count: 5, size: 20, angle: 90+section.angle };
   return segmentatePair(parent, legs, processSection, 'rigid-leg');
 }
 
@@ -441,7 +456,7 @@ const segmentateGills: SegmentationFunc = (
     parent: Segment,
     section: Section,
     processSection: SegmentationFunc): Segment[] => {
-  const gills = { ...section, length: 5, size: 10 }
+  const gills = { ...section, count: 5, size: 10 }
   return segmentateEqualDistribution(parent, gills, processSection, 'curl', 3, 60);
 }
 
@@ -449,7 +464,7 @@ const segmentateMandibles: SegmentationFunc = (
     parent: Segment,
     section: Section,
     processSection: SegmentationFunc): Segment[] => {
-  const mandible = { ...section, length: 5, size: 20, angle: 165 };
+  const mandible = { ...section, count: 5, size: 20, angle: 165 };
   return segmentatePair(parent, mandible, processSection, 'mandible');
 }
 
@@ -471,7 +486,7 @@ const segmentateOctoArms: SegmentationFunc = (
     parent: Segment,
     section: Section,
     processSection: SegmentationFunc): Segment[] => {
-  const arm = { ...section, length: 12, size: 40 }
+  const arm = { ...section, count: 12, size: 40 }
   return segmentateEqualDistribution(parent, arm, processSection, 'curl', 6, 80, true);
 }
 
@@ -486,7 +501,7 @@ const segmentateStarfishArms: SegmentationFunc = (
     parent: Segment,
     section: Section,
     processSection: SegmentationFunc): Segment[] => {
-  const arm = { ...section, length: 8, size: 75 }
+  const arm = { ...section, count: 8, size: 75 }
   return segmentateRadialDistribution(parent, arm, processSection, 'curl', 5);
 }
 
@@ -529,13 +544,13 @@ const segmentateCurl: SegmentationFunc = (
     section: Section,
     _processSection: SegmentationFunc): Segment[] => {
   const spec: SegmentsSpec = {
-    count: section.length,
+    count: section.count,
     radius: parent.circle.radius * section.size / 100,
     taperFactor: 0.9,
     angle: section.angle,
     overlapMult: 0.5,
-    curveRange: 360 / section.length,
-    offset: section.seed,
+    curveRange: 360 / section.count,
+    offset: section.offset,
   };
   const generateGentleCurl = (i: number) => [generateCurlSpec(120/spec.count, 2, i, spec.offset)]
   const segments = createDefault(parent, spec, generateGentleCurl);
@@ -553,7 +568,7 @@ const segmentateFeeler: SegmentationFunc = (
     angle: section.angle,
     overlapMult: 0.2,
     curveRange: 0,
-    offset: section.seed,
+    offset: section.offset,
   }
   const segments = createDefault(parent, spec);
   return segments;
@@ -563,7 +578,7 @@ const segmentateFishTail: SegmentationFunc = (
     parent: Segment,
     section: Section,
     _processSection: SegmentationFunc): Segment[] => {
-  const count = section.length;
+  const count = section.count;
   const tailSpec: SegmentsSpec = {
     count,
     radius: section.size,
@@ -597,7 +612,7 @@ const segmentateFlipper: SegmentationFunc = (
   });
   flipper.forEach((segment) => {
     curr.children.push(segment);
-    segment.wriggle = generateWriggle(generateRotationSpec(20, RELAXED_PERIOD, section.seed));
+    segment.wriggle = generateWriggle(generateRotationSpec(20, RELAXED_PERIOD, section.offset));
     curr = segment;
   });
   return flipper;
@@ -642,13 +657,13 @@ const segmentateHair: SegmentationFunc = (
     section: Section,
     _processSection: SegmentationFunc): Segment[] => {
   const spec: SegmentsSpec = {
-    count: section.length,
+    count: section.count,
     radius: parent.circle.radius * section.size / 100,
     taperFactor: 1,
     angle: section.angle,
     overlapMult: 1.25,
     curveRange: 20,
-    offset: section.seed,
+    offset: section.offset,
   };
   const generateGentleCurl = (i: number) => {
     return [
@@ -675,8 +690,8 @@ const segmentateLionHead: SegmentationFunc = (
   const snout = createSegment(section.size*0.75, 180, 1.5);
   head.children.push(snout);
 
-  const mane = { ...section, type: 'mane', children: [] };
-  section.children.push(mane);
+  const mane = createBranch(section, 'mane');
+  section.branches.push(mane);
 
   return [head];
 }
@@ -687,13 +702,13 @@ const segmentateMandible: SegmentationFunc = (
     _processSection: SegmentationFunc): Segment[] => {
   const curve = (section.angle < 0) ? -10 : 10;
   const spec: SegmentsSpec = {
-    count: section.length,
+    count: section.count,
     radius: parent.circle.radius * section.size / 100,
     taperFactor: 0.8,
     angle: section.angle,
     overlapMult: 0.5,
     curveRange: 0,
-    offset: section.seed,
+    offset: section.offset,
   }
   const segments = addCurve(createRotation(parent, spec, 5, 1), curve);
   return segments;
@@ -763,7 +778,7 @@ const segmentateNoodleLimb: SegmentationFunc = (
     section: Section,
     _processSection: SegmentationFunc): Segment[] => {
   const spec: SegmentsSpec = {
-    count: section.length,
+    count: section.count,
     radius: parent.circle.radius * section.size / 100,
     taperFactor: 0.9,
     angle: section.angle,
@@ -780,13 +795,13 @@ const segmentateRigidLeg: SegmentationFunc = (
     section: Section,
     _processSection: SegmentationFunc): Segment[] => {
   const spec: SegmentsSpec = {
-    count: section.length,
+    count: section.count,
     radius: parent.circle.radius * section.size / 100,
     taperFactor: 1,
     angle: section.angle,
     overlapMult: 0.2,
     curveRange: 0,
-    offset: section.seed,
+    offset: section.offset,
   }
   const segments = createRotation(parent, spec, 30, 1);
   return segments;
@@ -797,15 +812,15 @@ const segmentateSimpleLimb: SegmentationFunc = (
     section: Section,
     _processSection: SegmentationFunc): Segment[] => {
   const spec: SegmentsSpec = {
-    count: section.length,
+    count: section.count,
     radius: parent.circle.radius * section.size / 100,
     taperFactor: 0.9,
     angle: section.angle,
     overlapMult: 0.5,
     curveRange: 5,
-    offset: section.seed
+    offset: section.offset
   }
-  const curve = (section.seed % (Math.PI * 2) == 0) ? 15: -15; // mirror curve
+  const curve = (section.offset % (Math.PI * 2) == 0) ? 15: -15; // mirror curve
   const segments = addCurve(createRotation(parent, spec, 10, RELAXED_PERIOD), curve);
   return segments;
 }

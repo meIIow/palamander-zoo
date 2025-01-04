@@ -12,13 +12,14 @@ async function createPalsTemp(): Promise<Palamander[]> {
     {
       head: segmentate({
         type: 'sea-lion',
-        length: 10,
-        parentIndex: 0,
+        count: 10,
+        index: 0,
         size: 100,
         angle: 0,
-        seed: 0,
+        offset: 0,
         mirror: false,
-        children: [],
+        next: null,
+        branches: [],
       }),
       updateInterval: 50,
       range: new IndexedWindowRange(1, 0, 0, 20, createSpawnMult()),
