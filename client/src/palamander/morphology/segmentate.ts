@@ -9,16 +9,12 @@ export default function segmentate(sectionTree: Section): Segment {
       parent: Segment,
       section: Section,
       processSection: SegmentationFunc): Segment[] => {
-    if (section.type == 'passthru') {
-      processChildren([parent], section.next, section.branches);
-      return [];
-    }
     if (!(section.type in segmentationMap)) {
       console.log(`${section.type} not present in segmentation map, skipping section ${section}`);
       return []
     }
-    const segments = segmentationMap[section.type](parent, section, processSection)
-    return [ ...segments, ...processChildren(segments, section.next, section.branches) ];
+    const segments = [ ...segmentationMap[section.type](parent, section, processSection), parent ];
+    return [ ...segments.slice(0, -1), ...processChildren(segments, section.next, section.branches) ];
   }
 
   const processChildren = (

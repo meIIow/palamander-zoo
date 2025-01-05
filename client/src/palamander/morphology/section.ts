@@ -15,9 +15,9 @@ type Section = {
   branches: Section[]; // offshoot sub-Sections
 };
 
-function createSection(): Section {
+function createSection(type: string): Section {
   return {
-    type: 'empty',
+    type,
     count: 0,
     index: 0,
     size: 0,
@@ -33,12 +33,21 @@ function createBranch(section: Section, type: string): Section {
   return { ...section, type, next: null, branches: [] };
 }
 
-function createPassthru(): Section {
-  return { ...createSection(), type: 'passthru'};
+function deepClone(section: Section): Section {
+  const next = (section.next == null) ? null : deepClone(section.next);
+  const branches = section.branches.map((branch) => deepClone(branch));
+  return { ...section, next, branches };
 }
 
-function createPassthruBranch(passthru: Section, type: string): Section {
-  return { ...createBranch(passthru, type), index: 0 };
+function passthru(section: Section): Section {
+  return { ...deepClone(section), index: 0 };
+}
+
+function replace(section: Section): Section {
+  const replacement =  { ...section };
+  section.next = null;
+  section.branches = [];
+  return replacement;
 }
 
 function calculateRadius(parent: Segment, section: Section): number {
@@ -46,4 +55,4 @@ function calculateRadius(parent: Segment, section: Section): number {
 }
 
 export type { Section }
-export { calculateRadius, createSection, createBranch, createPassthru, createPassthruBranch }
+export { calculateRadius, createSection, createBranch, deepClone, passthru, replace }
