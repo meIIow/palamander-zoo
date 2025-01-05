@@ -2,8 +2,8 @@ import { useState } from 'react'
 import PalamanderGrid from '../palamander/view/PalamanderGrid.tsx'
 
 function App() {
-  const [speed, setSpeed] = useState(false)
-  const [turn, setTurn] = useState(false)
+  const [speed, setSpeed] = useState(true)
+  const [turn, setTurn] = useState(true)
   const [reset, setReset] = useState(0)
 
   return (

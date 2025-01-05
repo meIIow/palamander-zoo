@@ -50,9 +50,19 @@ function replace(section: Section): Section {
   return replacement;
 }
 
+// Adds a chain of nexts to a section, pushing the existing next to the back of this chain
+function follow(section: Section, next: Section): Segment[] {
+  const finalNext = section.next;
+  section.next = next;
+  let nextNext = next;
+  while (nextNext.next != null) nextNext = nextNext.next;
+  nextNext.next = finalNext;
+  return []; // provices syntactic sugar within SegmentationFunc - can return this call
+}
+
 function calculateRadius(parent: Segment, section: Section): number {
   return parent.circle.radius * section.size / 100;
 }
 
 export type { Section }
-export { calculateRadius, createSection, createBranch, deepClone, passthru, replace }
+export { calculateRadius, createSection, createBranch, deepClone, passthru, replace, follow }

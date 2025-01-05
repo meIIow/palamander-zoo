@@ -5,30 +5,30 @@ import { SegmentationFunc, getDefaultSegmentationMap } from "./segmentation"
 export default function segmentate(sectionTree: Section): Segment {
   const segmentationMap = getDefaultSegmentationMap();
   
-  const processSection: SegmentationFunc = (
-      parent: Segment,
-      section: Section,
-      processSection: SegmentationFunc): Segment[] => {
+  const processSection: SegmentationFunc = (parent: Segment, section: Section): Segment[] => {
     if (!(section.type in segmentationMap)) {
       console.log(`${section.type} not present in segmentation map, skipping section ${section}`);
       return []
     }
-    const segments = [ ...segmentationMap[section.type](parent, section, processSection), parent ];
-    return [ ...segments.slice(0, -1), ...processChildren(segments, section.next, section.branches) ];
+    const segments = segmentationMap[section.type](parent, section)
+    return [ ...segments, ...processChildren(section, segments, parent) ];
   }
 
-  const processChildren = (
-      segmentation: Segment[],
-      next: Section | null,
-      branches: Section[]): Segment[] => {
-    branches.forEach((branch)=> {
-      const parent = segmentation[branch.index];
-      processSection(parent, branch, processSection);
+  const processChildren = (section: Section, parents: Segment[], grandparent: Segment): Segment[] => {
+    // Next segment keys off last parent section segment, w/ grandparent as fallback.
+    const last = (!parents.length) ? grandparent : parents[parents.length-1];
+    const follows = (section.next == null) ? [] : processSection(last, section.next);
+
+    // Branches index off full chain (including next), w/ grandparent short-circuit available.
+    const branchParents = [ ...parents, ...follows, grandparent ];
+    section.branches.forEach((branch)=> {
+      const parent = branchParents[branch.index];
+      processSection(parent, branch);
     });
-    const parent = segmentation[segmentation.length-1];
-    return (next == null) ? [] : processSection(parent, next, processSection);
+
+    return follows;
   }
 
   // Return head segment from segmentation of sectionTree
-  return processSection(createDefaultSegment(100), sectionTree, processSection)[0];
+  return processSection(createDefaultSegment(100), sectionTree)[0];
 }
