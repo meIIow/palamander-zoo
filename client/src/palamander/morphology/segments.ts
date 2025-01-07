@@ -1,5 +1,6 @@
 import { Segment, createSegment } from './segment.ts';
-import { WriggleSpec, generateCompositeWriggle, generateSquiggleSpec, generateRotationSpec, generatePullInAtSpeed } from './wriggle.ts';
+import { generateCompositeWriggle } from './wriggle.ts';
+import { WriggleSpec, WaveSpec, createSquiggleSpec, createRotationSpec, generateTuckAtSpeed, generateSquiggleGradientSpec, generateSupressionGradient, injectWriggleSupression } from './wriggle-spec.ts';
 
 // Config for a series of segments.
 export type SegmentsSpec = {
@@ -9,43 +10,30 @@ export type SegmentsSpec = {
   angle: number;
   overlapMult: number;
   curveRange: number;
-  offset: number;
 }
 
 // Creates a series of segments with gradually increasing squiggle magnitude, supressed at speed.
 export function createSquiggleGradient(
     parent: Segment,
     spec: SegmentsSpec,
-    period: number,
-    startRange: number,
-    endRange: number,
-    supressionFactor: number): Segment[] {
-  const getFractionI = (i: number) => (spec.count - i - 1) / (spec.count-1);
-  const generateSupressWiggleAtSpeed = (i: number) => {
-    const supression = supressionFactor * getFractionI(i);
-    return (angle: number, speed: number): number => {
-      return angle * (1 - speed / 100 * supression);
-    };
-  };
-  const generateWiggleSpec = (i: number) => {
-    const squiggleRange = endRange - getFractionI(i) * (endRange-startRange);
-    const squiggleSpec = generateSquiggleSpec(squiggleRange, period, i, spec.count*2);
-    squiggleSpec.speedTransformation = generateSupressWiggleAtSpeed(i);
-    return [squiggleSpec]
-  };
-  return createDefault(parent, spec, generateWiggleSpec);
+    waveSpec: WaveSpec,
+    initialRange: number,
+    supressionRange: { front: number, back: number }): Segment[] {
+  const suppressionGenerator = generateSupressionGradient(spec.count, supressionRange);
+  const squiggleGenerator = generateSquiggleGradientSpec(spec.count, waveSpec, initialRange, 0.2);
+  const wriggleGenerator = injectWriggleSupression(squiggleGenerator, suppressionGenerator);
+  return createDefault(parent, spec, wriggleGenerator);
 }
 
 // Creates a noodly limb that pulls inward at high speed.
 export function createNoodleLimb(
     parent: Segment,
     spec: SegmentsSpec,
-    range: number,
-    pullTowards: number,
-    period: number): Segment[] {
+    waveSpec: WaveSpec,
+    pullTowards: number): Segment[] {
   const generateWiggleSpec = (i: number) => {
-    const wiggleSpec = generateSquiggleSpec(range, period, i, spec.count*2);
-    wiggleSpec.speedTransformation = generatePullInAtSpeed(pullTowards, spec.angle);
+    const wiggleSpec = createSquiggleSpec(waveSpec, i, spec.count*2);
+    wiggleSpec.suppress = generateTuckAtSpeed(spec.angle, pullTowards, 0.5);
     return [wiggleSpec];
   }
   return createDefault(parent, spec, generateWiggleSpec);
@@ -55,9 +43,8 @@ export function createNoodleLimb(
 export function createRotation(
     parent: Segment,
     spec: SegmentsSpec,
-    angle: number,
-    period: number): Segment[] {
-  const generateWriggleSpec = (_: number) => [generateRotationSpec(angle, period, spec.offset)];
+    waveSpec: WaveSpec): Segment[] {
+  const generateWriggleSpec = (_: number) => [createRotationSpec(waveSpec)];
   return createDefault(parent, spec, generateWriggleSpec);
 }
 

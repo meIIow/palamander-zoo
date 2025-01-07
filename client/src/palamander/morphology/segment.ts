@@ -1,4 +1,5 @@
-import { Wriggle, WriggleSpec, generateCompositeWriggle } from './wriggle.ts';
+import { Wriggle, generateCompositeWriggle } from './wriggle.ts';
+import { WriggleSpec } from './wriggle-spec.ts';
 import { Circle, calculateCenter, createDefaultCircle } from '../common/circle.ts';
 
 type BodyAngle = {
@@ -109,7 +110,7 @@ function hydrateSegment(
       segment.circle,
       parentCircle,
       segment.overlap,
-      bodyAngleAbsolute + segment.bodyAngle.relative + segment.wriggle(updateTime/100, 0)),
+      bodyAngleAbsolute + segment.bodyAngle.relative + segment.wriggle(updateTime, 0, 0)),
     radius: segment.circle.radius
   }
   const bodyAngle = {...segment.bodyAngle}
@@ -146,7 +147,7 @@ function updateSegment(
       segment.circle,
       parentCircle,
       segment.overlap,
-      bodyAngle.absolute + bodyAngle.relative + segment.wriggle(updateTime, speed)),
+      bodyAngle.absolute + bodyAngle.relative + segment.wriggle(updateTime, interval, speed)),
     radius: segment.circle.radius
   }
   return {
