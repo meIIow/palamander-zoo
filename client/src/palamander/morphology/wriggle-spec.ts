@@ -4,6 +4,7 @@ type WriggleSpec = {
   i: number; // segment index
   squiggleRate: number; // squigs per section: 0 = no squiggle, 1/(section len) = 1 full squiggle
   synchronize: boolean; // synchonize wave
+  acceleration?: number; // adjusts cycle period based on speed
   offset?: number; // offsets wriggle by constant amount, repeats every 2 PI
   suppress?: SpeedSuppression; // dampens wriggle magnitude based on speed magnitude
 }
@@ -13,6 +14,7 @@ type WaveSpec = {
   range: number,
   period: number,
   offset?: number,
+  acceleration?: number,
   suppress?: SpeedSuppression,
 }
 

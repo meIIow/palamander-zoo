@@ -22,7 +22,7 @@ const initializeUpdateLoop = (pal: Palamander, animate: AnimationFunc ): NodeJS.
     const movement = movementAgent.move(interval);
     const engineCircle = updateEngine(movement.delta);
     animate((head: Segment) => {
-      return updateSegment(head, engineCircle, movement.angle, movement.angle, currTime, interval, movement.speed);
+      return updateSegment(head, engineCircle, movement.angle, movement.angle, interval, movement.speed);
     });
     prevTime = currTime;
   }, pal.updateInterval);

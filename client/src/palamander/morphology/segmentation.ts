@@ -9,7 +9,9 @@ type SegmentationFunc = (parent: Segment, section: Section) => Segment[];
 
 const DEFAULT_SQUIGGLY_CURVE = 20;
 const MUSCLEY_CURVE = 10;
-const RELAXED_PERIOD = 2.5;
+const RELAXED_PERIOD = 3.5;
+const DELIBERATE_PERIOD = 2.75;
+// const FRENETIC_PERIOD = 1.5;
 
 interface SegmentationMap {
   [key: string]: SegmentationFunc;
@@ -437,7 +439,7 @@ const segmentateClaw: SegmentationFunc = (parent: Segment, section: Section): Se
     overlapMult: 0.3,
     curveRange: 0,
   };
-  const upperArmWaveSpec = { range: 30, period: 2, offset: section.offset };
+  const upperArmWaveSpec = { range: 30, period: DELIBERATE_PERIOD, offset: section.offset, acceleration: 0 };
   const upperArm = createRotation(parent, upperArmSpec, upperArmWaveSpec);
   const lowerArmSpec: SegmentsSpec = {
     ...upperArmSpec,
@@ -462,7 +464,7 @@ const segmentateCurl: SegmentationFunc = (parent: Segment, section: Section): Se
     overlapMult: 0.5,
     curveRange: 360 / section.count,
   };
-  const waveSpec = { range: 120 / spec.count, period: 2, offset: section.offset };
+  const waveSpec = { range: 120 / spec.count, period: DELIBERATE_PERIOD, offset: section.offset };
   const generateGentleCurl = (i: number) => [createCurlSpec(waveSpec, i)]
   const segments = createDefault(parent, spec, generateGentleCurl);
   return segments;
@@ -507,7 +509,7 @@ const segmentateFishTail: SegmentationFunc = (parent: Segment, section: Section)
     overlapMult: 0.6,
     curveRange: MUSCLEY_CURVE,
   };
-  const waveSpec = { range: 30/count, period: 2, offset: section.offset };
+  const waveSpec = { range: 30/count, period: DELIBERATE_PERIOD, offset: section.offset };
   const tailWriggle = (i: number) => [createCurlSpec(waveSpec, i)];
   const tail = createDefault(parent, tailSpec, tailWriggle);
   [-1, 1].forEach((i) => {
@@ -580,7 +582,7 @@ const segmentateHair: SegmentationFunc = (parent: Segment, section: Section): Se
   const generateGentleCurl = (i: number) => {
     return [
       createRotationSpec({ range: 5, period: RELAXED_PERIOD, offset: section.offset }),
-      createCurlSpec({ range: 30, period: 2, offset: section.offset }, i)
+      createCurlSpec({ range: 30, period: DELIBERATE_PERIOD, offset: section.offset }, i)
     ];
   };
   const segments = createDefault(parent, spec, generateGentleCurl);
@@ -618,7 +620,7 @@ const segmentateMandible: SegmentationFunc = (parent: Segment, section: Section)
     overlapMult: 0.5,
     curveRange: 0,
   }
-  const waveSpec = { range: 5, period: 1, offset: section.offset };
+  const waveSpec = { range: 5, period: DELIBERATE_PERIOD, offset: section.offset, acceleration: 0 };
   const segments = addCurve(createRotation(parent, spec, waveSpec), curve);
   return segments;
 }
@@ -640,7 +642,7 @@ const segmentateMonkeyArm: SegmentationFunc = (parent: Segment, section: Section
     overlapMult: 0.8,
     curveRange: 0,
   };
-  const upperArmWaveSpec = { range: 45, period: 2, offset: section.offset };
+  const upperArmWaveSpec = { range: 45, period: DELIBERATE_PERIOD, offset: section.offset };
   const upperArm = createRotation(shoulder, upperArmSpec, upperArmWaveSpec);
 
   const forearmSpec: SegmentsSpec = {
@@ -652,7 +654,7 @@ const segmentateMonkeyArm: SegmentationFunc = (parent: Segment, section: Section
     curveRange: 0,
   };
   // Offset by PI because forearm should swing the opposive way as bicep
-  const forearmWaveSpec = { range: 20, period: 2, offset: section.offset + Math.PI };
+  const forearmWaveSpec = { range: 20, period: DELIBERATE_PERIOD, offset: section.offset + Math.PI };
   const forearm = createRotation(upperArm[1], forearmSpec, forearmWaveSpec);
 
   // Turn final forearm segment into fist: bigger, with less overlap
@@ -700,7 +702,7 @@ const segmentateRigidLeg: SegmentationFunc = (parent: Segment, section: Section)
     overlapMult: 0.2,
     curveRange: 0,
   };
-  const waveSpec = { range: 30, period: 1.5, offset: section.offset };
+  const waveSpec = { range: 30, period: DELIBERATE_PERIOD, offset: section.offset };
   const segments = createRotation(parent, spec, waveSpec);
   return segments;
 }

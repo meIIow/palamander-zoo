@@ -33,6 +33,9 @@ function generateGetSample(sample: ()=>number, sampleInterval: ()=>number) {
       countdown -= interval;
       return sampledVal;
     }
+    // countdown = 2000;
+    // sampledVal = Math.random() > 0.5 ? 0 : 100;
+    // return sampledVal;
     const componentPrev = sampledVal * countdown / interval;
     sampledVal = sample();
     const component = sampledVal * (interval - countdown) / interval;
