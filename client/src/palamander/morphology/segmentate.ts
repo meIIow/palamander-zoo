@@ -2,7 +2,7 @@ import { Segment, createDefaultSegment } from "./segment"
 import { Section } from "./section"
 import { SegmentationFunc, getDefaultSegmentationMap } from "./segmentation"
 
-export default function segmentate(sectionTree: Section): Segment {
+export default function segmentate(sectionTree: Section): Segment[] {
   const segmentationMap = getDefaultSegmentationMap();
   
   const processSection: SegmentationFunc = (parent: Segment, section: Section): Segment[] => {
@@ -29,6 +29,8 @@ export default function segmentate(sectionTree: Section): Segment {
     return follows;
   }
 
-  // Return head segment from segmentation of sectionTree
-  return processSection(createDefaultSegment(100), sectionTree)[0];
+  // Return body segments from segmentation of sectionTree
+  const body = processSection(createDefaultSegment(100), sectionTree);
+  body.forEach((segment) => segment.primary = true);
+  return body;
 }

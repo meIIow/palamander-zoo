@@ -30,13 +30,15 @@ type SegmentSpec = {
 // 2. The persistant data that define its relationship to its parent segment (angle, etc)
 // 3. How to adjust the parent angle to simulate wriggling/curling/squiggling
 // 4. How close to render this segment to its parent. At overlap 0, the circles are tangent.
-// 5. Downstream segments, defined as recursive tree from this segment
+// 5. Whether this segment should be considered for physics.
+// 6. Downstream segments, defined as recursive tree from this segment
 type Segment = {
   circle: Circle;
   bodyAngle: BodyAngle;
   wriggle: Wriggle;
   overlap: number;
   propagationInterval: number;
+  primary: boolean;
   children: Array<Segment>;
 };
 
@@ -115,11 +117,9 @@ function hydrateSegment(
   const bodyAngle = {...segment.bodyAngle}
   bodyAngle.absolute = bodyAngleAbsolute;
   return {
+    ...segment,
     circle,
     bodyAngle,
-    wriggle: segment.wriggle,
-    overlap: segment.overlap,
-    propagationInterval: segment.propagationInterval,
     children: segment.children.map(
       (child) => hydrateSegment(child, circle, bodyAngleAbsolute, depth+1)
     )
@@ -149,11 +149,9 @@ function updateSegment(
     radius: segment.circle.radius
   }
   return {
+    ...segment,
     circle,
     bodyAngle,
-    wriggle: segment.wriggle,
-    overlap: segment.overlap,
-    propagationInterval: segment.propagationInterval,
     children: segment.children.map((child) => {
       return updateSegment(
         child,
@@ -171,6 +169,11 @@ function getSegmentCircles(segment: Segment): Array<Circle> {
   return [segment.circle, ...segment.children.map(child => getSegmentCircles(child)).flat()]
 }
 
+function getBodySegments(segment: Segment): Segment[] {
+  if (!segment.primary) return [];
+  return [segment, ...segment.children.map(child => getBodySegments(child)).flat()];
+}
+
 function createDefaultSegment(radius: number, propagationInterval: number = 100): Segment {
   return {
     circle: createDefaultCircle(radius),
@@ -182,6 +185,7 @@ function createDefaultSegment(radius: number, propagationInterval: number = 100)
     wriggle: generateCompositeWriggle([]),
     overlap: 0,
     propagationInterval: propagationInterval,
+    primary: false,
     children: [],
   }
 }
@@ -197,5 +201,5 @@ function createSegment(
   return segment;
 }
 
-export { updateSegment, hydrateSegment, getSegmentCircles, createDefaultSegment, createSegment };
+export { updateSegment, hydrateSegment, getSegmentCircles, createDefaultSegment, createSegment, getBodySegments };
 export type { Segment, SegmentSpec };

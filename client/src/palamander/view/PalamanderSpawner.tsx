@@ -1,26 +1,28 @@
 import { useState, useEffect } from 'react';
 
 import PalamanderView from './PalamanderView.tsx';
-import { Palamander } from '../palamander.ts';
+import { Palamander, calculatePivotIndex } from '../palamander.ts';
 import { IndexedWindowRange } from '../palamander-range.ts';
 import segmentate from '../morphology/segmentate.ts';
 import { createSpawnMult } from '../common/circle.ts';
 import { getPlaceholderMovementAgent } from '../movement/movement-agent.ts';
 
 async function createPalsTemp(): Promise<Palamander[]> {
+  const body = segmentate({
+    type: 'sea-lion',
+    count: 10,
+    index: 0,
+    size: 100,
+    angle: 0,
+    offset: 0,
+    mirror: false,
+    next: null,
+    branches: [],
+  });
   return [
     {
-      head: segmentate({
-        type: 'sea-lion',
-        count: 10,
-        index: 0,
-        size: 100,
-        angle: 0,
-        offset: 0,
-        mirror: false,
-        next: null,
-        branches: [],
-      }),
+      body,
+      pivotIndex: calculatePivotIndex(body),
       updateInterval: 50,
       range: new IndexedWindowRange(1, 0, 0, 20, createSpawnMult()),
       movementAgent: getPlaceholderMovementAgent()

@@ -1,32 +1,73 @@
-import { createEngineCircle, generateUpdateCircle } from './common/circle.ts'
-import { Segment, updateSegment } from './morphology/segment.ts'
+import { Coordinate, createEngineCircle, calculateDelta, shift, toAngleVector } from './common/circle.ts'
+import { Segment, updateSegment, getBodySegments } from './morphology/segment.ts'
 import { MovementAgent } from './movement/movement-agent.ts'
 import { PalamanderRange } from './palamander-range.ts'
 
 type Palamander = {
-  head: Segment;
+  body: Segment[];
+  pivotIndex: number;
   updateInterval: number;
   movementAgent: MovementAgent;
-  range: PalamanderRange; // pixels per 100 Pal Units
+  range: PalamanderRange;
 };
 
-type AnimationFunc = (update: (head: Segment) => Segment) => void;
+type PalamanderState = {
+  head: Segment;
+  delta: Coordinate;
+  pivot: Coordinate;
+}
+
+type AnimationFunc = (update: (state: PalamanderState) => PalamanderState) => void;
 
 const initializeUpdateLoop = (pal: Palamander, animate: AnimationFunc ): NodeJS.Timeout => {
   const movementAgent = pal.movementAgent;
-  const updateEngine = generateUpdateCircle(createEngineCircle(pal.head.circle));
+  const pivotIndex = pal.pivotIndex;
+  const updateCircle = createEngineCircle(pal.body[0].circle);
   let prevTime = Date.now();
   return setInterval(() => {
     const currTime = Date.now();
     const interval = currTime-prevTime;
     const movement = movementAgent.move(interval);
-    const engineCircle = updateEngine(movement.delta);
-    animate((head: Segment) => {
-      return updateSegment(head, engineCircle, movement.angle, movement.angle, interval, movement.speed);
+    animate((state: PalamanderState) => {
+      const head = updateSegment(state.head, updateCircle, movement.angle, movement.angle, interval, movement.speed);
+      const pivot = calculateFractionalCoordinates(getBodySegments(head), pivotIndex);
+      const pivotDelta = calculateDelta(state.pivot, pivot);
+      const delta = shift(shift(state.delta, movement.delta), pivotDelta);
+      return {
+        head,
+        delta,
+        pivot
+      };
     });
     prevTime = currTime;
   }, pal.updateInterval);
 };
 
-export { initializeUpdateLoop }; 
-export type { Palamander };
+function calculatePivotIndex(body: Segment[]): number {
+  const masses = body.map((segment) => Math.pow(segment.circle.radius, 1.5));
+  const mass = masses.reduce((sum: number, mass: number) => sum + mass, 0);
+  let massLeft = mass * 0.5;
+  for (let i = 0; i < body.length; i++) {
+    if (massLeft < masses[i]) {
+      const indexFraction = massLeft / masses[i];
+      return i + indexFraction;
+    }
+    massLeft -= masses[i];
+  }
+  return 0;
+}
+
+function calculateFractionalCoordinates(body: Segment[], index: number): Coordinate {
+  const segment = body[Math.floor(index)];
+  const angleVector = toAngleVector(segment.bodyAngle.absolute);
+  const length = 2 * segment.circle.radius - segment.overlap;
+  const centerToEdge = segment.circle.radius - segment.overlap;
+  const delta = (index % 1) * length - centerToEdge;
+  return {
+    x: segment.circle.center.x + delta * angleVector.x,
+    y: segment.circle.center.y + delta * angleVector.y,
+  };
+}
+
+export { initializeUpdateLoop, calculatePivotIndex, getBodySegments, calculateFractionalCoordinates }; 
+export type { Palamander, PalamanderState };

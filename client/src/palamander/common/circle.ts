@@ -45,6 +45,36 @@ function generateUpdateCircle(circle: Circle) {
   }
 }
 
+function shift(coordinates: Coordinate, delta: Coordinate) {
+  return {
+    x: coordinates.x + delta.x,
+    y: coordinates.y + delta.y,
+  };
+}
+
+function calculateDelta(a: Coordinate, b: Coordinate) {
+  return {
+    x: a.x - b.x,
+    y: a.y - b.y
+  };
+}
+
+function toAngleVector(angle: number): Coordinate {
+  const radians = angle * Math.PI / 180;
+  return {
+    x: -Math.sin(radians),
+    y: -Math.cos(radians),
+  }
+}
+
+function toVector(dist: number, angle: number) {
+  const angleVector = toAngleVector(angle);
+  return {
+    x: dist * angleVector.x,
+    y: dist * angleVector.y,
+  };
+}
+
 // Calculates center of circle if "tangent" (but w/ given overlap) to rootCircle at given angle.
 function calculateCenter(
     circle: Circle,
@@ -60,4 +90,4 @@ function calculateCenter(
 }
 
 export type { Circle, Coordinate };
-export { createOrigin, createSpawnMult, createDefaultCircle, createEngineCircle, generateUpdateCircle, calculateCenter }
+export { createOrigin, createSpawnMult, createDefaultCircle, createEngineCircle, generateUpdateCircle, calculateCenter, calculateDelta, toAngleVector, toVector, shift }

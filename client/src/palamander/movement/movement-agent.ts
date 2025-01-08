@@ -61,10 +61,10 @@ class MovementAgent {
     this.#getTurnPercent = generateGetSample(generateSampler(0, 100, sampleBehavior.turn), sampleInterval);
   }
 
-  private static updateDelta(delta: Coordinate, angle: number, dist: number): Coordinate {
+  private static calculateDelta(angle: number, dist: number): Coordinate {
     return {
-      x: delta.x - Math.sin(angle * Math.PI / 180) * dist,
-      y: delta.y - Math.cos(angle * Math.PI / 180) * dist,
+      x: -Math.sin(angle * Math.PI / 180) * dist,
+      y: -Math.cos(angle * Math.PI / 180) * dist,
     }
   }
 
@@ -98,7 +98,7 @@ class MovementAgent {
     const dist = this.#supress.speed ? 0 : this.calculateDist(interval, speed);
 
     const angle = this.#supress.turn ? 0 : this.calculateAngle(interval, turn, speed);
-    const delta = MovementAgent.updateDelta(this.#movement.delta, angle, dist);
+    const delta = MovementAgent.calculateDelta(angle, dist);
 
     this.#movement = {
       angle,

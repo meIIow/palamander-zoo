@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 import PalamanderView from './PalamanderView.tsx';
 
-import { Palamander } from '../palamander.ts';
+import { Palamander, calculatePivotIndex } from '../palamander.ts';
 import { IndexedWindowRange } from '../palamander-range.ts';
 import segmentate from '../morphology/segmentate.ts';
 import { getPlaceholderMovementAgent, SuppressMove } from '../movement/movement-agent.ts';
@@ -23,19 +23,21 @@ const palTypes = [
 async function createPalList(types: string[], count: number, supressMoves: SuppressMove): Promise<Palamander[]> {
   return types.map((type, i) => {
     const mag = (type == 'crawdad' ? 10 : 20) / 2;
+    const body = segmentate({
+      type,
+      count: type == 'axolotl' ? 15 : 10,
+      index: 0,
+      size: 100,
+      angle: 0,
+      offset: 0,
+      mirror: false,
+      next: null,
+      branches: [],
+    });
     return {
-      head: segmentate({
-        type,
-        count: type == 'axolotl' ? 15 : 10,
-        index: 0,
-        size: 100,
-        angle: 0,
-        offset: 0,
-        mirror: false,
-        next: null,
-        branches: [],
-      }),
-      updateInterval: 50,
+      body,
+      pivotIndex: calculatePivotIndex(body),
+      updateInterval: 150,
       range: new IndexedWindowRange(count, Math.floor(i/count), i % count, mag, { x: 0.5, y: 0.5 }),
       movementAgent: getPlaceholderMovementAgent(supressMoves)
     }

@@ -1,29 +1,38 @@
 import { useEffect, useState } from 'react'
 import SegmentView from './SegmentView.tsx'
-import { createEngineCircle } from '../common/circle.ts'
+import { createEngineCircle, shift } from '../common/circle.ts'
 import { hydrateSegment, getSegmentCircles } from '../morphology/segment.ts'
-import { Palamander, initializeUpdateLoop } from '../palamander.ts'
+import { Palamander, initializeUpdateLoop, calculateFractionalCoordinates, getBodySegments } from '../palamander.ts'
 
 type PalamanderProps = {
   pal: Palamander,
 }
 
 function PalamanderView({ pal }: PalamanderProps) {
-  const [head, setHead] = useState(
-    () => hydrateSegment(pal.head, createEngineCircle(pal.head.circle), 0, Date.now())
-  );
+  const [state, setState] = useState(() => {
+    const head = hydrateSegment(pal.body[0], createEngineCircle(pal.body[0].circle), 0, Date.now());
+    return {
+      head,
+      delta: { x: 0, y: 0 },
+      pivot: calculateFractionalCoordinates(getBodySegments(head), pal.pivotIndex),
+    };
+  });
 
   useEffect(() => {
     // Initialize loop that triggers new render by updating the 'head' Segment state.
-    const intervalId = initializeUpdateLoop(pal, setHead);
+    const intervalId = initializeUpdateLoop(pal, setState);
     return () => clearInterval(intervalId); // cleanup on unmount
   }, [pal]);
 
   pal.range.sync();
   return (
     <>
-      {getSegmentCircles(head).map((circle, i) => {
-        return <SegmentView circle={circle} range={pal.range} key={i} />
+      {getSegmentCircles(state.head).map((circle, i) => {
+        return (<SegmentView
+          circle={{ ...circle, center: shift(circle.center, state.delta)}}
+          range={pal.range}
+          key={i}
+        />)
       })}
     </>
   )
