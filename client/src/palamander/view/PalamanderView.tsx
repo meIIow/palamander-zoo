@@ -31,6 +31,7 @@ function PalamanderView({ pal }: PalamanderProps) {
         return (<SegmentView
           circle={{ ...circle, center: shift(circle.center, state.delta)}}
           range={pal.range}
+          color='teal'
           key={i}
         />)
       })}

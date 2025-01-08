@@ -5,9 +5,10 @@ import { PalamanderRange } from '../palamander-range.ts'
 type SegmentViewProps = {
   circle: Circle,
   range: PalamanderRange,
+  color: string
 }
 
-function SegmentView({ circle, range }: SegmentViewProps) {
+function SegmentView({ circle, range, color}: SegmentViewProps) {
   const { x, y } = range.wrapToRange(circle);
   const size = range.magnify(circle.radius);
 
@@ -16,6 +17,7 @@ function SegmentView({ circle, range }: SegmentViewProps) {
     right: `${x}px`,
     height: `${size}px`,
     width: `${size}px`,
+    backgroundColor: color
   };
 
   return (

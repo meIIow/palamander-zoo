@@ -30,13 +30,15 @@ const initializeUpdateLoop = (pal: Palamander, animate: AnimationFunc ): NodeJS.
     const movement = movementAgent.move(interval);
     animate((state: PalamanderState) => {
       const head = updateSegment(state.head, updateCircle, movement.angle, movement.angle, interval, movement.speed);
-      const pivot = calculateFractionalCoordinates(getBodySegments(head), pivotIndex);
+      const body = getBodySegments(head)
+      const center = calculateFractionalCoordinates(body, pivotIndex);
+      const pivot = calculateTangent(center, head.circle.center, -body[Math.floor(pivotIndex)].bodyAngle.absolute);
       const pivotDelta = calculateDelta(state.pivot, pivot);
       const delta = shift(shift(state.delta, movement.delta), pivotDelta);
       return {
         head,
         delta,
-        pivot
+        pivot,
       };
     });
     prevTime = currTime;
@@ -67,6 +69,24 @@ function calculateFractionalCoordinates(body: Segment[], index: number): Coordin
     x: segment.circle.center.x + delta * angleVector.x,
     y: segment.circle.center.y + delta * angleVector.y,
   };
+}
+
+function calculateTangent(a: Coordinate, b: Coordinate, angle: number): Coordinate {
+  const aPrime = changeBasis(a, angle);
+  const bPrime = changeBasis(b, angle);
+  const cPrime = {
+    x: bPrime.x,
+    y: aPrime.y
+  };
+  return changeBasis(cPrime, -angle);
+}
+
+function changeBasis(coordinate: Coordinate, angle: number) {
+  const radiants = angle * Math.PI / 180;
+  return {
+    x: coordinate.x * Math.cos(radiants) + coordinate.y * Math.sin(radiants),
+    y: -coordinate.x * Math.sin(radiants) + coordinate.y * Math.cos(radiants)
+  }
 }
 
 export { initializeUpdateLoop, calculatePivotIndex, getBodySegments, calculateFractionalCoordinates }; 

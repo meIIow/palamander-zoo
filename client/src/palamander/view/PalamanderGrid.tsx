@@ -37,10 +37,10 @@ async function createPalList(types: string[], count: number, supressMoves: Suppr
     return {
       body,
       pivotIndex: calculatePivotIndex(body),
-      updateInterval: 150,
+      updateInterval: 50,
       range: new IndexedWindowRange(count, Math.floor(i/count), i % count, mag, { x: 0.5, y: 0.5 }),
       movementAgent: getPlaceholderMovementAgent(supressMoves)
-    }
+    };
   });
 }
 
