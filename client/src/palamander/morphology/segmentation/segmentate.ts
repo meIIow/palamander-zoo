@@ -1,5 +1,5 @@
-import { Segment, createDefaultSegment } from "./segment"
-import { Section } from "./section"
+import { Segment, createDefaultSegment } from "../segment"
+import { Section } from "../section"
 import { SegmentationFunc, getDefaultSegmentationMap } from "./segmentation"
 
 export default function segmentate(sectionTree: Section): Segment[] {

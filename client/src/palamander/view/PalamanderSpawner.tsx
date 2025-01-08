@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import PalamanderView from './PalamanderView.tsx';
 import { Palamander, calculatePivotIndex } from '../palamander.ts';
 import { IndexedWindowRange } from '../palamander-range.ts';
-import segmentate from '../morphology/segmentate.ts';
+import segmentate from '../morphology/segmentation/segmentate.ts';
 import { createSpawnMult } from '../common/circle.ts';
 import { getPlaceholderMovementAgent } from '../movement/movement-agent.ts';
 

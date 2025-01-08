@@ -4,7 +4,7 @@ import PalamanderView from './PalamanderView.tsx';
 
 import { Palamander, calculatePivotIndex } from '../palamander.ts';
 import { IndexedWindowRange } from '../palamander-range.ts';
-import segmentate from '../morphology/segmentate.ts';
+import segmentate from '../morphology/segmentation/segmentate.ts';
 import { getPlaceholderMovementAgent, SuppressMove } from '../movement/movement-agent.ts';
 
 const palTypes = [

@@ -1,6 +1,6 @@
-import { Segment, createSegment } from './segment.ts';
-import { generateCompositeWriggle } from './wriggle.ts';
-import { WriggleSpec, WaveSpec, createSquiggleSpec, createRotationSpec, generateTuckAtSpeed, generateSquiggleGradientSpec, generateSupressionGradient, injectWriggleSupression } from './wriggle-spec.ts';
+import { Segment, createSegment } from '../segment.ts';
+import { generateCompositeWriggle } from '../animation/wriggle.ts';
+import { WriggleSpec, WaveSpec, createSquiggleSpec, createRotationSpec, generateTuckAtSpeed, generateSquiggleGradientSpec, generateSupressionGradient, injectWriggleSupression } from '../animation/wriggle-spec.ts';
 
 // Config for a series of segments.
 export type SegmentsSpec = {

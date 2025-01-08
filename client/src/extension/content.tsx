@@ -4,7 +4,7 @@ import './content.css'
 import PalamanderView from '../palamander/view/PalamanderView.tsx'
 import { Palamander, calculatePivotIndex } from '../palamander/palamander.ts'
 import { IndexedWindowRange } from '../palamander/palamander-range.ts'
-import segmentate from '../palamander/morphology/segmentate.ts'
+import segmentate from '../palamander/morphology/segmentation/segmentate.ts'
 import { showPals } from './storage.ts'
 import { getPlaceholderMovementAgent } from '../palamander/movement/movement-agent.ts'
 

@@ -1,5 +1,5 @@
-import { Wriggle, generateCompositeWriggle } from './wriggle.ts';
-import { WriggleSpec } from './wriggle-spec.ts';
+import { Wriggle, generateCompositeWriggle } from './animation/wriggle.ts';
+import { WriggleSpec } from './animation/wriggle-spec.ts';
 import { Circle, calculateCenter, createDefaultCircle } from '../common/circle.ts';
 
 type BodyAngle = {

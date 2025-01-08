@@ -1,7 +1,7 @@
-import { Segment, createSegment, createDefaultSegment } from "./segment";
-import { Section, calculateRadius, createBranch, createSection, deepClone, passthru, replace, follow } from "./section";
-import { generateCompositeWriggle, generateWriggle } from './wriggle';
-import { createSquiggleSpec, createCurlSpec, createRotationSpec } from './wriggle-spec';
+import { Segment, createSegment, createDefaultSegment } from "../segment";
+import { Section, calculateRadius, createBranch, createSection, deepClone, passthru, replace, follow } from "../section";
+import { generateCompositeWriggle, generateWriggle } from '../animation/wriggle';
+import { createSquiggleSpec, createCurlSpec, createRotationSpec } from '../animation/wriggle-spec';
 import { SegmentsSpec, addCurve, createSquiggleGradient, createNoodleLimb , createRotation, createDefault} from "./segments";
 
 // A function that breaks down a given Section into its component Segments.
@@ -15,7 +15,7 @@ const DELIBERATE_PERIOD = 2.75;
 
 interface SegmentationMap {
   [key: string]: SegmentationFunc;
-} 
+}
 
 function getDefaultSegmentationMap(): SegmentationMap{
   return {
