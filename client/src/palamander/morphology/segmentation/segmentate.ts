@@ -1,9 +1,10 @@
 import { Segment, createDefaultSegment } from "../segment"
 import { Section } from "../section"
-import { SegmentationFunc, getDefaultSegmentationMap } from "./segmentation"
+import { SegmentationFunc } from "./segmentation.ts"
+import { segmentationMap } from "./segmentation-map.ts"
+
 
 export default function segmentate(sectionTree: Section): Segment[] {
-  const segmentationMap = getDefaultSegmentationMap();
   
   const processSection: SegmentationFunc = (parent: Segment, section: Section): Segment[] => {
     if (!(section.type in segmentationMap)) {
