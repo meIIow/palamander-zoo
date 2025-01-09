@@ -5,7 +5,7 @@ type Wriggle = (interval: number, speed: number) => number;
 
 // Generalized Wriggle Generator.
 function generateWriggle(spec: WriggleSpec): Wriggle {
-  const squiggleIndexOffset = FULL_CYCLE * spec.i * spec.squiggleRate; 
+  const squiggleIndexOffset = FULL_CYCLE * -spec.i * spec.squiggleRate; 
   const offset = squiggleIndexOffset - (spec.offset ?? 0);
 
   const acceleration = (spec.acceleration ?? 0.5); // default to 1.5x frequency at speed
