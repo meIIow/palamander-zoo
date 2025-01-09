@@ -1,7 +1,7 @@
 import { Segment, createSegment, createDefaultSegment } from "../segment";
-import { Section, calculateRadius, createBranch, createSection, follow } from "../section";
+import { Section, createBranch, createSection, follow } from "../section";
 import { createSquiggleSpec } from '../animation/wriggle-spec';
-import { SegmentsSpec, createDefault} from "./segments";
+import { createDefault} from "./segments";
 import { SegmentationFunc, preset } from "./segmentation.ts";
 
 // An axolotl has a newt body and gilly head.
@@ -14,7 +14,7 @@ const segmentateAxolotl: SegmentationFunc = (_parent: Segment, section: Section)
 }
 
 // A caterpillar is an inchworm with goofy legs and mandibles.
-const segmentateCaterpillar: SegmentationFunc = (parent: Segment, section: Section): Segment[] => {
+const segmentateCaterpillar: SegmentationFunc = (_parent: Segment, section: Section): Segment[] => {
   const head = { ...createBranch(section, 'head'), size: 100 };
   head.branches.push({ ...createBranch(section, 'mandibles') });
 

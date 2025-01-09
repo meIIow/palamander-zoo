@@ -112,7 +112,7 @@ const segmentateFrogLeg: SegmentationFunc = (parent: Segment, section: Section):
     overlapMult: 0.3,
     curveRange: 2,
   };
-  const upperLegWave = { range: 45*dir, period: preset.period.relaxed, offset: section.offset };
+  const upperLegWave = { range: 45, period: preset.period.relaxed, offset: section.offset };
   const upperLeg = createRotation(parent, upperLegSpec, upperLegWave);
 
   const lowerLegSpec: SegmentsSpec = {
@@ -120,7 +120,7 @@ const segmentateFrogLeg: SegmentationFunc = (parent: Segment, section: Section):
     radius: parent.circle.radius * 0.7,
     angle: parent.bodyAngle.relative + 10*dir
   };
-  const lowerLegWave = { range: 20*dir, period: preset.period.relaxed, offset: section.offset };
+  const lowerLegWave = { range: 20, period: preset.period.relaxed, offset: section.offset };
   const lowerLeg = createRotation(upperLeg[2], lowerLegSpec, lowerLegWave);
 
   // Add frog foot
