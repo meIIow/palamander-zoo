@@ -163,8 +163,16 @@ const segmentateNewt: SegmentationFunc = (_parent: Segment, section: Section): S
   const head = { ...createBranch(section, 'head'), size: 100 };
   const body = { ...createBranch(section, 'newt-body'), count: 18, size: 60 };
   follow(head, body);
-  follow(section, head);
-  return [];
+  return follow(section, head);
+}
+
+// A newt king has three newt bodies off one head.
+const segmentateNewtKing: SegmentationFunc = (_parent: Segment, section: Section): Segment[] => {
+  const head = { ...createBranch(section, 'head'), size: 75 };
+  const equal = { ...createSection('equal'), count: 3, angle: 90, mirror: false };
+  equal.next = { ...createBranch(section, 'newt-body'), count: 12, size: 50 };
+  follow(head, equal);
+  return follow(section, head);
 }
 
 // An octopus is an octopus.
@@ -220,6 +228,7 @@ export const pals = {
   'jellyfish': segmentateJellyfish,
   'horshoe-crab': segmentateHorshoeCrab,
   'newt': segmentateNewt,
+  'newt-king': segmentateNewtKing,
   'octopus': segmentateOctopus,
   'sea-lion': segmentateSeaLion,
   'sea-monkey': segmentateSeaMonkey,

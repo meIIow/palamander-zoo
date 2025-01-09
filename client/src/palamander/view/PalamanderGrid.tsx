@@ -10,16 +10,17 @@ import { getPlaceholderMovementAgent, SuppressMove } from '../movement/movement-
 const palTypes = [
   'axolotl',
   // 'newt',
-  // 'tadpole',
   'frog',
   'centipede',
-  // 'caterpillar',
   'sea-monkey',
   'sea-lion',
   'starfish',
   'octopus',
   'crawdad',
-  'horshoe-crab'
+  'horshoe-crab',
+  // 'caterpillar',
+  // 'tadpole',
+  // 'newt-king',
 ]
 
 async function createPalList(types: string[], count: number, supressMoves: SuppressMove): Promise<Palamander[]> {
