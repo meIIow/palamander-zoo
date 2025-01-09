@@ -68,6 +68,10 @@ export function createDefault(
   return segments;
 }
 
+export function calculateTaper(terminationFactor: number, count: number) {
+  return Math.pow(terminationFactor, 1/Math.max(1, count));
+}
+
 // Curves given segments by a given amount.
 export function addCurve(segments: Segment[], curveAngle: number): Segment[] {
   segments.forEach((segment, i) => {

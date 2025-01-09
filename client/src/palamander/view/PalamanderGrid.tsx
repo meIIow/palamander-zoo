@@ -10,6 +10,7 @@ import { getPlaceholderMovementAgent, SuppressMove } from '../movement/movement-
 const palTypes = [
   'axolotl',
   // 'newt',
+  // 'tadpole',
   'frog',
   'centipede',
   'sea-monkey',

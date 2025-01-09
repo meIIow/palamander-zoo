@@ -1,17 +1,16 @@
 import { Segment, createSegment, createDefaultSegment } from "../segment";
 import { Section, calculateRadius, createBranch, createSection, follow } from "../section";
 import { createSquiggleSpec } from '../animation/wriggle-spec';
-import { SegmentsSpec, createSquiggleGradient, createDefault} from "./segments";
+import { SegmentsSpec, createDefault} from "./segments";
 import { SegmentationFunc, preset } from "./segmentation.ts";
 
-// An axolotl is a newt with a gill-pair on its head.
-const segmentateAxolotl: SegmentationFunc = (
-    _parent: Segment,
-    section: Section): Segment[] => {
-  const axolotl = {...section};
-  axolotl.type = 'newt';
-  axolotl.branches = [ { ...createBranch(section, 'gill-pair'), index: 0 } ];
-  return follow(section, axolotl);
+// An axolotl has a newt body and gilly head.
+const segmentateAxolotl: SegmentationFunc = (_parent: Segment, section: Section): Segment[] => {
+  const head = { ...createBranch(section, 'head'), size: 100 };
+  head.branches.push({ ...createBranch(section, 'gill-pair'), index: 0 });
+  const body = { ...createBranch(section, 'newt-body'), count: 15, size: 50 };
+  follow(head, body);
+  return follow(section, head);
 }
 
 // A caterpillar is a caterpillar.
@@ -159,13 +158,10 @@ const segmentateHorshoeCrab: SegmentationFunc = (_parent: Segment, section: Sect
 
 // A newt is a tadpole with noodle limbs.
 const segmentateNewt: SegmentationFunc = (_parent: Segment, section: Section): Segment[] => {
-  const newt = { ...createBranch(section, 'tadpole') };
-  const legs = { ...createBranch(section, 'noodle-limbs'), count: 5, size: 50 };
-  newt.branches = newt.branches.concat([
-    { ...legs, index: 1, angle: section.angle+45 },
-    { ...legs, index: 3, angle: section.angle+45 },
-  ]);
-  follow(section, newt);
+  const head = { ...createBranch(section, 'head'), size: 100 };
+  const body = { ...createBranch(section, 'newt-body'), count: 18, size: 60 };
+  follow(head, body);
+  follow(section, head);
   return [];
 }
 
@@ -205,18 +201,12 @@ const segmentateStarfish: SegmentationFunc = (_parent: Segment, section: Section
 
 // A tadpole is a tadpole.
 const segmentateTadpole: SegmentationFunc = (_parent: Segment, section: Section): Segment[] => {
-  const head = createDefaultSegment(section.size);
-  const spec: SegmentsSpec = {
-    count: section.count,
-    radius: section.size / 2,
-    taperFactor: 0.95,
-    angle: 0,
-    overlapMult: 0.5,
-    curveRange: preset.curve.squiggly,
-  }
-  const waveSpec = { range: 25, period: preset.period.relaxed, offset: section.offset };
-  const body = createSquiggleGradient(head, spec, waveSpec, 15, { front: 0.5, back: -0.5 });
-  return [ head, ...body];
+  const head = { ...createBranch(section, 'head'), size: 100 };
+  head.branches.push({ ...createBranch(section, 'gill-pair'), index: 0 });
+
+  follow(head, { ...createBranch(section, 'eel-body'), count: 10, size: 50 });
+  follow(section, head);
+  return [];
 }
 
 export const pals = {
