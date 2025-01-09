@@ -1,7 +1,8 @@
 import { Segment } from "../segment";
-import { SegmentsSpec, calculateTaper, createSquiggleGradient } from './segments';
+import { SegmentsSpec, createDefault, calculateTaper, createSquiggleGradient } from './segments';
 import { Section, createBranch, createSection, calculateRadius, follow } from "../section";
 import { SegmentationFunc, preset } from "./segmentation.ts";
+import { createSquiggleSpec } from '../animation/wriggle-spec.ts'
 
 /* -----------------------------------------------
  * Granular Segmentations: re-usable Body Types
@@ -37,6 +38,21 @@ const segmentateFishBody: SegmentationFunc = (_parent: Segment, section: Section
   return follow(section, tail);
 }
 
+const segmentateInchwormBody: SegmentationFunc = (parent: Segment, section: Section): Segment[] => {
+  const spec: SegmentsSpec = {
+    count: section.count,
+    radius: calculateRadius(parent, section),
+    taperFactor: 1,
+    angle: 0,
+    overlapMult: 0.1,
+    curveRange: 720 / section.count,
+  };
+  const waveSpec = { range: 10, period: preset.period.deliberate, offset: section.offset }
+  const generateWriggleSpec = (i: number) => [createSquiggleSpec(waveSpec, i, section.count*0.75)];
+  const body = createDefault(parent, spec, generateWriggleSpec);
+  return [ ...body ];
+}
+
 const segmentateNewtBody: SegmentationFunc = (_parent: Segment, section: Section): Segment[] => {
   const third = Math.floor(section.count / 3); // build various body components off this count
   const body = { ...createBranch(section, 'eel-body') };
@@ -50,4 +66,5 @@ export const bodies = {
   'eel-body': segmentateEelBody,
   'fish-body': segmentateFishBody,
   'newt-body': segmentateNewtBody,
+  'inchworm-body': segmentateInchwormBody,
 };

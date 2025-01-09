@@ -13,38 +13,40 @@ const segmentateAxolotl: SegmentationFunc = (_parent: Segment, section: Section)
   return follow(section, head);
 }
 
-// A caterpillar is a caterpillar.
+// A caterpillar is an inchworm with goofy legs and mandibles.
 const segmentateCaterpillar: SegmentationFunc = (parent: Segment, section: Section): Segment[] => {
-  const head = createDefaultSegment(parent.circle.radius);
-  const spec: SegmentsSpec = {
-    count: section.count,
-    radius: calculateRadius(parent, section),
-    taperFactor: 1,
-    angle: 0,
-    overlapMult: 0.1,
-    curveRange: 360 / section.count,
-  };
-  const waveSpec = { range: 20, period: preset.period.relaxed, offset: section.offset }
-  const generateWriggleSpec = (i: number) => [createSquiggleSpec(waveSpec, i, section.count*2)];
-  const body = createDefault(head, spec, generateWriggleSpec);
-  return [ head, ...body];
+  const head = { ...createBranch(section, 'head'), size: 100 };
+  head.branches.push({ ...createBranch(section, 'mandibles') });
+
+  const body = { ...createBranch(section, 'inchworm-body'), size: 80 };
+  // Goofy alternating feet movement across segments.
+  for (let i = 0; i < section.count-1; i++) {
+    const offset = section.offset + (2 * Math.PI / 2) * i;
+    const legs = { ...createBranch(section, 'buggy-legs'), index: i, offset };
+    body.branches.push(legs);
+  }
+  follow(head, body);
+  return follow(section, head);
 }
 
-// A centipede is a caterpillar with mandibles, legs, and a final-segment feeler.
+// A centipede is an inchworm with scuttling legs, mandibles, and a final-segment feeler.
 const segmentateCentipede: SegmentationFunc = (_parent: Segment, section: Section): Segment[] => {
-  const caterpillar = { ...createBranch(section, 'caterpillar'), size: 75 };
-  for (let i = 1; i <= section.count; i++) {
-    const offset = section.offset + (2 * Math.PI / 2) * i; // alternating offset
-    //const seed = section.seed + (2 * Math.PI) / (count * 3) * parentIndex, // cascade offset down segment
+  const head = { ...createBranch(section, 'head'), size: 100 };
+  head.branches.push({ ...createBranch(section, 'mandibles') });
+
+  const body = { ...createBranch(section, 'inchworm-body'), size: 70 };
+  // Cascade feet movement down segments.
+  for (let i = 0; i < section.count; i++) {
+    const offset = section.offset + (2 * Math.PI) / (section.count * 2.5) * i;
     const legs = { ...createBranch(section, 'buggy-legs'), index: i, offset };
-    caterpillar.branches.push(legs);
+    body.branches.push(legs);
   }
-  // TODO(mellow): add antennae Section.
-  const feeler = { ...createBranch(section, 'feeler'), index: section.count };
-  caterpillar.branches.push({ ...feeler, angle: section.angle + 12 });
-  caterpillar.branches.push({ ...feeler, angle: section.angle - 12 });
-  caterpillar.branches.push({ ...createBranch(section, 'mandibles') });
-  return follow(section, caterpillar);
+  const feeler = { ...createBranch(section, 'feeler'), index: body.count-1 };
+  body.branches.push({ ...feeler, angle: section.angle + 12 });
+  body.branches.push({ ...feeler, angle: section.angle - 12 });
+
+  follow(head, body);
+  return follow(section, head);
 }
 
 // A crawdad is a crawdad.

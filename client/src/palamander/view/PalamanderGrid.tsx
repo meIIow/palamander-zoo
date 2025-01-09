@@ -13,6 +13,7 @@ const palTypes = [
   // 'tadpole',
   'frog',
   'centipede',
+  // 'caterpillar',
   'sea-monkey',
   'sea-lion',
   'starfish',
