@@ -1,21 +1,12 @@
 import { Coordinate } from '../common/circle.ts'
-import { SampleSpec, generateGetSample, generateSampler } from './movement-sample.ts'
+import { SampleBehavior, getSampleBehavior } from './sample-behavior.ts';
+import { generateGetSample, generateSampler } from './movement-sample.ts'
 
 type MovementBehavior = {
   speedCap: number; // (Pal Units) / Second
   turnCap: number;  // (Angle* Delta) / Second
   maxAccel: number; // (Speed% Delta) / Second
   maxDecel: number; // (Speed% Delta) / Second
-}
-
-type SampleBehavior = {
-  speed: SampleSpec;
-  turn: SampleSpec;
-  interval: {
-    skewMin: number;
-    min: number;
-    max: number;
-  }
 }
 
 type Movement = {
@@ -49,16 +40,9 @@ class MovementAgent {
     this.#supress = supress;
 
     // Generate Sampling Methods.
-    const sampleInterval = generateSampler(
-      sampleBehavior.interval.min,
-      sampleBehavior.interval.max,
-      {
-        zero: 0,
-        skewMin: sampleBehavior.interval.skewMin,
-        mirror: false
-      });
-    this.#getSpeedPercent = generateGetSample(generateSampler(0, 100, sampleBehavior.speed), sampleInterval);
-    this.#getTurnPercent = generateGetSample(generateSampler(0, 100, sampleBehavior.turn), sampleInterval);
+    const sampleInterval = generateSampler(sampleBehavior.interval);
+    this.#getSpeedPercent = generateGetSample(generateSampler(sampleBehavior.speed), sampleInterval);
+    this.#getTurnPercent = generateGetSample(generateSampler(sampleBehavior.turn), sampleInterval);
   }
 
   private static calculateDelta(angle: number, dist: number): Coordinate {
@@ -119,23 +103,10 @@ function getPlaceholderMovementAgent(supress: SuppressMove = { turn: false, spee
     maxDecel: 2000,
   }
 
-  const sample = {
-    speed: {
-      zero: 0.15,
-      skewMin: 2,
-      mirror: false,
-    },
-    turn: {
-      zero: 0.15,
-      skewMin: 2,
-      mirror: true,
-    },
-    interval: {
-      skewMin: 3,
-      min: 200, // ms
-      max: 5000, //ms
-    }
-  }
+  const sample = getSampleBehavior(
+    { id: '', magnitude: 0 },
+    { id: '', magnitude: 0 },
+    { id: '', magnitude: 0 });
 
   return new MovementAgent(movement, sample, supress);
 }

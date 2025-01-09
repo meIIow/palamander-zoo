@@ -1,20 +1,27 @@
 type SampleSpec = {
+  range: SampleRange,
   zero: number; // odds the sample is set straight to zero
-  skewMin: number; // bias towards lower values - will sample skewMin extra and take min
   mirror: boolean; // whether sample space should be mirrored in the negative direction
 }
 
-// Samples from a range, skewing towards the min by taking the lowest from skewCount+1.
-function sampleSkewedMin(min: number, max: number, skewCount=0) {
-  // Fill array with skewCount+1 random numbers and take the smallest.
-  const r = Math.min(Math.random(), ...[...Array(skewCount)].map(_=>Math.random()));
-  return min + max*r;
+type SampleRange = {
+  min: number; // lower limit
+  max: number; // upper limit
+  skewMin?: number; // bias towards lower values - will sample skewMin extra and take min
 }
 
-function generateSampler(min: number, max: number, spec: SampleSpec): ()=>number {
+// Samples from a range, skewing towards the min by taking the lowest from skewCount+1.
+function sampleSkewedMin(range: SampleRange) {
+  const skew = range.skewMin ?? 0;
+  // Fill array with skewCount+1 random numbers and take the smallest.
+  const r = Math.min(Math.random(), ...[...Array(skew)].map(_=>Math.random()));
+  return range.min + range.max*r;
+}
+
+function generateSampler(spec: SampleSpec): ()=>number {
   return () => {
     // Set to zero with some given probability - otherwise sample.
-    const magnitude = Math.random() < spec.zero ? 0 : sampleSkewedMin(min, max, spec.skewMin);
+    const magnitude = Math.random() < spec.zero ? 0 : sampleSkewedMin(spec.range);
     if (!spec.mirror) return magnitude;
 
     // Equally likely to be mirrored around 0
@@ -47,4 +54,4 @@ function generateGetSample(sample: ()=>number, sampleInterval: ()=>number) {
 }
 
 export { generateGetSample, generateSampler };
-export type { SampleSpec };
+export type { SampleSpec, SampleRange };
