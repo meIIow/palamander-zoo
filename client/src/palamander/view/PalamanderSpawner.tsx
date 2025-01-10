@@ -1,33 +1,11 @@
 import { useState, useEffect } from 'react';
 
 import PalamanderView from './PalamanderView.tsx';
-import { Palamander, calculatePivotIndex } from '../palamander.ts';
-import { IndexedWindowRange } from '../palamander-range.ts';
-import segmentate from '../morphology/segmentation/segmentate.ts';
-import { createSpawnMult } from '../common/circle.ts';
-import { getPlaceholderMovementAgent } from '../movement/movement-agent.ts';
+import { Palamander } from '../palamander.ts';
+import { createDefaultPal } from '../create-palamander.ts';
 
 async function createPalsTemp(): Promise<Palamander[]> {
-  const body = segmentate({
-    type: 'sea-lion',
-    count: 10,
-    index: 0,
-    size: 100,
-    angle: 0,
-    offset: 0,
-    mirror: false,
-    next: null,
-    branches: [],
-  });
-  return [
-    {
-      body,
-      pivotIndex: calculatePivotIndex(body),
-      updateInterval: 50,
-      range: new IndexedWindowRange(1, 0, 0, 20, createSpawnMult()),
-      movementAgent: getPlaceholderMovementAgent()
-    },
-  ];
+  return [ createDefaultPal( )];
 }
 
 // Convenience Component for describing Palamander Segment trees and behavior.

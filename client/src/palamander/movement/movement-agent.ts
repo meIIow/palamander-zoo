@@ -1,5 +1,5 @@
 import { Coordinate } from '../common/circle.ts'
-import { Behavior, generateBehavior } from './behavior.ts';
+import { Behavior, BehaviorInput, generateBehavior } from './behavior.ts';
 
 type Movement = {
   dist: number;
@@ -80,13 +80,10 @@ class MovementAgent {
   }
 }
 
-function getPlaceholderMovementAgent(supress: SuppressMove = { turn: false, speed: false }) {
-  const behavior = generateBehavior(
-    { id: '', velocity: 0, interval: 0 },
-    { id: '', velocity: 0, interval: 0 });
-
-  return new MovementAgent(behavior, supress);
+function createMovementAgent(behavior: BehaviorInput, supress: SuppressMove = { turn: false, speed: false }) {
+  const movementBehavior = generateBehavior(behavior);
+  return new MovementAgent(movementBehavior, supress);
 }
 
-export { MovementAgent, getPlaceholderMovementAgent };
+export { MovementAgent, createMovementAgent };
 export type { Movement, SuppressMove }

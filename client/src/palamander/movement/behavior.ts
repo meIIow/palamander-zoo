@@ -3,8 +3,13 @@ import { rotationMap } from './rotation-behavior.ts';
 import { VelocityBehaviorInput, VelocityBehavior, accessBehaviorMap } from './velocity-behavior.ts';
 
 type Behavior = {
-  speed: VelocityBehavior,
-  rotation: VelocityBehavior,
+  speed: VelocityBehavior, // linear velocity movement behavior
+  rotation: VelocityBehavior, // angular velocity movement behavior
+};
+
+type BehaviorInput = {
+  linear: VelocityBehaviorInput,
+  angular: VelocityBehaviorInput,
 };
 
 /*
@@ -14,12 +19,12 @@ Squirrely vs Mellow (rotation)
 Zippy vs Lazy
 */
 
-function generateBehavior(speed: VelocityBehaviorInput, rotation: VelocityBehaviorInput) {
+function generateBehavior(behaviorInput: BehaviorInput) {
   return {
-    speed: accessBehaviorMap(speedMap, speed),
-    rotation: accessBehaviorMap(rotationMap, rotation),
+    speed: accessBehaviorMap(speedMap, behaviorInput.linear),
+    rotation: accessBehaviorMap(rotationMap, behaviorInput.angular),
   }
 }
 
-export type { Behavior }
+export type { Behavior, BehaviorInput }
 export { generateBehavior }

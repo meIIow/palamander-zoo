@@ -2,11 +2,9 @@ import { StrictMode } from 'react'
 import { createRoot, Root } from 'react-dom/client'
 import './content.css'
 import PalamanderView from '../palamander/view/PalamanderView.tsx'
-import { Palamander, calculatePivotIndex } from '../palamander/palamander.ts'
-import { IndexedWindowRange } from '../palamander/palamander-range.ts'
-import segmentate from '../palamander/morphology/segmentation/segmentate.ts'
+import { Palamander } from '../palamander/palamander.ts'
+import { createAxolotl } from '../palamander/create-palamander.ts'
 import { showPals } from './storage.ts'
-import { getPlaceholderMovementAgent } from '../palamander/movement/movement-agent.ts'
 
 const PALAMANDER_ROOT_ID = 'palamander-root';
 
@@ -29,24 +27,7 @@ const getPalamanderRoot = (() => {
 })();
 
 async function createAxolotlTemp(): Promise<Palamander> {
-  const body = segmentate({
-    type: 'axolotl',
-    count: 15,
-    index: 0,
-    size: 100,
-    angle: 0,
-    offset: 0,
-    mirror: false,
-    next: null,
-    branches: [],
-  });
-  return {
-    body,
-    pivotIndex: calculatePivotIndex(body),
-    updateInterval: 50,
-    range: new IndexedWindowRange(1, 0, 0, 20, { x: 0.5, y: 0.5 }),
-    movementAgent: getPlaceholderMovementAgent()
-  };
+  return createAxolotl();
 }
 
 const [renderPalamander, clearPalamander] = (() => {
