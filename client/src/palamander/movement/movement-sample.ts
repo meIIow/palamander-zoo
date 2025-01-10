@@ -10,15 +10,18 @@ type SampleRange = {
   skewMin?: number; // bias towards lower values - will sample skewMin extra and take min
 }
 
+type MovementSampler = (interval: number) => number;
+type Sampler = () => number;
+
 // Samples from a range, skewing towards the min by taking the lowest from skewCount+1.
-function sampleSkewedMin(range: SampleRange) {
+function sampleSkewedMin(range: SampleRange): number {
   const skew = range.skewMin ?? 0;
   // Fill array with skewCount+1 random numbers and take the smallest.
   const r = Math.min(Math.random(), ...[...Array(skew)].map(_=>Math.random()));
   return range.min + range.max*r;
 }
 
-function generateSampler(spec: SampleSpec): ()=>number {
+function generateSampler(spec: SampleSpec): Sampler {
   return () => {
     // Set to zero with some given probability - otherwise sample.
     const magnitude = Math.random() < spec.zero ? 0 : sampleSkewedMin(spec.range);
@@ -32,7 +35,7 @@ function generateSampler(spec: SampleSpec): ()=>number {
 
 // Generates a function to call repeatedly in order to get the specified sample
 // Sampled value persists based on corresponding sampled interval.
-function generateGetSample(sample: ()=>number, sampleInterval: ()=>number) {
+function generateGetSample(sample: Sampler, sampleInterval: Sampler): MovementSampler {
   let countdown = 0;
   let sampledVal = 0;
   return (interval: number) => {
@@ -54,4 +57,4 @@ function generateGetSample(sample: ()=>number, sampleInterval: ()=>number) {
 }
 
 export { generateGetSample, generateSampler };
-export type { SampleSpec, SampleRange };
+export type { SampleSpec, SampleRange, MovementSampler };
