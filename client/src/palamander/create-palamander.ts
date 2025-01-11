@@ -35,7 +35,6 @@ const defaultPalList = [
 ];
 
 function hydrate(spec: PalamanderSpec, count: number, index: number): Palamander {
-  console.log(`hydrating pal of type ${spec.sectionTree.type}`, spec);
   const body = segmentate(spec.sectionTree);
   const row = Math.floor(index/count);
   const col = index % count;
@@ -130,7 +129,6 @@ function createAxolotl(): Palamander {
 async function readDefaultPalList(suppressMove: SuppressMove = { speed: false, turn: false }): Promise<Palamander[]> {
   const rawData = await fetch('./../pals.json');
   const palSpecs: PalamanderSpecMap = JSON.parse(await rawData.text());
-  // console.log(palSpecs);
   return createPalList(Object.entries(palSpecs)
     .filter(([ type, _ ]) => defaultPalList.includes(type))
     .map(([ _, spec ]) => { return { ...spec, suppressMove }}));

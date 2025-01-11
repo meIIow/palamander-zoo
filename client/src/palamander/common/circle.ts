@@ -52,6 +52,28 @@ function shift(coordinates: Coordinate, delta: Coordinate) {
   };
 }
 
+function stretchCircle(circle: Circle, factor: number) {
+  return {
+    center: stretch(circle.center, factor),
+    radius: circle.radius * factor,
+  }
+}
+
+function stretch(coordinates: Coordinate, factor: number) {
+  return {
+    x: coordinates.x * factor,
+    y: coordinates.y * factor,
+  };
+}
+
+// Rounds 3 decimal places.
+function round(coordinates: Coordinate) {
+  return {
+    x: Math.round(coordinates.x * 1000) / 1000,
+    y: Math.round(coordinates.y * 1000) / 1000,
+  };
+}
+
 function calculateDelta(a: Coordinate, b: Coordinate) {
   return {
     x: a.x - b.x,
@@ -90,4 +112,4 @@ function calculateCenter(
 }
 
 export type { Circle, Coordinate };
-export { createOrigin, createSpawnMult, createDefaultCircle, createEngineCircle, generateUpdateCircle, calculateCenter, calculateDelta, toAngleVector, toVector, shift }
+export { createOrigin, createSpawnMult, createDefaultCircle, createEngineCircle, generateUpdateCircle, calculateCenter, calculateDelta, toAngleVector, toVector, shift, stretchCircle, stretch, round }

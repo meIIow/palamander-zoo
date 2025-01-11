@@ -9,20 +9,22 @@ type SegmentViewProps = {
 }
 
 function SegmentView({ circle, range, color}: SegmentViewProps) {
-  const { x, y } = range.wrapToRange(circle);
+  const bottomRightEdges = range.calculateBottomRightEdges(circle);
   const size = range.magnify(circle.radius);
-
-  const style = {
-    bottom: `${y}px`,
-    right: `${x}px`,
-    height: `${size}px`,
-    width: `${size}px`,
-    backgroundColor: color
-  };
+  const styles = bottomRightEdges.map(({ x, y }) => {
+    return {
+      bottom: `${y}px`,
+      right: `${x}px`,
+      height: `${size}px`,
+      width: `${size}px`,
+      backgroundColor: color
+    };
+  });
 
   return (
     <>
-      <div className="segment" style={style}></div>
+      {/* <div className="segment" style={style}></div> */}
+      {styles.map((style, i) => <div className="segment" style={style} key={i}></div>)}
     </>
   )
 }
