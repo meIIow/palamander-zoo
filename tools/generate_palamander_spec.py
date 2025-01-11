@@ -25,22 +25,39 @@ def createDefaultPalamanderSpec(type: str):
     'magnification': 10,
   }
 
+def createVelocityBehavior(id: str):
+  return { 'id': id, 'velocity': 0, 'interval': 0 }
+
+def configurePalamanderSpec(type: str, linear: str, angular: str, mag: int):
+  behavior = {
+    'linear': createVelocityBehavior(linear),
+    'angular': createVelocityBehavior(angular),
+  }
+  return { **createDefaultPalamanderSpec(type), 'movementBehavior': behavior, 'magnification': mag }
+
+
 pals = {
-  'axolotl': { **createDefaultPalamanderSpec('axolotl') },
-  'newt': { **createDefaultPalamanderSpec('newt') },
-  'frog': { **createDefaultPalamanderSpec('frog') },
-  'centipede': { **createDefaultPalamanderSpec('centipede'), 'magnification': 8 },
-  'sea-monkey': { **createDefaultPalamanderSpec('sea-monkey') },
-  'sea-lion': { **createDefaultPalamanderSpec('sea-lion') },
-  'starfish': { **createDefaultPalamanderSpec('starfish') },
-  'octopus': { **createDefaultPalamanderSpec('octopus') },
-  'crawdad': { **createDefaultPalamanderSpec('crawdad'), 'magnification': 5 },
-  'horshoe-crab': { **createDefaultPalamanderSpec('horshoe-crab') },
-  'caterpillar': { **createDefaultPalamanderSpec('caterpillar'), 'magnification': 8 },
-  'tadpole': { **createDefaultPalamanderSpec('tadpole') },
-  'newt-king': { **createDefaultPalamanderSpec('newt-king') },
-  'jelly': { **createDefaultPalamanderSpec('jelly') },
+  # type: (linear, angular, magnification)
+  'axolotl': ('flitting', 'twirling', 10),
+  'caterpillar': ('pushing', 'wary', 8),
+  'centipede': ('erratic', 'twirling', 8),
+  'crawdad': ('pushing', 'wary', 5),
+  'frog': ('flitting', 'curious', 10),
+  'horshoe-crab': ('flitting', 'curious', 10),
+  'jelly': ('float', 'curious', 10),
+  'newt': ('flitting', 'twirling', 10),
+  'newt-king': ('deliberate', 'curious', 10),
+  'octopus': ('flitting', 'turning', 10),
+  'sea-monkey': ('deliberate', 'wary', 10),
+  'sea-lion': ('flitting', 'turning', 10),
+  'tadpole': ('flitting', 'twirling', 10),
+  'starfish': ('hovering', 'twirling', 10),
 }
+
+for type in pals:
+  pals[type] = configurePalamanderSpec(type, *pals[type])
+
+# print(pals)
 
 with open('./../client/public/pals.json', 'w') as f:
   f.write(json.dumps(pals))

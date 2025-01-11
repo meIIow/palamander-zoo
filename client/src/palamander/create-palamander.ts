@@ -18,19 +18,20 @@ interface PalamanderSpecMap {
 }
 
 const defaultPalList = [
-  'axolotl',
+  // 'axolotl',
   // 'newt',
-  'frog',
-  'centipede',
+  // 'frog',
+  // 'centipede',
   // 'sea-monkey',
-  'sea-lion',
-  'starfish',
-  'octopus',
-  'crawdad',
-  'horshoe-crab',
-  'caterpillar',
-  // 'tadpole',
-  // 'newt-king',
+  // 'sea-lion',
+  // 'starfish',
+  // 'octopus',
+  // 'crawdad',
+  // 'horshoe-crab',
+  // 'caterpillar',
+  'tadpole',
+  'newt-king',
+  // 'jelly'
 ];
 
 function hydrate(spec: PalamanderSpec, count: number, index: number): Palamander {
