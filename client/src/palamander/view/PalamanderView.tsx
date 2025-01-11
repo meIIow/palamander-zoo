@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import SegmentView from './SegmentView.tsx'
-import { createEngineCircle, shift } from '../common/circle.ts'
+import { createEngineCircle } from '../common/circle.ts'
+import { shift } from '../common/coords.ts'
 import { hydrateSegment, getSegmentCircles } from '../morphology/segment.ts'
 import { Palamander, initializeUpdateLoop, calculateFractionalCoordinates, getBodySegments } from '../palamander.ts'
 

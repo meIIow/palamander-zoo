@@ -1,4 +1,5 @@
-import { Coordinate, createEngineCircle, calculateDelta, shift, toAngleVector } from './common/circle.ts'
+import { createEngineCircle } from './common/circle.ts'
+import { Coords, shiftNegative, shift, toAngleVector } from './common/coords.ts'
 import { Segment, updateSegment, getBodySegments } from './morphology/segment.ts'
 import { MovementAgent } from './movement/movement-agent.ts'
 import { PalamanderRange } from './palamander-range.ts'
@@ -13,8 +14,8 @@ type Palamander = {
 
 type PalamanderState = {
   head: Segment;
-  delta: Coordinate;
-  pivot: Coordinate;
+  delta: Coords;
+  pivot: Coords;
 }
 
 type AnimationFunc = (update: (state: PalamanderState) => PalamanderState) => void;
@@ -33,7 +34,7 @@ const initializeUpdateLoop = (pal: Palamander, animate: AnimationFunc ): NodeJS.
       const body = getBodySegments(head)
       const center = calculateFractionalCoordinates(body, pivotIndex);
       const pivot = calculateTangent(center, head.circle.center, -body[Math.floor(pivotIndex)].bodyAngle.absolute);
-      const pivotDelta = calculateDelta(state.pivot, pivot);
+      const pivotDelta = shiftNegative(state.pivot, pivot);
       const delta = shift(shift(state.delta, movement.delta), pivotDelta);
       return {
         head,
@@ -59,7 +60,7 @@ function calculatePivotIndex(body: Segment[]): number {
   return 0;
 }
 
-function calculateFractionalCoordinates(body: Segment[], index: number): Coordinate {
+function calculateFractionalCoordinates(body: Segment[], index: number): Coords {
   const segment = body[Math.floor(index)];
   const angleVector = toAngleVector(segment.bodyAngle.absolute);
   const length = 2 * segment.circle.radius - segment.overlap;
@@ -71,7 +72,7 @@ function calculateFractionalCoordinates(body: Segment[], index: number): Coordin
   };
 }
 
-function calculateTangent(a: Coordinate, b: Coordinate, angle: number): Coordinate {
+function calculateTangent(a: Coords, b: Coords, angle: number): Coords {
   const aPrime = changeBasis(a, angle);
   const bPrime = changeBasis(b, angle);
   const cPrime = {
@@ -81,7 +82,7 @@ function calculateTangent(a: Coordinate, b: Coordinate, angle: number): Coordina
   return changeBasis(cPrime, -angle);
 }
 
-function changeBasis(coordinate: Coordinate, angle: number) {
+function changeBasis(coordinate: Coords, angle: number) {
   const radiants = angle * Math.PI / 180;
   return {
     x: coordinate.x * Math.cos(radiants) + coordinate.y * Math.sin(radiants),

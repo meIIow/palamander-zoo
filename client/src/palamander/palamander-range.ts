@@ -1,15 +1,16 @@
-import { Circle, Coordinate, stretchCircle, shift, stretch, calculateDelta, round } from './common/circle.ts'
+import { Circle, stretchCircle } from './common/circle.ts'
+import { Coords, shift, stretch, shiftNegative, round } from './common/coords.ts'
 
 interface PalamanderRange {
   sync: () => void;
   magnify: (radius: number) => number;
-  calculateBottomRightEdges: (circle: Circle) => Coordinate[];
+  calculateBottomRightEdges: (circle: Circle) => Coords[];
 }
 
 interface Range {
-  range: Coordinate;
-  upperLeft: Coordinate;
-  lowerRight: Coordinate;
+  range: Coords;
+  upperLeft: Coords;
+  lowerRight: Coords;
 }
 
 function wrapToRange(coordinate: number, range: number): number {
@@ -18,7 +19,7 @@ function wrapToRange(coordinate: number, range: number): number {
   return coordinate % range;
 }
 
-function wrapAround(coord: Coordinate, range: Range): Coordinate {
+function wrapAround(coord: Coords, range: Range): Coords {
   return {
     x: range.upperLeft.x + wrapToRange(coord.x, range.range.x),
     y: range.upperLeft.y + wrapToRange(coord.y, range.range.y),
@@ -30,10 +31,10 @@ class IndexedWindowRange implements PalamanderRange {
   #row: number;
   #col: number;
   #magnification: number;
-  #spawn: Coordinate;
+  #spawn: Coords;
   #range: Range;
 
-  constructor(count: number, row: number, col: number, mag: number, spawnMult: Coordinate) {
+  constructor(count: number, row: number, col: number, mag: number, spawnMult: Coords) {
     this.#count = count;
     this.#row = row;
     this.#col = col;
@@ -53,7 +54,7 @@ class IndexedWindowRange implements PalamanderRange {
     return 2 * radius * this.#magnification/100;
   }
 
-  calculateBottomRightEdges(circle: Circle): Coordinate[] {
+  calculateBottomRightEdges(circle: Circle): Coords[] {
     const pixelCircle = stretchCircle(circle, this.#magnification/100);
     pixelCircle.center = shift(pixelCircle.center, this.#spawn);
 
@@ -62,11 +63,11 @@ class IndexedWindowRange implements PalamanderRange {
       const edgeOffset = { x: pixelCircle.radius * xDir, y: pixelCircle.radius * yDir };
       const edge = shift(pixelCircle.center, edgeOffset)
       const wrappedEdge = wrapAround(edge, this.#range);
-      return round(calculateDelta(wrappedEdge, edgeOffset));
+      return round(shiftNegative(wrappedEdge, edgeOffset));
     })).flat();
 
     // Keep only unique centers.
-    const centerMap = wrappedCenters.reduce((acc: { [key: string]: Coordinate }, center) => {
+    const centerMap = wrappedCenters.reduce((acc: { [key: string]: Coords }, center) => {
       acc[JSON.stringify(center)] = center;
       return acc
     }, {});

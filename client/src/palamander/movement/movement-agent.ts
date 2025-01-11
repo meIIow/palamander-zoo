@@ -1,4 +1,4 @@
-import { Coordinate } from '../common/circle.ts'
+import { Coords } from '../common/coords.ts'
 import { Behavior, BehaviorInput, generateBehavior } from './behavior.ts';
 
 type Movement = {
@@ -6,7 +6,7 @@ type Movement = {
   angle: number;
   speed: number,
   turn: number,
-  delta: Coordinate,
+  delta: Coords,
 }
 
 type SuppressMove = {
@@ -30,7 +30,7 @@ class MovementAgent {
     this.#supress = supress;
   }
 
-  private static calculateDelta(angle: number, dist: number): Coordinate {
+  private static calculateDelta(angle: number, dist: number): Coords {
     return {
       x: -Math.sin(angle * Math.PI / 180) * dist,
       y: -Math.cos(angle * Math.PI / 180) * dist,
