@@ -23,7 +23,7 @@ function App() {
           Respawn
         </button>
       </div>
-      <PalamanderGrid supress={{ turn, speed }} reset={reset}/>
+      <PalamanderGrid suppress={{ turn, speed }} reset={reset}/>
     </>
   )
 }
