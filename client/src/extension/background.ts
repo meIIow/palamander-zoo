@@ -2,6 +2,10 @@ chrome.runtime.onInstalled.addListener(() => {
   console.log("I was installed!");
 });
 
+chrome.sidePanel
+          .setPanelBehavior({ openPanelOnActionClick: true })
+          .catch((error) => console.error(error));
+
 // Normally, the content script determines whether to render Pals itself.
 // The content script has access to the document visibility values/events...
 //    which is easier than trying to track when tabs become active & complete via worker events.

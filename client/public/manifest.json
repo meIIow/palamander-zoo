@@ -3,10 +3,9 @@
   "version": "0.0",
   "manifest_version": 3,
   "action": {
-    "default_popup": "popup.html",
     "default_title": "Collect Aquatic Buddies!"
   },
-  "permissions": ["activeTab", "tabs", "scripting", "webNavigation", "storage"],
+  "permissions": ["activeTab", "tabs", "scripting", "webNavigation", "storage", "sidePanel"],
   "background": {
     "service_worker": "assets/worker.js",
     "type": "module"
@@ -17,7 +16,10 @@
         "css": ["assets/content.css"],
         "js": ["assets/content-wrapper.js"]
     }
-],
+  ],
+  "side_panel": {
+    "default_path": "popup.html"
+  },
   "host_permissions": [
     "http://*/*",
     "https://*/*"
