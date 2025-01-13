@@ -4,6 +4,7 @@ import './content.css'
 import PalamanderView from '../palamander/view/PalamanderView.tsx'
 import { Palamander } from '../palamander/palamander.ts'
 import { createAxolotl } from '../palamander/create-palamander.ts'
+import { generateWindowDisplayRange } from '../palamander/palamander-range.ts'
 import { showPals } from './storage.ts'
 
 const PALAMANDER_ROOT_ID = 'palamander-root';
@@ -42,7 +43,7 @@ const [renderPalamander, clearPalamander] = (() => {
       const pal = await createAxolotlTemp();
       getPalamanderRoot().render(
         <StrictMode>
-          <PalamanderView pal={pal}/>
+          <PalamanderView pal={pal} display={generateWindowDisplayRange({ x: 0.5, y: 0.5 })}/>
         </StrictMode>,
       )
     },

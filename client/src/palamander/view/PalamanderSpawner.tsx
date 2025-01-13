@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import PalamanderView from './PalamanderView.tsx';
 import { Palamander } from '../palamander.ts';
 import { createDefaultPal } from '../create-palamander.ts';
+import { generateWindowDisplayRange } from '../palamander-range.ts'
 
 async function createPalsTemp(): Promise<Palamander[]> {
   return [ createDefaultPal( )];
@@ -27,7 +28,7 @@ function PalamanderSpawner() {
   return (
     <>
       {palamanders.length <= 0 ? null : palamanders.map((pal, i) => (
-        <PalamanderView pal={pal} key={i}/>
+        <PalamanderView pal={pal} display={generateWindowDisplayRange({ x: 0.5, y: 0.5 })} key={i}/>
       ))}
     </>
   )

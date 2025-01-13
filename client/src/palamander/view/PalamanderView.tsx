@@ -1,15 +1,19 @@
-import { useEffect, useState } from 'react'
+import './PalamanderView.css'
+import { useEffect, useState, useRef } from 'react'
 import SegmentView from './SegmentView.tsx'
 import { createEngineCircle } from '../common/circle.ts'
 import { shift } from '../common/coords.ts'
 import { hydrateSegment, getSegmentCircles } from '../morphology/segment.ts'
 import { Palamander, initializeUpdateLoop, calculateFractionalCoordinates, getBodySegments } from '../palamander.ts'
+import { DisplayRange } from '../palamander-range.ts'
 
 type PalamanderProps = {
   pal: Palamander,
+  display: DisplayRange,
 }
 
-function PalamanderView({ pal }: PalamanderProps) {
+function PalamanderView({ pal, display }: PalamanderProps) {
+  const divRef: React.MutableRefObject<null | HTMLDivElement> = useRef(null);
   const [state, setState] = useState(() => {
     const head = hydrateSegment(pal.body[0], createEngineCircle(pal.body[0].circle), 0, Date.now());
     return {
@@ -25,17 +29,19 @@ function PalamanderView({ pal }: PalamanderProps) {
     return () => clearInterval(intervalId); // cleanup on unmount
   }, [pal]);
 
-  pal.range.sync();
+  if (divRef.current != null) display.setRange(divRef.current.getBoundingClientRect());
   return (
     <>
-      {getSegmentCircles(state.head).map((circle, i) => {
-        return (<SegmentView
-          circle={{ ...circle, center: shift(circle.center, state.delta)}}
-          range={pal.range}
-          color='teal'
-          key={i}
-        />)
-      })}
+      <div ref={divRef} className="palamander">
+        {divRef.current == null ? null : getSegmentCircles(state.head).map((circle, i) => {
+          return (<SegmentView
+            circle={{ ...circle, center: shift(circle.center, state.delta)}}
+            display={display}
+            magnification={pal.magnificaiton}
+            key={i}
+          />)
+        })}
+      </div>
     </>
   )
 }

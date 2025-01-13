@@ -2,14 +2,14 @@ import { createEngineCircle } from './common/circle.ts'
 import { Coords, shiftNegative, shift, toAngleVector } from './common/coords.ts'
 import { Segment, updateSegment, getBodySegments } from './morphology/segment.ts'
 import { MovementAgent } from './movement/movement-agent.ts'
-import { PalamanderRange } from './palamander-range.ts'
+
 
 type Palamander = {
   body: Segment[];
   pivotIndex: number;
   updateInterval: number;
   movementAgent: MovementAgent;
-  range: PalamanderRange;
+  magnificaiton: number;
 };
 
 type PalamanderState = {

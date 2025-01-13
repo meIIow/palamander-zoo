@@ -1,7 +1,6 @@
 import { Section } from './morphology/section.ts';
 import segmentate from './morphology/segmentation/segmentate.ts'
 import { Palamander, calculatePivotIndex } from './palamander.ts';
-import { IndexedWindowRange } from './palamander-range.ts';
 import { createMovementAgent, SuppressMove } from './movement/movement-agent.ts';
 import { BehaviorInput } from './movement/behavior.ts';
 
@@ -18,38 +17,35 @@ interface PalamanderSpecMap {
 }
 
 const defaultPalList = [
-  // 'axolotl',
-  // 'newt',
-  // 'frog',
-  // 'centipede',
-  // 'sea-monkey',
-  // 'sea-lion',
-  // 'starfish',
-  // 'octopus',
-  // 'crawdad',
-  // 'horshoe-crab',
-  // 'caterpillar',
+  'axolotl',
+  'newt',
+  'frog',
+  'centipede',
+  'sea-monkey',
+  'sea-lion',
+  'starfish',
+  'octopus',
+  'crawdad',
+  'horshoe-crab',
+  'caterpillar',
   'tadpole',
   'newt-king',
   // 'jelly'
 ];
 
-function hydrate(spec: PalamanderSpec, count: number, index: number): Palamander {
+function hydrate(spec: PalamanderSpec): Palamander {
   const body = segmentate(spec.sectionTree);
-  const row = Math.floor(index/count);
-  const col = index % count;
   return {
     body,
     pivotIndex: calculatePivotIndex(body),
     updateInterval: spec.updateInterval,
-    range: new IndexedWindowRange(count, row, col, spec.magnification, { x: 0.5, y: 0.5 }),
+    magnificaiton: spec.magnification,
     movementAgent: createMovementAgent(spec.movementBehavior, spec.suppressMove),
   };
 }
 
 function createPalList(specs: PalamanderSpec[]): Palamander[] {
-  const gridDimension = Math.ceil(Math.pow(specs.length, 0.5)); // sqrt of pal count
-  return specs.map((spec, i) => hydrate(spec, gridDimension, i));
+  return specs.map((spec) => hydrate(spec));
 }
 
 async function createDefaultPalList(suppressMove: SuppressMove): Promise<Palamander[]> {
@@ -99,7 +95,7 @@ function createDefaultPal(): Palamander {
     updateInterval: 50,
     magnification: 20
   }
-  return hydrate(palSpec, 1, 0);
+  return hydrate(palSpec);
 }
 
 function createAxolotl(): Palamander {
@@ -123,7 +119,7 @@ function createAxolotl(): Palamander {
     updateInterval: 50,
     magnification: 20
   }
-  return hydrate(palSpec, 1, 0);
+  return hydrate(palSpec);
 }
 
 async function readDefaultPalList(suppressMove: SuppressMove = { speed: false, turn: false }): Promise<Palamander[]> {
