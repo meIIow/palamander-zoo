@@ -1,7 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot, Root } from 'react-dom/client'
 import './content.css'
-import PalamanderView from '../palamander/view/PalamanderView.tsx'
+import PalamanderView from '../components/palamander/PalamanderView.tsx'
 import { Palamander } from '../palamander/palamander.ts'
 import { createAxolotl } from '../palamander/create-palamander.ts'
 import { generateWindowDisplayRange } from '../palamander/palamander-range.ts'

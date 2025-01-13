@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import PalamanderGrid from '../palamander/view/PalamanderGrid.tsx'
+import PalamanderGrid from '../palamander/PalamanderGrid.tsx'
 
 function App() {
   const [speed, setSpeed] = useState(true)

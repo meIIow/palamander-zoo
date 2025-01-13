@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 
 import PalamanderView from './PalamanderView.tsx';
-import { Palamander } from '../palamander.ts';
-import { createDefaultPal } from '../create-palamander.ts';
-import { generateWindowDisplayRange } from '../palamander-range.ts'
+import { Palamander } from '../../palamander/palamander.ts';
+import { createDefaultPal } from '../../palamander/create-palamander.ts';
+import { generateWindowDisplayRange } from '../../palamander/palamander-range.ts'
 
 async function createPalsTemp(): Promise<Palamander[]> {
   return [ createDefaultPal( )];

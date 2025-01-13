@@ -1,11 +1,11 @@
 import './PalamanderView.css'
 import { useEffect, useState, useRef } from 'react'
 import SegmentView from './SegmentView.tsx'
-import { createEngineCircle } from '../common/circle.ts'
-import { shift } from '../common/coords.ts'
-import { hydrateSegment, getSegmentCircles } from '../morphology/segment.ts'
-import { Palamander, initializeUpdateLoop, calculateFractionalCoordinates, getBodySegments } from '../palamander.ts'
-import { DisplayRange } from '../palamander-range.ts'
+import { createEngineCircle } from '../../palamander/common/circle.ts'
+import { shift } from '../../palamander/common/coords.ts'
+import { hydrateSegment, getSegmentCircles } from '../../palamander/morphology/segment.ts'
+import { Palamander, initializeUpdateLoop, calculateFractionalCoordinates, getBodySegments } from '../../palamander/palamander.ts'
+import { DisplayRange } from '../../palamander/palamander-range.ts'
 
 type PalamanderProps = {
   pal: Palamander,

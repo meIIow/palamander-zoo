@@ -1,5 +1,5 @@
-import { Circle } from '../common/circle.ts'
-import {  DisplayRange } from '../palamander-range.ts'
+import { Circle } from '../../palamander/common/circle.ts'
+import {  DisplayRange } from '../../palamander/palamander-range.ts'
 
 type SegmentViewProps = {
   circle: Circle,

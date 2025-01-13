@@ -1,10 +1,10 @@
 import './PalamanderGrid.css'
 import { useState, useEffect } from 'react';
 import PalamanderView from './PalamanderView.tsx';
-import { Palamander } from '../palamander.ts';
-import { SuppressMove } from '../movement/movement-agent.ts';
-import { readDefaultPalList } from '../create-palamander.ts';
-import { generateBoundedDisplayRange }from '../palamander-range.ts'
+import { Palamander } from '../../palamander/palamander.ts';
+import { SuppressMove } from '../../palamander/movement/movement-agent.ts';
+import { readDefaultPalList } from '../../palamander/create-palamander.ts';
+import { generateBoundedDisplayRange }from '../../palamander/palamander-range.ts'
 
 // Convenience Component for describing Palamander Segment trees and behavior.
 // For development / iteration only - Palamanders will ultimately be defined by:
