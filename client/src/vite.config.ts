@@ -6,12 +6,14 @@ import { resolve } from 'path'
 export default defineConfig({
   plugins: [react()],
   build: {
+    outDir: './../dist',
+    emptyOutDir: true,
     rollupOptions: {
       input: {
         popup: resolve(__dirname, 'popup.html'),
         demo: resolve(__dirname, 'demo.html'),
         test: resolve(__dirname, 'test.html'),
-        worker: resolve(__dirname, './src/extension/background.ts')
+        worker: resolve(__dirname, './extension/background.ts')
       },
       output: {
         // Preserve name of entry files for chrome extension manifest reference.
@@ -19,4 +21,5 @@ export default defineConfig({
       },
     },
   },
+  publicDir: './../public'
 });

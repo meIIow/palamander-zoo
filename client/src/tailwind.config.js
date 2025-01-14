@@ -10,7 +10,7 @@ export default {
   safelist: gridSafeList,
   content: [
     "./*.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
+    "./**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {},
