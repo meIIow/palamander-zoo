@@ -123,11 +123,16 @@ function createAxolotl(): Palamander {
 }
 
 async function readDefaultPalList(suppressMove: SuppressMove = { speed: false, turn: false }): Promise<Palamander[]> {
+  return createPalList(await readDefaultPalSpecs(suppressMove));
+}
+
+async function readDefaultPalSpecs(suppressMove: SuppressMove = { speed: false, turn: false }): Promise<PalamanderSpec[]> {
   const rawData = await fetch('./../pals.json');
   const palSpecs: PalamanderSpecMap = JSON.parse(await rawData.text());
-  return createPalList(Object.entries(palSpecs)
+  return (Object.entries(palSpecs)
     .filter(([ type, _ ]) => defaultPalList.includes(type))
     .map(([ _, spec ]) => { return { ...spec, suppressMove }}));
 }
 
-export { createDefaultPalList, createDefaultPal, createAxolotl, hydrate, readDefaultPalList };
+export type { PalamanderSpec }
+export { createDefaultPalList, createDefaultPal, createAxolotl, hydrate, readDefaultPalList, readDefaultPalSpecs };

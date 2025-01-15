@@ -13,7 +13,13 @@ export default {
     "./**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      screens: {
+        '240': '240px',
+        '360': '360px',
+        '480': '480px',
+      },
+    },
   },
   plugins: [],
 }

@@ -1,7 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import './demo/index.css'
-import App from './demo/App.tsx'
+import Collection from './../collection/Collection.tsx'
 
 (async () => {
   const response = await chrome.runtime.sendMessage({greeting: "hello"});
@@ -11,6 +10,6 @@ import App from './demo/App.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <Collection />
   </StrictMode>,
 )
