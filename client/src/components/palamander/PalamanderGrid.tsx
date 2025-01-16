@@ -2,7 +2,7 @@ import './PalamanderGrid.css'
 import { useState, useEffect } from 'react';
 import PalamanderView from './PalamanderView.tsx';
 import { Palamander } from '../../palamander/palamander.ts';
-import { SuppressMove } from '../../palamander/movement/movement-agent.ts';
+import { MovementOverride } from '../../palamander/movement/movement-agent.ts';
 import { readDefaultPalList } from '../../palamander/create-palamander.ts';
 import { generateBoundedDisplayRange }from '../../palamander/palamander-range.ts'
 
@@ -10,13 +10,19 @@ import { generateBoundedDisplayRange }from '../../palamander/palamander-range.ts
 // For development / iteration only - Palamanders will ultimately be defined by:
 // 1. data configs
 // 2. server-side random generation code
-function PalamanderGrid({ suppress, reset } : { suppress: SuppressMove, reset: number } ) {
+function PalamanderGrid({ suppress, reset } : { suppress: { turn: boolean, speed: boolean }, reset: number } ) {
   const [palamanders, setPalamanders] = useState<Array<Palamander>>(() => []);
 
   useEffect(()=> {
     const getPals = async () => {
-      const x = await readDefaultPalList(suppress);
-      setPalamanders(x);
+      const movementOverride: MovementOverride = {
+        speed: suppress.speed ? 0 : undefined,
+        turn: suppress.turn ? 0 : undefined,
+      }
+      const pals = (await readDefaultPalList()).map((pal) => {
+        return { ...pal, override: { ... pal.override, move: movementOverride } }
+      });
+      setPalamanders(pals);
     };
     getPals();
   }, [suppress, reset]);

@@ -9,14 +9,15 @@ type Movement = {
   delta: Coords,
 }
 
-type SuppressMove = {
-  turn: boolean;
-  speed: boolean;
+type MovementOverride = {
+  turn?: number;
+  speed?: number;
+  angle?: number;
+  dist?: number;
 }
 
 class MovementAgent {
   #behavior: Behavior;
-  #supress: SuppressMove;
   #movement: Movement = {
     angle: 0,
     dist: 0,
@@ -25,9 +26,8 @@ class MovementAgent {
     delta: { x: 0, y: 0 }
   };
 
-  constructor(behavior: Behavior, supress: SuppressMove) {
+  constructor(behavior: Behavior) {
     this.#behavior = behavior;
-    this.#supress = supress;
   }
 
   private static calculateDelta(angle: number, dist: number): Coords {
@@ -61,12 +61,11 @@ class MovementAgent {
     return this.#movement.angle + turnAngle * (1 - speed / 100);
   }
 
-  move(interval: number): Movement {
-    const speed = this.clipSpeed(interval, this.#behavior.speed.sampler(interval));
-    const turn = this.#behavior.rotation.sampler(interval);
-    const dist = this.#supress.speed ? 0 : this.calculateDist(interval, speed);
-
-    const angle = this.#supress.turn ? 0 : this.calculateAngle(interval, turn, speed);
+  move(interval: number, override: MovementOverride): Movement {
+    const speed = override.speed ?? this.clipSpeed(interval, this.#behavior.speed.sampler(interval));
+    const turn = override.turn ?? this.#behavior.rotation.sampler(interval);
+    const dist = override.dist ?? this.calculateDist(interval, speed);
+    const angle = override.angle ?? this.calculateAngle(interval, turn, speed);
     const delta = MovementAgent.calculateDelta(angle, dist);
 
     this.#movement = {
@@ -80,10 +79,10 @@ class MovementAgent {
   }
 }
 
-function createMovementAgent(behavior: BehaviorInput, supress: SuppressMove = { turn: false, speed: false }) {
+function createMovementAgent(behavior: BehaviorInput) {
   const movementBehavior = generateBehavior(behavior);
-  return new MovementAgent(movementBehavior, supress);
+  return new MovementAgent(movementBehavior);
 }
 
 export { MovementAgent, createMovementAgent };
-export type { Movement, SuppressMove }
+export type { Movement, MovementOverride }

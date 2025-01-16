@@ -12,12 +12,14 @@ function CardMatrix({ pals } : CardProps ) {
 
   useEffect(()=> {
     if (pals.length > 0) {
-      const x = pals.map((pal) => hydrate(pal));
-      setPalamanders(x);
+      const hydratedPals = pals.map((pal) => hydrate(pal)).map((pal) => {
+        return { ...pal, override: { ...pal.override, freeze: true } }
+      });
+      setPalamanders(hydratedPals);
     }
   }, [pals]);
   return (
-    <div className="grid gap-4 grid-cols-1 240:grid-cols-2">
+    <div className="grid gap-3 grid-cols-1 240:grid-cols-2 360:grid-cols-3">
       {palamanders.length <= 0 ? null : palamanders.map((pal, i) => (
         <div key={i}>
           <Card pal={pal}/>

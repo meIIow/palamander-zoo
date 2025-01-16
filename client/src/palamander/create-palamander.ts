@@ -1,13 +1,12 @@
 import { Section } from './morphology/section.ts';
 import segmentate from './morphology/segmentation/segmentate.ts'
 import { Palamander, calculatePivotIndex } from './palamander.ts';
-import { createMovementAgent, SuppressMove } from './movement/movement-agent.ts';
+import { createMovementAgent } from './movement/movement-agent.ts';
 import { BehaviorInput } from './movement/behavior.ts';
 
 type PalamanderSpec = {
   sectionTree: Section,
   movementBehavior: BehaviorInput,
-  suppressMove: SuppressMove,
   updateInterval: number,
   magnification: number,
 };
@@ -40,7 +39,8 @@ function hydrate(spec: PalamanderSpec): Palamander {
     pivotIndex: calculatePivotIndex(body),
     updateInterval: spec.updateInterval,
     magnificaiton: spec.magnification,
-    movementAgent: createMovementAgent(spec.movementBehavior, spec.suppressMove),
+    override: { freeze: false, move: {} },
+    movementAgent: createMovementAgent(spec.movementBehavior),
   };
 }
 
@@ -48,7 +48,7 @@ function createPalList(specs: PalamanderSpec[]): Palamander[] {
   return specs.map((spec) => hydrate(spec));
 }
 
-async function createDefaultPalList(suppressMove: SuppressMove): Promise<Palamander[]> {
+async function createDefaultPalList(): Promise<Palamander[]> {
   const specs: PalamanderSpec[] = defaultPalList.map((type) => {
     return {
       sectionTree: {
@@ -66,7 +66,6 @@ async function createDefaultPalList(suppressMove: SuppressMove): Promise<Palaman
         linear: { id: '', velocity: 0, interval: 0 },
         angular: { id: '', velocity: 0, interval: 0 },
       },
-      suppressMove,
       updateInterval: 50,
       magnification: (type == 'crawdad' ? 10 : 20) / 2,
     }
@@ -122,16 +121,16 @@ function createAxolotl(): Palamander {
   return hydrate(palSpec);
 }
 
-async function readDefaultPalList(suppressMove: SuppressMove = { speed: false, turn: false }): Promise<Palamander[]> {
-  return createPalList(await readDefaultPalSpecs(suppressMove));
+async function readDefaultPalList(): Promise<Palamander[]> {
+  return createPalList(await readDefaultPalSpecs());
 }
 
-async function readDefaultPalSpecs(suppressMove: SuppressMove = { speed: false, turn: false }): Promise<PalamanderSpec[]> {
+async function readDefaultPalSpecs(): Promise<PalamanderSpec[]> {
   const rawData = await fetch('./../pals.json');
   const palSpecs: PalamanderSpecMap = JSON.parse(await rawData.text());
   return (Object.entries(palSpecs)
     .filter(([ type, _ ]) => defaultPalList.includes(type))
-    .map(([ _, spec ]) => { return { ...spec, suppressMove }}));
+    .map(([ _, spec ]) => spec ));
 }
 
 export type { PalamanderSpec }

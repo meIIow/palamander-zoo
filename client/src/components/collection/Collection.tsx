@@ -7,8 +7,8 @@ function Collection() {
 
   useEffect(()=> {
     const getPals = async () => {
-      const x = await readDefaultPalSpecs({ speed: true, turn: true });
-      setPals(x);
+      const pals = await readDefaultPalSpecs();
+      setPals(pals);
     };
     getPals();
   }, []);
