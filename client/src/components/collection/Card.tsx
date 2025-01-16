@@ -9,7 +9,15 @@ type CardProps = {
 }
 
 const setStaticPal = (pal: Palamander): Palamander => {
-  return { ...pal, override: { freeze: true, move: { speed: 0, angle: 225 } } }
+  return { ...pal, override: { freeze: false, move: { speed: 0, angle: 225 } } }
+};
+
+const StopSpinningPal = (pal: Palamander): Palamander => {
+  return { ...pal, override: { freeze: false, move: { speed: 0, turn: 0 } } }
+};
+
+const setSpinningPal = (pal: Palamander): Palamander => {
+  return { ...pal, override: { freeze: false, move: { speed: 0, turn: 25 } } }
 };
 
 function Card({ pal } : CardProps) {
@@ -17,12 +25,12 @@ function Card({ pal } : CardProps) {
   const [hovered, setHovered] = useState(false);
 
   const registerHover = (hover: boolean) => {
-    setPalamander(pal => ({ ...pal, override: { ...pal.override, freeze: !hover } }));
+    setPalamander(pal => hover ? setSpinningPal(pal) : StopSpinningPal(pal));
     setHovered(hover);
   };
 
   useEffect(()=> {
-    setPalamander(pal => ({ ...setStaticPal(pal), override: { ...pal.override, freeze: !hovered } }));
+    setPalamander(pal => hovered ? setSpinningPal(pal) : setStaticPal(pal));
   }, [pal]);
 
   return (

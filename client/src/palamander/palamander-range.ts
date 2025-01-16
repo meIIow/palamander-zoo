@@ -46,7 +46,7 @@ function magnify(radius: number, magnification: number) {
 
 function calculateBottomRightEdges(circle: Circle, range: Range, spawn: Coords, magnification: number): Coords[] {
   const pixelCircle = stretchCircle(circle, magnification/100);
-  pixelCircle.center = shift(pixelCircle.center, stretchByElement(range.range, spawn));
+  pixelCircle.center = shift(pixelCircle.center, spawn);
 
   // Shift to edge location, wrap the edge, then unshift back to center.
   const wrappedCenters = [ -1, 1 ].map((xDir) => [ -1, 1].map((yDir) => {

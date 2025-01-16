@@ -15,7 +15,7 @@ type Palamander = {
 type PalamanderState = {
   head: Segment;
   delta: Coords;
-  pivot: Coords;
+  center: Coords;
 }
 
 type Override = {
@@ -36,15 +36,13 @@ const startUpdateLoop = (pal: Palamander, animate: AnimationFunc): () => void =>
     const movement = locked.movementAgent.move(interval, locked.override.move);
     animate((state: PalamanderState) => {
       const head = updateSegment(state.head, updateCircle, movement.angle, movement.angle, interval, movement.speed);
-      const body = getBodySegments(head)
-      const center = calculateFractionalCoordinates(body, locked.pivotIndex);
-      const pivot = calculateTangent(center, head.circle.center, -body[Math.floor(locked.pivotIndex)].bodyAngle.absolute);
-      const pivotDelta = shiftNegative(state.pivot, pivot);
-      const delta = shift(shift(state.delta, movement.delta), pivotDelta);
+      const center = calculatePivotCoords(head, locked.pivotIndex);
+      const centerDelta = shiftNegative(state.center, center);
+      const delta = shift(shift(state.delta, movement.delta), centerDelta);
       return {
         head,
         delta,
-        pivot,
+        center,
       };
     });
     prevTime = currTime;
@@ -54,11 +52,12 @@ const startUpdateLoop = (pal: Palamander, animate: AnimationFunc): () => void =>
 
 function initializePalamanderState(pal: Palamander): PalamanderState {
   const initialAngle = pal.override.move.angle ?? 0;
-  const head = pal.body[0];
+  const head = hydrateSegment(pal.body[0], createEngineCircle(pal.body[0].circle), initialAngle, Date.now())
+  const center = calculatePivotCoords(head, pal.pivotIndex);
   return {
-    head: hydrateSegment(head, createEngineCircle(head.circle), initialAngle, Date.now()),
-    delta: { x: 0, y: 0 },
-    pivot: calculateFractionalCoordinates(getBodySegments(head), pal.pivotIndex),
+    head,
+    delta: shiftNegative({ x: 0, y: 0 }, center),
+    center,
   };
 }
 
@@ -86,6 +85,12 @@ function calculateFractionalCoordinates(body: Segment[], index: number): Coords 
     x: segment.circle.center.x + delta * angleVector.x,
     y: segment.circle.center.y + delta * angleVector.y,
   };
+}
+
+function calculatePivotCoords(head: Segment, index: number): Coords {
+  const body = getBodySegments(head);
+  const center = calculateFractionalCoordinates(body, index);
+  return calculateTangent(center, head.circle.center, -body[Math.floor(index)].bodyAngle.absolute);
 }
 
 function calculateTangent(a: Coords, b: Coords, angle: number): Coords {
