@@ -12,10 +12,10 @@ type DetailsProps = {
 }
 
 function Details({ pal, index, count, shift, release } : DetailsProps) {
-  const prev = (index < 0) ?
+  const prev = (index <= 0) ?
     null :
     (<button className="rounded-full" onClick={() => shift(index-1)}>prev</button>);
-  const next = (index >= count) ?
+  const next = (index >= count-1) ?
     null :
     (<button className="rounded-full" onClick={() => shift(index+1)}>next</button>);
   const exit = (<button className="rounded-full" onClick={() => release()}>release</button>);
