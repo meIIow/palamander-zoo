@@ -6,6 +6,7 @@ import { generateBoundedDisplayRange }from '../../palamander/palamander-range.ts
 
 type CardProps = {
   pal: Palamander,
+  choose: (type: string) => void,
 }
 
 const setStaticPal = (pal: Palamander): Palamander => {
@@ -20,7 +21,7 @@ const setSpinningPal = (pal: Palamander): Palamander => {
   return { ...pal, override: { freeze: false, move: { speed: 0, turn: 25 } } }
 };
 
-function Card({ pal } : CardProps) {
+function Card({ pal, choose } : CardProps) {
   const [palamander, setPalamander] = useState(setStaticPal(pal));
   const [hovered, setHovered] = useState(false);
 
@@ -39,6 +40,7 @@ function Card({ pal } : CardProps) {
         className=" border hover:size-28 size-[104px] rounded-md border-black"
         onMouseEnter={() => registerHover(true)}
         onMouseLeave={() => registerHover(false)}
+        onClick={() => choose(palamander.type)}
       >
         <div className='card'>
           <PalamanderView pal={palamander} display={generateBoundedDisplayRange({ x: 0.5, y: 0.5 })}/>

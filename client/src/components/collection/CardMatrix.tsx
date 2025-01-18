@@ -1,30 +1,30 @@
-import { PalamanderSpec, hydrate } from '../../palamander/create-palamander.ts';
 import Card from './Card.tsx';
 import { useState, useEffect } from 'react';
 import { Palamander } from '../../palamander/palamander.ts';
 
 type CardProps = {
-  pals: PalamanderSpec[],
+  pals: Palamander[],
+  choose: (type: string) => void,
 }
 
-function CardMatrix({ pals } : CardProps ) {
-  const [palamanders, setPalamanders] = useState<Array<Palamander>>(() => []);
+function CardMatrix({ pals, choose } : CardProps ) {
+  const [palamanders, setPalamanders] = useState<Array<Palamander>>(pals);
 
   useEffect(()=> {
-    if (pals.length > 0) {
-      const hydratedPals = pals.map((pal) => hydrate(pal)).map((pal) => {
-        return { ...pal, override: { ...pal.override, freeze: true } }
-      });
-      setPalamanders(hydratedPals);
-    }
+    setPalamanders(pals);
   }, [pals]);
+
+  const cards = Object.keys(palamanders).length <= 0 ?
+    null :
+    palamanders.map((pal) => (
+      <div key={pal.type}>
+        <Card pal={pal} choose={choose}/>
+      </div>
+    ));
+
   return (
     <div className="grid gap-3 grid-cols-1 240:grid-cols-2 360:grid-cols-3">
-      {palamanders.length <= 0 ? null : palamanders.map((pal, i) => (
-        <div key={i}>
-          <Card pal={pal}/>
-        </div>
-      ))}
+      {cards}
     </div>
   )
 }

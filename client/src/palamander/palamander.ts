@@ -4,6 +4,7 @@ import { Segment, hydrateSegment, updateSegment, getBodySegments } from './morph
 import { MovementAgent, MovementOverride } from './movement/movement-agent.ts'
 
 type Palamander = {
+  type: string,
   body: Segment[];
   pivotIndex: number;
   updateInterval: number;
@@ -11,6 +12,10 @@ type Palamander = {
   override: Override,
   magnificaiton: number;
 };
+
+type PalamanderMap = {
+  [key: string]: Palamander,
+}
 
 type PalamanderState = {
   head: Segment;
@@ -112,4 +117,4 @@ function changeBasis(coordinate: Coords, angle: number) {
 }
 
 export { startUpdateLoop, initializePalamanderState, calculatePivotIndex, getBodySegments, calculateFractionalCoordinates }; 
-export type { Palamander, PalamanderState };
+export type { Palamander, PalamanderMap, PalamanderState };

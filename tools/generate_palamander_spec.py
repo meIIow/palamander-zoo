@@ -20,7 +20,6 @@ def createDefaultPalamanderSpec(type: str):
       'linear': { 'id': '', 'velocity': 0, 'interval': 0 },
       'angular': { 'id': '', 'velocity': 0, 'interval': 0 },
     },
-    'suppressMove': { 'speed': False, 'turn': False },
     'updateInterval': 50,
     'magnification': 10,
   }

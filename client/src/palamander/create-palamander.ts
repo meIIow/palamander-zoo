@@ -1,10 +1,11 @@
 import { Section } from './morphology/section.ts';
 import segmentate from './morphology/segmentation/segmentate.ts'
-import { Palamander, calculatePivotIndex } from './palamander.ts';
+import { Palamander, PalamanderMap, calculatePivotIndex } from './palamander.ts';
 import { createMovementAgent } from './movement/movement-agent.ts';
 import { BehaviorInput } from './movement/behavior.ts';
 
 type PalamanderSpec = {
+  type: string,
   sectionTree: Section,
   movementBehavior: BehaviorInput,
   updateInterval: number,
@@ -35,6 +36,7 @@ const defaultPalList = [
 function hydrate(spec: PalamanderSpec): Palamander {
   const body = segmentate(spec.sectionTree);
   return {
+    type: spec.type,
     body,
     pivotIndex: calculatePivotIndex(body),
     updateInterval: spec.updateInterval,
@@ -48,9 +50,17 @@ function createPalList(specs: PalamanderSpec[]): Palamander[] {
   return specs.map((spec) => hydrate(spec));
 }
 
+function hydratePalMap(specMap: PalamanderSpecMap): PalamanderMap {
+  return Object.fromEntries(Object.entries(specMap)
+    .map(([ type, spec]) => ([ type, hydrate({ ...spec, type }) ]))
+    .filter(([ type, _ ]) => defaultPalList.includes(type as string))
+  );
+}
+
 async function createDefaultPalList(): Promise<Palamander[]> {
   const specs: PalamanderSpec[] = defaultPalList.map((type) => {
     return {
+      type,
       sectionTree: {
         type,
         count: type == 'axolotl' ? 15 : 10,
@@ -75,6 +85,7 @@ async function createDefaultPalList(): Promise<Palamander[]> {
 
 function createDefaultPal(): Palamander {
   const palSpec = {
+    type: 'sea-lion',
     sectionTree: {
       type: 'sea-lion',
       count: 10,
@@ -99,6 +110,7 @@ function createDefaultPal(): Palamander {
 
 function createAxolotl(): Palamander {
   const palSpec = {
+    type: 'axolotl',
     sectionTree: {
       type: 'axolotl',
       count: 15,
@@ -121,6 +133,16 @@ function createAxolotl(): Palamander {
   return hydrate(palSpec);
 }
 
+async function readDefaultPalSpecMap(): Promise<PalamanderSpecMap> {
+  const rawData = await fetch('./../pals.json');
+  const palSpecs: PalamanderSpecMap = JSON.parse(await rawData.text());
+  return palSpecs;
+}
+
+async function readDefaultPalMap(): Promise<PalamanderMap> {
+  return hydratePalMap(await readDefaultPalSpecMap());
+}
+
 async function readDefaultPalList(): Promise<Palamander[]> {
   return createPalList(await readDefaultPalSpecs());
 }
@@ -134,4 +156,4 @@ async function readDefaultPalSpecs(): Promise<PalamanderSpec[]> {
 }
 
 export type { PalamanderSpec }
-export { createDefaultPalList, createDefaultPal, createAxolotl, hydrate, readDefaultPalList, readDefaultPalSpecs };
+export { createDefaultPalList, createDefaultPal, createAxolotl, hydrate, readDefaultPalList, readDefaultPalMap, readDefaultPalSpecs };
