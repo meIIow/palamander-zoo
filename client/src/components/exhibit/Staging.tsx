@@ -1,4 +1,3 @@
-import './../collection/Card.css'
 import { useEffect, useState } from 'react';
 import PalamanderView from '../palamander/PalamanderView.tsx';
 import { Palamander } from '../../palamander/palamander.ts';
@@ -40,16 +39,13 @@ function Staging({ pal, active, select } : CardProps) {
   };
 
   useEffect(()=> {
-    // console.log(pal)
     if (pal == null) return setPalamander(null);
     setPalamander(hovered ? setSpinningPal(pal) : StopSpinningPal(pal));
   }, [pal]);
 
-  // console.log(palamander);
-
   const content = (palamander == null) ?
     null :
-    (<div className='card'>
+    (<div className='pal-boundry'>
       <PalamanderView pal={palamander} key={palamander.type} display={generateBoundedDisplayRange({ x: 0.5, y: 0.5 })}/>
     </div>)
 

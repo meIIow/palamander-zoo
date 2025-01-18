@@ -1,4 +1,3 @@
-import './Card.css'
 import PalamanderView from '../palamander/PalamanderView.tsx';
 import { Palamander } from '../../palamander/palamander.ts';
 import { generateBoundedDisplayRange }from '../../palamander/palamander-range.ts'
@@ -25,7 +24,7 @@ function Details({ pal, index, count, shift, release } : DetailsProps) {
       {next}
       {exit}
       <div className='flex justify-center items-center border size-80 rounded-md border-black'>
-        <div className='card'>
+        <div className='pal-boundry'>
           <PalamanderView pal={pal} key={pal.type} display={generateBoundedDisplayRange({ x: 0.5, y: 0.5 })}/>
         </div>
       </div>

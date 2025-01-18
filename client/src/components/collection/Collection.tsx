@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import CardMatrix from './CardMatrix.tsx';
+import CardMatrix from '../common/CardMatrix.tsx';
 import Details from './Details.tsx';
 import { Palamander } from '../../palamander/palamander.ts';
 import { readDefaultPalMap } from '../../palamander/create-palamander.ts';

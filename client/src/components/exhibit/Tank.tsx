@@ -16,7 +16,7 @@ function Tank({ palamanders } : { palamanders: Palamander[] } ) {
 
   return (
     <div className='size-80 border'>
-      {<div className='card'>
+      {<div className='pal-boundry'>
         {palContent}
       </div>}
     </div>

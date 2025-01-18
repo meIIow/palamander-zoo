@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Staging from './Staging.tsx';
-import CardMatrix from './../collection/CardMatrix.tsx';
+import CardMatrix from '../common/CardMatrix.tsx';
 import Tank from './Tank.tsx';
 import { Palamander } from '../../palamander/palamander.ts';
 import { readDefaultPalMap } from '../../palamander/create-palamander.ts';
@@ -39,8 +39,6 @@ function Exhibit() {
   }, []);
 
   const choose = (index: number): void => setChosen(index);
-
-  // console.log(staged);
 
   const selection = (chosen < 0 || chosen > 2) ?
     (<Tank palamanders={staged.filter((pal) => pal != null)}/>) :

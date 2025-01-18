@@ -1,4 +1,3 @@
-import './Card.css'
 import { useEffect, useState } from 'react';
 import PalamanderView from '../palamander/PalamanderView.tsx';
 import { Palamander } from '../../palamander/palamander.ts';
@@ -37,12 +36,12 @@ function Card({ pal, choose } : CardProps) {
   return (
     <div>
       <div
-        className=" border hover:size-28 size-[104px] rounded-md border-black"
+        className="border hover:size-28 size-[104px] rounded-md border-black"
         onMouseEnter={() => registerHover(true)}
         onMouseLeave={() => registerHover(false)}
         onClick={() => choose(palamander.type)}
       >
-        <div className='card'>
+        <div className='pal-boundry'>
           <PalamanderView pal={palamander} display={generateBoundedDisplayRange({ x: 0.5, y: 0.5 })}/>
         </div>
       </div>
