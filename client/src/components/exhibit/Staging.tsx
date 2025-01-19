@@ -6,41 +6,27 @@ import { generateBoundedDisplayRange }from '../../palamander/palamander-range.ts
 type CardProps = {
   pal: Palamander | null,
   active: boolean,
+  selected: boolean,
   select: () => void,
+  hover?: () => void,
 }
 
 const setStaticPal = (pal: Palamander): Palamander => {
-  return { ...pal, override: { freeze: false, move: { speed: 0, angle: 225 } } }
+  return { ...pal, override: { freeze: false, move: { speed: 0, angle: 270 } } }
 };
 
-const StopSpinningPal = (pal: Palamander): Palamander => {
-  return { ...pal, override: { freeze: false, move: { speed: 0, turn: 0 } } }
-};
-
-const setSpinningPal = (pal: Palamander): Palamander => {
-  return { ...pal, override: { freeze: false, move: { speed: 0, turn: 25 } } }
-};
-
-const setNullablePal = (hovered: boolean, set: (value: React.SetStateAction<Palamander | null>) => void): void => {
-  return set((pal) => {
-    if (pal == null) return pal;
-    return hovered ? setSpinningPal(pal) : StopSpinningPal(pal);
-  });
-}
-
-function Staging({ pal, active, select } : CardProps) {
+function Staging({ pal, active, selected, select, hover } : CardProps) {
   const [palamander, setPalamander] = useState<Palamander | null>(() => pal == null ? null : setStaticPal(pal));
   const [hovered, setHovered] = useState(false);
 
-  const registerHover = (hover: boolean) => {
-    setHovered(hover);
-    if (palamander == null) return;
-    setNullablePal(hover, setPalamander);
+  const registerHover = (hovered: boolean) => {
+    if (hovered && !!hover) hover();
+    setHovered(hovered);
   };
 
   useEffect(()=> {
     if (pal == null) return setPalamander(null);
-    setPalamander(hovered ? setSpinningPal(pal) : StopSpinningPal(pal));
+    setPalamander(setStaticPal(pal));
   }, [pal]);
 
   const content = (palamander == null) ?
@@ -49,10 +35,12 @@ function Staging({ pal, active, select } : CardProps) {
       <PalamanderView pal={palamander} key={palamander.type} display={generateBoundedDisplayRange({ x: 0.5, y: 0.5 })}/>
     </div>)
 
+  const border = selected ? 'border-4' : 'border';
+  const size = (active || hovered) ? 'size-28' : 'size-[104px]';
   return (
     <div>
       <div
-        className={`${active ? 'border-4' : 'border'} hover:size-28 size-[104px] rounded-md border-black`}
+        className={`${border} ${size} rounded-md border-black`}
         onMouseEnter={() => registerHover(true)}
         onMouseLeave={() => registerHover(false)}
         onClick={() => select()}

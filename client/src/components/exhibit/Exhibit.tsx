@@ -6,29 +6,25 @@ import { Palamander } from '../../palamander/palamander.ts';
 import { readDefaultPalMap } from '../../palamander/create-palamander.ts';
 
 type StagedPals = (Palamander | null)[]
+type StagingState = {
+  staged: StagedPals,
+  active: number,
+  selected: number,
+}
 
-const createChoose = (
-    index: number,
-    pals: Palamander[],
-    set: (value: React.SetStateAction<StagedPals>) => void,
-    choose: (value: React.SetStateAction<number>) => void) => {
-  return (type: string) => {
-    const palIndex = pals.findIndex(pal => pal.type == type);
-    console.log(palIndex, pals, index);
-    if (palIndex == -1) return;
-    set((staged) => {
-      const newStaged = [ ...staged ];
-      newStaged[index] = pals[palIndex]
-      return newStaged
-    });
-    choose(-1);
+const cloneStagingState = (stagingState: StagingState) => {
+  return {
+    ...stagingState,
+    staged: [ ...stagingState.staged ]
   }
 }
 
 function Exhibit() {
   const [ pals, setPals ] = useState<Array<Palamander>>([]);
-  const [ chosen, setChosen ] = useState(-1); // chosen index
-  const [ staged, setStaged ] = useState<StagedPals>([null, null, null]);
+  const [ staging, setStaging ] = useState<StagingState>({
+    staged: [ null, null, null ],
+    active: -1,
+    selected: -1 });
 
   useEffect(()=> {
     const getPals = async () => {
@@ -38,20 +34,64 @@ function Exhibit() {
     getPals();
   }, []);
 
-  const choose = (index: number): void => setChosen(index);
+  // Switch to a chosen index, then toggle on/off.
+  const select = (index: number): void => setStaging((staging) => {
+    const selected = (staging.selected == index) ? -1 : index
+    return {
+      ...cloneStagingState(staging),
+      selected,
+      active: selected,
+    };
+  });
 
-  const selection = (chosen < 0 || chosen > 2) ?
-    (<Tank palamanders={staged.filter((pal) => pal != null)}/>) :
-    (<CardMatrix pals={pals} choose={createChoose(chosen, pals, setStaged, setChosen)}/>);
+  const activate = (index: number): void => setStaging((staging) => {
+    if (staging.selected > -1) return cloneStagingState(staging);
+    return {
+      ...cloneStagingState(staging),
+      active: index,
+    };
+  });
+
+  const set = (type: string): void => setStaging((staging) => {
+    const palIndex = pals.findIndex(pal => pal.type == type);
+    if (palIndex == -1) return cloneStagingState(staging);
+    const staged = [ ...staging.staged ];
+    staged[staging.selected] = { ...pals[palIndex] };
+    return {
+      staged,
+      selected: -1,
+      active: staging.active,
+    };
+  });
+
+  const selection = (staging.selected < 0 || staging.selected > 2) ?
+    (<Tank palamanders={staging.staged.filter((pal) => pal != null)}/>) :
+    (<CardMatrix pals={pals} choose={set}/>);
 
   return (
     <div className={'max-w-80'}>
       {<div className="grid gap-3 grid-cols-1 240:grid-cols-2 360:grid-cols-3">
-        {staged.map((pal, i) => <Staging pal={pal} active={i==chosen} key={`${i}-${(pal == null) ? '' : pal.type}`} select={() => choose(i)}/>)}
+        {staging.staged.map((pal, i) => {
+          return <Staging
+            pal={pal}
+            active={staging.active == i}
+            selected={staging.selected == i}
+            key={`${i}-${(pal == null) ? '' : pal.type}`}
+            select={() => select(i)}
+            hover={() => activate(i)}
+          />
+        })}
       </div>}
       {selection}
     </div>
   )
 }
+
+// pal: Palamander | null,
+// spawnAngle: number,
+// active: boolean,
+// selected: boolean,
+// select: () => void,
+// hover?: () => void,
 
 export default Exhibit
