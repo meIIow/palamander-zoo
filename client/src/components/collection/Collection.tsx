@@ -39,7 +39,7 @@ function Collection() {
   return (
     <div className={'max-w-80'}>
       {<div>
-        <Filters filters={filters} set={doFilter}/>
+        <Filters filters={filters} display={chosen >= 0 && chosen < pals.length} set={doFilter}/>
         {content}
       </div>}
     </div>
