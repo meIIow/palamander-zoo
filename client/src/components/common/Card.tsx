@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import PalamanderView from '../palamander/PalamanderView.tsx';
 import { Palamander } from '../../palamander/palamander.ts';
 import { generateBoundedDisplayRange }from '../../palamander/palamander-range.ts'
+import PalamanderFilter from './PalamanderFilter.tsx';
 
 type CardProps = {
   pal: Palamander,
@@ -21,29 +22,24 @@ const setSpinningPal = (pal: Palamander): Palamander => {
 };
 
 function Card({ pal, choose } : CardProps) {
-  const [palamander, setPalamander] = useState(setStaticPal(pal));
   const [hovered, setHovered] = useState(false);
-
+  const [initial, setInitial] = useState(true);
+  const palamander = initial ? setStaticPal(pal) : hovered ? setSpinningPal(pal) : StopSpinningPal(pal);
   const registerHover = (hover: boolean) => {
-    setPalamander(pal => hover ? setSpinningPal(pal) : StopSpinningPal(pal));
-    setHovered(hover);
+    setHovered((_) => hover);
+    setInitial((_) => false);
   };
-
-  useEffect(()=> {
-    setPalamander(pal => hovered ? setSpinningPal(pal) : setStaticPal(pal));
-  }, [pal]);
-
   return (
     <div>
       <div
         className="border hover:size-28 size-[104px] rounded-md border-black"
         onMouseEnter={() => registerHover(true)}
         onMouseLeave={() => registerHover(false)}
-        onClick={() => choose(palamander.type)}
       >
-        <div className='pal-boundry'>
+        <div className='pal-boundry' onClick={() => choose(palamander.type)}>
           <PalamanderView pal={palamander} display={generateBoundedDisplayRange({ x: 0.5, y: 0.5 })}/>
         </div>
+        <PalamanderFilter type={pal.type}/>
       </div>
     </div>
   )

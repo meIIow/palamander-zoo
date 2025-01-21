@@ -1,7 +1,7 @@
 import { useState, useContext } from 'react';
 import CardMatrix from '../common/CardMatrix.tsx';
 import Details from './Details.tsx';
-import Filters from '../common/Filters.tsx';
+import PrimaryFilter from '../common/PrimaryFilter.tsx';
 import { FilteredPalContext } from '../common/context.tsx';
 
 function Collection() {
@@ -21,7 +21,7 @@ function Collection() {
 
   return (
     <div>
-      <Filters display={chosen >= 0 && chosen < pals.length}/>
+      <PrimaryFilter active={chosen < 0 || chosen >= pals.length}/>
       {content}
     </div>
   )

@@ -11,7 +11,9 @@ type ColorFilterAction =
   | { type: 'CLEAR' } 
   | { type: 'TOGGLE', color: string };
 
-type PalColors = { [type: string]: ColorFilter };
+type PalColorFilters = { [type: string]: ColorFilter };
+
+type ColorToggle = (type: string, color: string) => void;
 
 const dummyPalcolors = {
   'axolotl': { red: true, green: true, blue: true, purple: true },
@@ -21,16 +23,15 @@ const dummyPalcolors = {
   'asdfsdkja': { red: true, green: true, blue: true, purple: true },
 }
 
-
 function initColorFilter(): ColorFilter {
   return { red: false, green: false, blue: false, purple: false }
 }
 
-function filterPals(pals: Palamander[], colors: PalColors, filter: ColorFilter): Palamander[] {
+function filterPals(pals: Palamander[], filters: PalColorFilters, filter: ColorFilter): Palamander[] {
   if (!(Object.values(filter).reduce((pred, val) => val || pred, false))) return pals;
   return pals.filter((pal) => {
-    if (!(pal.type in colors)) return false;
-    return Object.entries(colors[pal.type]).reduce((acc, [ color, set ]) => {
+    if (!(pal.type in filters)) return false;
+    return Object.entries(filters[pal.type]).reduce((acc, [ color, set ]) => {
       if (!(color in filter)) return acc;
       return acc || (set && filter[color as keyof typeof filter])
     }, false);
@@ -48,5 +49,5 @@ const reduceColorFilter = (filters: ColorFilter, action: ColorFilterAction): Col
   }
 };
 
-export type { ColorFilter, ColorFilterAction, PalColors };
+export type { ColorFilter, ColorFilterAction, PalColorFilters, ColorToggle };
 export { initColorFilter, filterPals, reduceColorFilter, dummyPalcolors };
