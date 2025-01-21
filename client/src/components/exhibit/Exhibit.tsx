@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useContext } from 'react';
 import Staging from './Staging.tsx';
 import CardMatrix from '../common/CardMatrix.tsx';
 import Tank from './Tank.tsx';
 import { Palamander } from '../../palamander/palamander.ts';
-import { readDefaultPalMap } from '../../palamander/create-palamander.ts';
+import { PalContext } from '../common/context.tsx';
 
 type StagedPals = (Palamander | null)[]
 type StagingState = {
@@ -20,19 +20,11 @@ const cloneStagingState = (stagingState: StagingState) => {
 }
 
 function Exhibit() {
-  const [ pals, setPals ] = useState<Array<Palamander>>([]);
   const [ staging, setStaging ] = useState<StagingState>({
     staged: [ null, null, null ],
     active: -1,
     selected: -1 });
-
-  useEffect(()=> {
-    const getPals = async () => {
-      const palMap = await readDefaultPalMap();
-      setPals(Object.values(palMap));
-    };
-    getPals();
-  }, []);
+  const pals = useContext(PalContext);
 
   // Switch to a chosen index, then toggle on/off.
   const select = (index: number): void => setStaging((staging) => {

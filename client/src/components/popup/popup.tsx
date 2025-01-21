@@ -1,6 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import Collection from './../collection/Collection.tsx'
+import App from './App.tsx'
 // import Exhibit from './../exhibit/Exhibit.tsx'
 
 (async () => {
@@ -11,6 +11,6 @@ import Collection from './../collection/Collection.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <Collection />
+    <App />
   </StrictMode>,
 )
