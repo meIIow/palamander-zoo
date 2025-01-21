@@ -2,6 +2,7 @@ import { useState, useContext } from 'react';
 import Staging from './Staging.tsx';
 import CardMatrix from '../common/CardMatrix.tsx';
 import Tank from './Tank.tsx';
+import PrimaryFilter from './../common/PrimaryFilter.tsx'
 import { Palamander } from '../../palamander/palamander.ts';
 import { PalContext } from '../common/context.tsx';
 
@@ -58,7 +59,7 @@ function Exhibit() {
 
   const selection = (staging.selected < 0 || staging.selected > 2) ?
     (<Tank pals={staging.staged.filter((pal) => pal != null)}/>) :
-    (<CardMatrix choose={set}/>);
+    (<div><PrimaryFilter active={true}/><CardMatrix choose={set}/></div>);
 
   return (
     <div>

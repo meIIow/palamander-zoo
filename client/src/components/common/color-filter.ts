@@ -1,4 +1,5 @@
 import { Palamander } from "../../palamander/palamander";
+import storage from '../../utilities/storage.ts';
 
 type ColorFilter = {
   red: boolean,
@@ -15,12 +16,14 @@ type PalColorFilters = { [type: string]: ColorFilter };
 
 type ColorToggle = (type: string, color: string) => void;
 
-const dummyPalcolors = {
-  'axolotl': { red: true, green: true, blue: true, purple: true },
-  'newt': { red: false, green: false, blue: false, purple: false },
-  'octopus': { red: true, green: false, blue: true, purple: false },
-  'frog': { red: false, green: true, blue: false, purple: true },
-  'asdfsdkja': { red: true, green: true, blue: true, purple: true },
+async function pullPalamanderFilters(): Promise<PalColorFilters> {
+  return (await storage.sync.get(['pal-filters']))['pal-filters'] ?? {};
+}
+
+async function syncPalamanderFilters(filters: PalColorFilters): Promise<void> {
+  const storedFilters = await pullPalamanderFilters();
+  const combinedFilters = { ...storedFilters, ...filters };
+  await storage.sync.set({ 'pal-filters': combinedFilters });
 }
 
 function initColorFilter(): ColorFilter {
@@ -50,4 +53,4 @@ const reduceColorFilter = (filters: ColorFilter, action: ColorFilterAction): Col
 };
 
 export type { ColorFilter, ColorFilterAction, PalColorFilters, ColorToggle };
-export { initColorFilter, filterPals, reduceColorFilter, dummyPalcolors };
+export { initColorFilter, filterPals, reduceColorFilter, syncPalamanderFilters, pullPalamanderFilters };
