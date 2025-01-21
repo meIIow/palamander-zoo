@@ -11,7 +11,7 @@ function Filters({ display }: { display: boolean}) {
       {Object.entries(filter).map(([ color, active ]) => {
         return (<Filter color={color} active={active} key={color} toggle={toggle}/>)
       })}
-      <button className="rounded-full" onClick={reset}>reset</button>
+      <button className="rounded-full" onClick={reset}>{(display) ? 'locked' : 'reset'}</button>
     </div>
   )
 }

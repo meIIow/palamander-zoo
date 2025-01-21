@@ -11,17 +11,13 @@ type DetailsProps = {
 }
 
 function Details({ pal, index, count, shift, release } : DetailsProps) {
-  const prev = (index <= 0) ?
-    null :
-    (<button className="rounded-full" onClick={() => shift(index-1)}>prev</button>);
-  const next = (index >= count-1) ?
-    null :
-    (<button className="rounded-full" onClick={() => shift(index+1)}>next</button>);
-  const exit = (<button className="rounded-full" onClick={() => release()}>release</button>);
+  const prev = (<button className="rounded-full" onClick={() => shift(index-1)}>prev</button>);
+  const next = (<button className="rounded-full" onClick={() => shift(index+1)}>next</button>);
+  const exit = (<button className="rounded-full" onClick={() => release()}>exit</button>);
   return (
     <div className="w-full h-full">
-      {prev}
-      {next}
+      {(index <= 0) ? null : prev}
+      {(index >= count-1) ? null : next}
       {exit}
       <div className='flex justify-center items-center border size-80 rounded-md border-black'>
         <div className='pal-boundry'>

@@ -57,12 +57,12 @@ function Exhibit() {
   });
 
   const selection = (staging.selected < 0 || staging.selected > 2) ?
-    (<Tank palamanders={staging.staged.filter((pal) => pal != null)}/>) :
-    (<CardMatrix pals={pals} choose={set}/>);
+    (<Tank pals={staging.staged.filter((pal) => pal != null)}/>) :
+    (<CardMatrix choose={set}/>);
 
   return (
-    <div className={'max-w-80'}>
-      {<div className="grid gap-3 grid-cols-1 240:grid-cols-2 360:grid-cols-3">
+    <div>
+      <div className="grid gap-3 grid-cols-1 240:grid-cols-2 360:grid-cols-3">
         {staging.staged.map((pal, i) => {
           return <Staging
             pal={pal}
@@ -73,17 +73,10 @@ function Exhibit() {
             hover={() => activate(i)}
           />
         })}
-      </div>}
+      </div>
       {selection}
     </div>
   )
 }
-
-// pal: Palamander | null,
-// spawnAngle: number,
-// active: boolean,
-// selected: boolean,
-// select: () => void,
-// hover?: () => void,
 
 export default Exhibit

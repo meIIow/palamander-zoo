@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import PalamanderView from '../palamander/PalamanderView.tsx';
 import { Palamander } from '../../palamander/palamander.ts';
 import { generateBoundedDisplayRange }from '../../palamander/palamander-range.ts'
@@ -16,18 +16,13 @@ const setStaticPal = (pal: Palamander): Palamander => {
 };
 
 function Staging({ pal, active, selected, select, hover } : CardProps) {
-  const [palamander, setPalamander] = useState<Palamander | null>(() => pal == null ? null : setStaticPal(pal));
   const [hovered, setHovered] = useState(false);
+  const palamander =  pal == null ? null : setStaticPal(pal)
 
   const registerHover = (hovered: boolean) => {
     if (hovered && !!hover) hover();
     setHovered(hovered);
   };
-
-  useEffect(()=> {
-    if (pal == null) return setPalamander(null);
-    setPalamander(setStaticPal(pal));
-  }, [pal]);
 
   const content = (palamander == null) ?
     null :

@@ -1,7 +1,7 @@
 import { useState, useEffect, useReducer } from 'react';
 import Collection from '../collection/Collection.tsx';
 import Exhibit from '../exhibit/Exhibit.tsx';
-import { initColorFilter, reduceColorFilter } from '../common/color-filter.ts';
+import { initColorFilter, reduceColorFilter, filterPals, dummyPalcolors } from '../common/color-filter.ts';
 import { Palamander } from '../../palamander/palamander.ts';
 import { readDefaultPalMap } from '../../palamander/create-palamander.ts';
 import { FilterContext, PalContext, FilteredPalContext } from '../common/context.tsx';
@@ -19,11 +19,12 @@ function App() {
     getPals();
   }, []);
 
+  const filtered = filterPals(pals, dummyPalcolors, filter);
   return (
     <div className={'max-w-80'}>
       <button className="rounded-full" onClick={() => setShowCollection((_) => true)}>Collection</button>
       <button className="rounded-full" onClick={() => setShowCollection((_) => false)}>Exhibit</button>
-      <PalContext.Provider value={pals}><FilteredPalContext.Provider value={pals}>
+      <PalContext.Provider value={pals}><FilteredPalContext.Provider value={filtered}>
         <FilterContext.Provider value={{ filter, dispatch }}>
           {showCollection ? <Collection/> : <Exhibit/>}
         </FilterContext.Provider>

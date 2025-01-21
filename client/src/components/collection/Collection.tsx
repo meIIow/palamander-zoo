@@ -2,12 +2,11 @@ import { useState, useContext } from 'react';
 import CardMatrix from '../common/CardMatrix.tsx';
 import Details from './Details.tsx';
 import Filters from '../common/Filters.tsx';
-import { PalContext } from '../common/context.tsx';
+import { FilteredPalContext } from '../common/context.tsx';
 
 function Collection() {
-  // const [ palMap, setPalMap ] = useState<PalamanderMap>({});
   const [ chosen, setChosen ] = useState(-1); // chosen index
-  const pals = useContext(PalContext)
+  const pals = useContext(FilteredPalContext);
 
   const choose = (type: string): void => {
     setChosen(pals.findIndex(pal => pal.type == type));
@@ -18,14 +17,12 @@ function Collection() {
 
   const content = (chosen >= 0 && chosen < pals.length) ?
     (<Details pal={pals[chosen]} index={chosen} count={pals.length} release={release} shift={shift}/>) :
-    (<CardMatrix pals={pals} choose={choose}/>);
+    (<CardMatrix choose={choose}/>);
 
   return (
-    <div className={'max-w-80'}>
-      {<div>
-        <Filters display={chosen >= 0 && chosen < pals.length}/>
-        {content}
-      </div>}
+    <div>
+      <Filters display={chosen >= 0 && chosen < pals.length}/>
+      {content}
     </div>
   )
 }

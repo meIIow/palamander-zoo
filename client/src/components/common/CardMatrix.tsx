@@ -1,22 +1,13 @@
 import Card from './Card.tsx';
-import { useState, useEffect } from 'react';
-import { Palamander } from '../../palamander/palamander.ts';
+import { useContext } from 'react';
+import { FilteredPalContext } from './context.tsx';
 
-type CardProps = {
-  pals: Palamander[],
-  choose: (type: string) => void,
-}
+function CardMatrix({ choose } : { choose: (type: string) => void } ) {
+  const pals = useContext(FilteredPalContext)
 
-function CardMatrix({ pals, choose } : CardProps ) {
-  const [palamanders, setPalamanders] = useState<Array<Palamander>>(pals);
-
-  useEffect(()=> {
-    setPalamanders(pals);
-  }, [pals]);
-
-  const cards = Object.keys(palamanders).length <= 0 ?
+  const cards = Object.keys(pals).length <= 0 ?
     null :
-    palamanders.map((pal) => (
+    pals.map((pal) => (
       <div key={pal.type}>
         <Card pal={pal} choose={choose}/>
       </div>
