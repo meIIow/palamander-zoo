@@ -4,7 +4,7 @@ import CardMatrix from '../common/CardMatrix.tsx';
 import Tank from './Tank.tsx';
 import PrimaryFilter from './../common/PrimaryFilter.tsx'
 import { Palamander } from '../../palamander/palamander.ts';
-import { PalContext } from '../common/context.tsx';
+import { PalContext } from '../common/pal-context.ts';
 
 type StagedPals = (Palamander | null)[]
 type StagingState = {

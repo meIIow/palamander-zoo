@@ -2,7 +2,7 @@ import { useState, useContext } from 'react';
 import CardMatrix from '../common/CardMatrix.tsx';
 import Details from './Details.tsx';
 import PrimaryFilter from '../common/PrimaryFilter.tsx';
-import { FilteredPalContext } from '../common/context.tsx';
+import { FilteredPalContext } from '../common/pal-context.ts';
 
 function Collection() {
   const [ chosen, setChosen ] = useState(-1); // chosen index

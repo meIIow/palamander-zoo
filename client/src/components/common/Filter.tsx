@@ -1,4 +1,4 @@
-import { ColorFilter } from './color-filter.ts';
+import { ColorFilter, FILTER_COLORS } from './color-filter.ts';
 import FilterColor from './FilterColor.tsx'
 
 type FiltersProps = {
@@ -13,8 +13,8 @@ function Filter({ filter, toggle, extras }: FiltersProps) {
   })
   return (
     <div>
-      {Object.entries(filter).map(([ color, active ]) => {
-        return (<FilterColor color={color} active={active} key={color} toggle={toggle}/>)
+      {FILTER_COLORS.map((color) => {
+        return (<FilterColor color={color} active={filter[color]} key={color} toggle={toggle}/>)
       })}
       {(!buttons.length) ? null : buttons}
     </div>

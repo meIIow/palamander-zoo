@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import Filter from './Filter.tsx';
-import { PalFiltersContext } from './context.tsx';
+import { PalFiltersContext } from './filter-context.ts';
 import { initColorFilter } from './color-filter.ts';
 
 function PalamanderFilter({ type }: { type: string }) {

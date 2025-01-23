@@ -1,6 +1,6 @@
 import Card from './Card.tsx';
 import { useContext } from 'react';
-import { FilteredPalContext } from './context.tsx';
+import { FilteredPalContext } from './pal-context.ts';
 
 function CardMatrix({ choose } : { choose: (type: string) => void } ) {
   const pals = useContext(FilteredPalContext)

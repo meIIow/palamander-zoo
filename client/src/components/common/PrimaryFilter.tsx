@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import Filter from './Filter.tsx';
-import { FilterContext } from './context.tsx';
+import { FilterContext } from './filter-context.ts';
 
 function PrimaryFilter({ active }: { active: boolean }) {
   const { filter, dispatch } = useContext(FilterContext);
