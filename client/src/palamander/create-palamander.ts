@@ -1,6 +1,6 @@
 import { Section } from './morphology/section.ts';
 import segmentate from './morphology/segmentation/segmentate.ts'
-import { Palamander, PalamanderMap, calculatePivotIndex } from './palamander.ts';
+import { Palamander, PalSettings, PalamanderMap, calculatePivotIndex } from './palamander.ts';
 import { createMovementAgent } from './movement/movement-agent.ts';
 import { BehaviorInput } from './movement/behavior.ts';
 
@@ -8,7 +8,6 @@ type PalamanderSpec = {
   type: string,
   sectionTree: Section,
   movementBehavior: BehaviorInput,
-  updateInterval: number,
   magnification: number,
 };
 
@@ -33,16 +32,24 @@ const defaultPalList = [
   // 'jelly'
 ];
 
-function hydrate(spec: PalamanderSpec): Palamander {
+const defaultPalParams = {
+  updateInterval: 50,
+  magnification: 1,
+  color: 'teal',
+}
+
+function hydrate(spec: PalamanderSpec, settings: PalSettings = defaultPalParams): Palamander {
   const body = segmentate(spec.sectionTree);
   return {
     type: spec.type,
     body,
     pivotIndex: calculatePivotIndex(body),
-    updateInterval: spec.updateInterval,
-    magnificaiton: spec.magnification,
     override: { freeze: false, move: {} },
     movementAgent: createMovementAgent(spec.movementBehavior),
+    settings: {
+      ...settings,
+      magnification: spec.magnification * settings.magnification,
+    },
   };
 }
 
@@ -76,7 +83,6 @@ async function createDefaultPalList(): Promise<Palamander[]> {
         linear: { id: '', velocity: 0, interval: 0 },
         angular: { id: '', velocity: 0, interval: 0 },
       },
-      updateInterval: 50,
       magnification: (type == 'crawdad' ? 10 : 20) / 2,
     }
   });
@@ -102,7 +108,6 @@ function createDefaultPal(): Palamander {
       angular: { id: '', velocity: 0, interval: 0 },
     },
     suppressMove: { turn: false, speed: false },
-    updateInterval: 50,
     magnification: 20
   }
   return hydrate(palSpec);
@@ -127,7 +132,6 @@ function createAxolotl(): Palamander {
       angular: { id: '', velocity: 0, interval: 0 },
     },
     suppressMove: { turn: false, speed: false },
-    updateInterval: 50,
     magnification: 20
   }
   return hydrate(palSpec);

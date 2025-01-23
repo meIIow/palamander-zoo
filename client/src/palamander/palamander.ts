@@ -7,10 +7,15 @@ type Palamander = {
   type: string,
   body: Segment[];
   pivotIndex: number;
-  updateInterval: number;
   movementAgent: MovementAgent;
   override: Override,
-  magnificaiton: number;
+  settings: PalSettings;
+};
+
+type PalSettings = {
+  updateInterval: number,
+  magnification: number,
+  color: string,
 };
 
 type PalamanderMap = {
@@ -51,7 +56,7 @@ const startUpdateLoop = (pal: Palamander, animate: AnimationFunc): () => void =>
       };
     });
     prevTime = currTime;
-  }, locked.updateInterval);
+  }, locked.settings.updateInterval);
   return () => clearInterval(intervalId);
 };
 
@@ -117,4 +122,4 @@ function changeBasis(coordinate: Coords, angle: number) {
 }
 
 export { startUpdateLoop, initializePalamanderState, calculatePivotIndex, getBodySegments, calculateFractionalCoordinates }; 
-export type { Palamander, PalamanderMap, PalamanderState };
+export type { Palamander, PalSettings, PalamanderMap, PalamanderState };

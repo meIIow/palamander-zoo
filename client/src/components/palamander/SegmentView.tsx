@@ -5,10 +5,11 @@ type SegmentViewProps = {
   circle: Circle,
   display: DisplayRange,
   magnification: number,
+  color: string
 }
 
-function SegmentView({ circle, display, magnification }: SegmentViewProps) {
-  const styles = display.styleSegment(circle, magnification);
+function SegmentView({ circle, display, magnification, color }: SegmentViewProps) {
+  const styles = display.styleSegment(circle, magnification, color);
   return (
     <>
       {styles.map((style, i) => <div className="segment" style={style} key={i}></div>)}

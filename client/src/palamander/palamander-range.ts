@@ -85,7 +85,7 @@ class DisplayRange {
     return this;
   }
 
-  styleSegment(circle: Circle, magnification: number): React.CSSProperties[] {
+  styleSegment(circle: Circle, magnification: number, color: string): React.CSSProperties[] {
     if (this.#range == undefined) return [];
     if (this.#spawn == undefined) return [];
     const bottomRightEdges = calculateBottomRightEdges(circle, this.#range, this.#spawn, magnification);
@@ -96,7 +96,7 @@ class DisplayRange {
         right: `${x}px`,
         height: `${size}px`,
         width: `${size}px`,
-        backgroundColor: 'teal',
+        backgroundColor: color,
         position: this.#options.fixed ? 'fixed' : 'absolute',
         borderRadius: '50%',
       };

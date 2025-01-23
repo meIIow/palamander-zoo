@@ -28,7 +28,8 @@ function PalamanderView({ pal, display }: PalamanderProps) {
           return (<SegmentView
             circle={{ ...circle, center: shift(circle.center, state.delta)}}
             display={display}
-            magnification={pal.magnificaiton}
+            magnification={pal.settings.magnification}
+            color={pal.settings.color}
             key={i}
           />)
         })}
