@@ -33,7 +33,7 @@ const getStagedSettings = (stagedSettings: StagedSettings, index: number, key: s
 const defaultStagedSettings: PalSettings = {
   updateInterval: 50,
   magnification: 10,
-  color: '#000000',
+  color: '#000000', // black
 }
 
 function Exhibit() {
