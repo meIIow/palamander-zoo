@@ -46,9 +46,9 @@ pals = {
   'jelly': ('float', 'curious', 10),
   'newt': ('flitting', 'twirling', 10),
   'newt-king': ('deliberate', 'curious', 10),
-  'octopus': ('flitting', 'turning', 10),
+  'octopus': ('flitting', 'curious', 10),
   'sea-monkey': ('deliberate', 'wary', 10),
-  'sea-lion': ('flitting', 'turning', 10),
+  'sea-lion': ('flitting', 'curious', 10),
   'tadpole': ('flitting', 'twirling', 10),
   'starfish': ('hovering', 'twirling', 10),
 }
