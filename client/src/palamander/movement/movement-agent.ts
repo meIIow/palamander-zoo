@@ -1,5 +1,6 @@
 import { Coords } from '../common/coords.ts'
 import { Behavior, BehaviorInput, generateBehavior } from './behavior.ts';
+import { MovementVector, VelocitySampler, VelocityFactor, generateSampleVelocity } from './velocity.ts'
 
 type Movement = {
   dist: number;
@@ -15,6 +16,51 @@ type MovementOverride = {
   angle?: number;
   dist?: number;
 }
+
+type MovementOverride2 = {
+  turn?: number;
+  speed?: number;
+  angle?: number;
+  dist?: number;
+}
+
+type Move = (interval: number, override: number, factor: VelocityFactor) => Movement;
+
+function calculateDelta(angle: number, dist: number): Coords {
+  return {
+    x: -Math.sin(angle * Math.PI / 180) * dist,
+    y: -Math.cos(angle * Math.PI / 180) * dist,
+  }
+}
+
+// function calculateAngle(interval: number, turn: number, speed: number): number {
+//   const turnAngle = (interval / 1000) * this.#behavior.rotation.limit.velocity * (turn / 100);
+//   // Cannot turn as well at speed.
+//   return this.#movement.angle + turnAngle * (1 - speed / 100);
+// }
+
+// function generateMove(behavior: BehaviorInput): Move {
+//   const movementBehavior = generateBehavior(behavior);
+//   const sampleSpeed = generateSampleVelocity(movementBehavior.speed);
+//   const sampleTurn = generateSampleVelocity(movementBehavior.rotation);
+
+//   return (interval: number, override: MovementOverride, factor: VelocityFactor): Movement => {
+//     const speed = override.speed ?? sampleSpeed(interval, factor);
+//     const turn = override.turn ?? sampleSpeed(interval, factor);
+//     const dist = override.dist ?? calculateDist(interval, speed);
+//     const angle = override.angle ?? this.calculateAngle(interval, turn, speed);
+//     const delta = MovementAgent.calculateDelta(angle, dist);
+
+//     this.#movement = {
+//       angle,
+//       dist,
+//       speed,
+//       turn,
+//       delta,
+//     }
+//     return this.#movement;
+//   };
+// }
 
 class MovementAgent {
   #behavior: Behavior;
