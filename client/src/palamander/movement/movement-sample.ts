@@ -10,7 +10,7 @@ type SampleRange = {
   skewMin?: number; // bias towards lower values - will sample skewMin extra and take min
 }
 
-type MovementSampler = (interval: number) => number;
+type TimedSampler = (interval: number) => number;
 type Sampler = () => number;
 
 // Samples from a range, skewing towards the min by taking the lowest from skewCount+1.
@@ -33,9 +33,10 @@ function generateSampler(spec: SampleSpec): Sampler {
   }
 }
 
-// Generates a function to call repeatedly in order to get the specified sample
-// Sampled value persists based on corresponding sampled interval.
-function generateGetSample(sample: Sampler, sampleInterval: Sampler): MovementSampler {
+// Generates a function to call repeatedly in order to get the specified sample.
+// Sampled value persists if corresponding sampled interval has not been exceeded.
+// Sampled value (and sampled interval) is replaced when original sampled interval is exceeded.
+function generateGetSample(sample: Sampler, sampleInterval: Sampler): TimedSampler {
   let countdown = 0;
   let sampledVal = 0;
   return (interval: number) => {
@@ -43,9 +44,6 @@ function generateGetSample(sample: Sampler, sampleInterval: Sampler): MovementSa
       countdown -= interval;
       return sampledVal;
     }
-    // countdown = 2000;
-    // sampledVal = Math.random() > 0.5 ? 0 : 100;
-    // return sampledVal;
     const componentPrev = sampledVal * countdown / interval;
     sampledVal = sample();
     const component = sampledVal * (interval - countdown) / interval;
@@ -57,4 +55,4 @@ function generateGetSample(sample: Sampler, sampleInterval: Sampler): MovementSa
 }
 
 export { generateGetSample, generateSampler };
-export type { SampleSpec, SampleRange, MovementSampler };
+export type { SampleSpec, SampleRange, TimedSampler };

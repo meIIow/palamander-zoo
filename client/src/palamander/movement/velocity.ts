@@ -1,16 +1,12 @@
-import { VelocityLimit, VelocityBehavior } from "./velocity-behavior";
+import { VelocityLimit, VelocityBehavior } from './velocity-behavior.ts'
 
-type MovementVector = {
-  velocity: number,
+type VelocityIntegral = {
   distance: number,
-}
-
-type VelocityFactor = {
   velocity: number,
-  interval: number,
 }
 
-type VelocitySampler = (interval: number, factor: VelocityFactor) => MovementVector;
+type VelocityOverride = Partial<VelocityIntegral>
+type VelocityIntegralSampler = (interval: number, factor: number, override: VelocityOverride) => VelocityIntegral;
 
 // Clip velocity if (acc/dec)eleration are outside max range for this interval.
 function clipVelocity(curr: number, prev: number, limit: VelocityLimit): number {
@@ -19,19 +15,16 @@ function clipVelocity(curr: number, prev: number, limit: VelocityLimit): number 
   return curr;
 }
 
-function generateSampleVelocity(behavior: VelocityBehavior): VelocitySampler {
+function generateSampleVelocity(behavior: VelocityBehavior): VelocityIntegralSampler {
   const limit = { ...behavior.limit };
   const sample = behavior.sampler;
   let prevVelocity = 0;
-  return (interval: number, factor: VelocityFactor) => {
-    interval *= factor.interval;
-    const velocity = clipVelocity(sample(interval), prevVelocity, limit);
-    return {
-      velocity,
-      distance: (interval / 1000) * (velocity / 100) * limit.velocity * factor.velocity,
-    };
+  return (interval: number, factor: number, override: VelocityOverride) => {
+    const velocity = override.velocity ?? clipVelocity(sample(interval), prevVelocity, limit);
+    const distance = override.distance ?? (interval / 1000) * (velocity / 100) * limit.velocity * factor;
+    return { velocity, distance };
   }
 }
 
-export type { MovementVector, VelocityFactor, VelocitySampler }
+export type { VelocityIntegral, VelocityOverride, VelocityIntegralSampler }
 export { generateSampleVelocity }

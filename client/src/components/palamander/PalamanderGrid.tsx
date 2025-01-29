@@ -16,8 +16,8 @@ function PalamanderGrid({ suppress, reset } : { suppress: { turn: boolean, speed
   useEffect(()=> {
     const getPals = async () => {
       const movementOverride: MovementOverride = {
-        speed: suppress.speed ? 0 : undefined,
-        turn: suppress.turn ? 0 : undefined,
+        linear: { velocity: suppress.speed ? 0 : undefined },
+        rotational: { velocity: suppress.turn ? 0 : undefined },
       }
       const pals = (await readDefaultPalList()).map((pal) => {
         return { ...pal, override: { ... pal.override, move: movementOverride } }

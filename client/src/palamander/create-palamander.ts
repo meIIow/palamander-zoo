@@ -1,7 +1,7 @@
 import { Section } from './morphology/section.ts';
 import segmentate from './morphology/segmentation/segmentate.ts'
 import { Palamander, PalSettings, PalamanderMap, calculatePivotIndex } from './palamander.ts';
-import { createMovementAgent } from './movement/movement-agent.ts';
+import { Move, generateMove } from './movement/movement-agent.ts';
 import { BehaviorInput } from './movement/behavior.ts';
 
 type PalamanderSpec = {
@@ -44,8 +44,8 @@ function hydrate(spec: PalamanderSpec, settings: PalSettings = defaultPalParams)
     type: spec.type,
     body,
     pivotIndex: calculatePivotIndex(body),
-    override: { freeze: false, move: {} },
-    movementAgent: createMovementAgent(spec.movementBehavior),
+    override: { freeze: false, move: { linear: {}, rotational: {} } },
+    move: generateMove(spec.movementBehavior),
     settings: {
       ...settings,
       magnification: spec.magnification * settings.magnification,

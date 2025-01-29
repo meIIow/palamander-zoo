@@ -1,13 +1,13 @@
 import { createEngineCircle } from './common/circle.ts'
 import { Coords, shiftNegative, shift, toAngleVector } from './common/coords.ts'
 import { Segment, hydrateSegment, updateSegment, getBodySegments } from './morphology/segment.ts'
-import { MovementAgent, MovementOverride } from './movement/movement-agent.ts'
+import { Move, MovementFactor, MovementOverride } from './movement/movement-agent.ts'
 
 type Palamander = {
   type: string,
   body: Segment[];
   pivotIndex: number;
-  movementAgent: MovementAgent;
+  move: Move;
   override: Override,
   settings: PalSettings;
 };
@@ -40,12 +40,13 @@ const startUpdateLoop = (pal: Palamander, animate: AnimationFunc): () => void =>
   const locked = { ...pal }; // safe from changes to top-level pal values
   const updateCircle = createEngineCircle(pal.body[0].circle);
   let prevTime = Date.now();
+  const factor: MovementFactor = { linear: 1, rotational: 1, interval: 1 }; // hard-code no-op move factor
   const intervalId = setInterval(() => {
     const currTime = Date.now();
     const interval = currTime-prevTime;
-    const movement = locked.movementAgent.move(interval, locked.override.move);
+    const movement = locked.move(interval, factor, locked.override.move);
     animate((state: PalamanderState) => {
-      const head = updateSegment(state.head, updateCircle, movement.angle, movement.angle, interval, movement.speed);
+      const head = updateSegment(state.head, updateCircle, movement.rotational.distance,  movement.rotational.distance, interval,  movement.rotational.velocity);
       const center = calculatePivotCoords(head, locked.pivotIndex);
       const centerDelta = shiftNegative(state.center, center);
       const delta = shift(shift(state.delta, movement.delta), centerDelta);

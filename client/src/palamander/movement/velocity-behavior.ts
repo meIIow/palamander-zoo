@@ -1,4 +1,4 @@
-import { MovementSampler, SampleSpec, generateSampler, generateGetSample } from './movement-sample.ts';
+import { TimedSampler, SampleSpec, generateSampler, generateGetSample } from './movement-sample.ts';
 
 type VelocityBehaviorInput = {
   id: string;
@@ -16,7 +16,7 @@ type VelocityBehaviorSpecGenerator = (velocity: number, interval: number) => Vel
 
 type VelocityBehavior = {
   limit: VelocityLimit,
-  sampler: MovementSampler,
+  sampler: TimedSampler,
 };
 
 type VelocityLimit = {

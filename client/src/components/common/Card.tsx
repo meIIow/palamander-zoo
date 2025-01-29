@@ -10,15 +10,15 @@ type CardProps = {
 }
 
 const setStaticPal = (pal: Palamander): Palamander => {
-  return { ...pal, override: { freeze: false, move: { speed: 0, angle: 225 } } }
+  return { ...pal, override: { freeze: false, move: { linear: { velocity: 0 }, rotational: {}, angle: 225 } } }
 };
 
 const StopSpinningPal = (pal: Palamander): Palamander => {
-  return { ...pal, override: { freeze: false, move: { speed: 0, turn: 0 } } }
+  return { ...pal, override: { freeze: false, move: { linear: { velocity: 0 }, rotational: { velocity: 0 } } } }
 };
 
 const setSpinningPal = (pal: Palamander): Palamander => {
-  return { ...pal, override: { freeze: false, move: { speed: 0, turn: 25 } } }
+  return { ...pal, override: { freeze: false, move: { linear: { velocity: 0 }, rotational: { velocity: 25 } } } }
 };
 
 function Card({ pal, choose } : CardProps) {
