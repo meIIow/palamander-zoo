@@ -1,10 +1,11 @@
-import { useState, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import Staging from './Staging.tsx';
 import CardMatrix from '../common/CardMatrix.tsx';
 import Tank from './Tank.tsx';
 import PrimaryFilter from './../common/PrimaryFilter.tsx'
 import { Palamander, PalSettings } from '../../palamander/palamander.ts';
 import { PalContext } from '../common/pal-context.ts';
+import { show as showPal, visible } from './../../extension/storage.ts'
 import Settings from './Settings.tsx'
 
 type StagedPals = (Palamander | null)[];
@@ -42,7 +43,20 @@ function Exhibit() {
     active: -1,
     selected: -1 });
   const [ settings, setSettings ] = useState<StagedSettings>([{}, {}, {}]);
+  const [ show, setShow ] = useState(false);
   const pals = useContext(PalContext);
+
+  useEffect(()=> {
+    (async () => {
+      const isVisible = await visible();
+      setShow(isVisible);
+    })();
+  }, []);
+
+  const toggleShow = async (show: boolean) => {
+    await showPal(!show);
+    setShow(!show);
+  }
 
   // Switch to a chosen index, then toggle on/off.
   const select = (index: number): void => setStaging((staging) => {
@@ -101,6 +115,7 @@ function Exhibit() {
 
   return (
     <div>
+      <button className="rounded-full" onClick={() => toggleShow(show)}>{show ? 'hide' : 'show'}</button>;
       <div className="grid gap-3 grid-cols-1 240:grid-cols-2 360:grid-cols-3">
         {staging.staged.map((pal, i) => {
           return <Staging

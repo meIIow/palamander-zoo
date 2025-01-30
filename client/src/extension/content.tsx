@@ -5,7 +5,7 @@ import PalamanderView from '../components/palamander/PalamanderView.tsx'
 import { Palamander } from '../palamander/palamander.ts'
 import { createAxolotl } from '../palamander/create-palamander.ts'
 import { generateWindowDisplayRange } from '../palamander/palamander-range.ts'
-import { showPals } from './storage.ts'
+import { visible } from './storage.ts'
 
 const PALAMANDER_ROOT_ID = 'palamander-root';
 
@@ -33,30 +33,30 @@ async function createAxolotlTemp(): Promise<Palamander> {
 
 const [renderPalamander, clearPalamander] = (() => {
   let rendered = false; // protect rendered variable in closure
-  return [
-    async (rerender: boolean = true) => {
-      if (rendered && !rerender) return;
-      if (document.hidden) return;
-      if (! (await showPals())) return;
-      rendered = true;
-      console.log("PALAMANDER: (re-)rendering pal");
-      const pal = await createAxolotlTemp();
-      getPalamanderRoot().render(
-        <StrictMode>
-          <PalamanderView pal={pal} display={generateWindowDisplayRange({ x: 0.5, y: 0.5 })}/>
-        </StrictMode>,
-      )
-    },
-    () => {
-      rendered = false;
-      console.log("PALAMANDER: clearing pal");
-      getPalamanderRoot().render(
-        <StrictMode>
-          {null}
-        </StrictMode>,
-      )
-    }
-  ]
+  const clearPalamander = () => {
+    if (rendered == false) return;
+    rendered = false;
+    console.log("PALAMANDER: clearing pal");
+    getPalamanderRoot().render(
+      <StrictMode>
+        {null}
+      </StrictMode>,
+    )
+  }
+  const renderPalamander = async (rerender: boolean = true) => {
+    if (! (await visible())) return clearPalamander();
+    if (rendered && !rerender) return;
+    if (document.hidden) return;
+    rendered = true;
+    console.log("PALAMANDER: (re-)rendering pal");
+    const pal = await createAxolotlTemp();
+    getPalamanderRoot().render(
+      <StrictMode>
+        <PalamanderView pal={pal} display={generateWindowDisplayRange({ x: 0.5, y: 0.5 })}/>
+      </StrictMode>,
+    )
+  };
+  return [ renderPalamander, clearPalamander ];
 })();
 
 // Pal Render/Clear LifeCycle:
@@ -91,10 +91,10 @@ document.addEventListener("visibilitychange", async function() {
 }, false);
 
 // Case 3 or 4
-// chrome.storage.onChanged.addListener(
-//   // Check for roam being changed, or behavior being changed
-//   function(changes) {}
-// )
+chrome.storage.onChanged.addListener(async (changes) => {
+    if ('show' in changes) await renderPalamander(true);
+  }
+)
 
 // Case 5
 chrome.runtime.onMessage.addListener(
@@ -109,8 +109,4 @@ chrome.runtime.onMessage.addListener(
 // Run on script injection, so Pals will show up in new and refreshed tabs.
 // If still hidden when this runs, then will render from Case 1 (tab becomes visible)...
 //    although there's maybe potential for a race case here
-(async() => {
-  if (document.hidden) return;
-  if (! (await showPals())) return;
-  await renderPalamander(false);
-})();
+(async () => await renderPalamander(false))();

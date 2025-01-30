@@ -1,7 +1,7 @@
 import { Section } from './morphology/section.ts';
 import segmentate from './morphology/segmentation/segmentate.ts'
 import { Palamander, PalSettings, PalamanderMap, calculatePivotIndex } from './palamander.ts';
-import { Move, generateMove } from './movement/movement-agent.ts';
+import { generateMove } from './movement/movement-agent.ts';
 import { BehaviorInput } from './movement/behavior.ts';
 
 type PalamanderSpec = {

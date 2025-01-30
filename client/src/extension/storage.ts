@@ -10,9 +10,20 @@
 // playspeed: number (0.2 - 1 - 5)x
 // behavior?: string or enum, mellow, squirlly, speedy
 
+const SHOW_KEY = 'show';
+// const EXHIBIT_KEY = 'exhibit';
 
-async function showPals(): Promise<boolean> {
-  return !!((await chrome.storage.local.get({ 'roam': true })).roam);
+// async function exhibit(pals: string[]): Promise<void> {
+//   return await chrome.storage.local.set({ EXHIBIT_KEY: pals });
+// }
+
+function show(show: boolean): Promise<void> {
+  return chrome.storage.local.set({ [SHOW_KEY]: show });
 }
 
-export { showPals }
+async function visible(): Promise<boolean> {
+  const show = await chrome.storage.local.get([ SHOW_KEY ])
+  return !!(show[SHOW_KEY as keyof typeof show]);
+}
+
+export { show, visible }
