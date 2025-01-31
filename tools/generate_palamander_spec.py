@@ -24,13 +24,10 @@ def createDefaultPalamanderSpec(type: str):
     'magnification': 10,
   }
 
-def createVelocityBehavior(id: str):
-  return { 'id': id, 'velocity': 0, 'interval': 0 }
-
 def configurePalamanderSpec(type: str, linear: str, angular: str, mag: int):
   behavior = {
-    'linear': createVelocityBehavior(linear),
-    'angular': createVelocityBehavior(angular),
+    'linear': linear,
+    'angular': angular,
   }
   return { **createDefaultPalamanderSpec(type), 'movementBehavior': behavior, 'magnification': mag }
 

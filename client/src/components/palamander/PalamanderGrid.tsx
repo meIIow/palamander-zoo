@@ -2,7 +2,7 @@ import './PalamanderGrid.css'
 import { useState, useEffect } from 'react';
 import PalamanderView from './PalamanderView.tsx';
 import { Palamander } from '../../palamander/palamander.ts';
-import { MovementOverride } from '../../palamander/movement/movement-agent.ts';
+import { MovementOverride } from '../../palamander/movement/movement.ts';
 import { readDefaultPalList } from '../../palamander/create-palamander.ts';
 import { generateBoundedDisplayRange }from '../../palamander/palamander-range.ts'
 

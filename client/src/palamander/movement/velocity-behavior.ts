@@ -1,10 +1,4 @@
-import { TimedSampler, SampleSpec, generateSampler, generateGetSample } from './movement-sample.ts';
-
-type VelocityBehaviorInput = {
-  id: string;
-  velocity: number;
-  interval: number,
-}
+import { SampleSpec } from './movement-sample.ts';
 
 type VelocityBehaviorSpec = {
   limit: VelocityLimit,
@@ -12,12 +6,7 @@ type VelocityBehaviorSpec = {
   interval: SampleSpec,
 }
 
-type VelocityBehaviorSpecGenerator = (velocity: number, interval: number) => VelocityBehaviorSpec;
-
-type VelocityBehavior = {
-  limit: VelocityLimit,
-  sampler: TimedSampler,
-};
+type VelocityBehaviorSpecGenerator = () => VelocityBehaviorSpec;
 
 type VelocityLimit = {
   velocity: number,
@@ -30,18 +19,14 @@ interface BehaviorMap {
   [key: string]: VelocityBehaviorSpecGenerator;
 }
 
-function accessBehaviorMap(map: BehaviorMap, input: VelocityBehaviorInput): VelocityBehavior {
-  let key = input.id;
+function accessBehaviorMap(map: BehaviorMap, behavior: string): VelocityBehaviorSpec {
+  let key = behavior;
   if (!(key in map)) {
     console.log(`${key} not present in sample map, falling back to placeholder.`);
     key = 'placeholder';
   }
-  const { limit, velocity, interval } = map[key](input.velocity, input.interval);
-  const intervalSampler = generateSampler(interval);
-  const velocitySampler = generateSampler(velocity);
-  const sampler = generateGetSample(velocitySampler, intervalSampler);
-  return { limit, sampler };
+  return map[key]();
 }
 
-export type { BehaviorMap, VelocityBehaviorInput, VelocityBehavior, VelocityLimit, VelocityBehaviorSpecGenerator };
+export type { BehaviorMap, VelocityLimit, VelocityBehaviorSpecGenerator, VelocityBehaviorSpec };
 export { accessBehaviorMap };

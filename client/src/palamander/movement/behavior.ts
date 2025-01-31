@@ -1,15 +1,15 @@
 import { speedMap } from './speed-behavior.ts';
 import { rotationMap } from './rotation-behavior.ts';
-import { VelocityBehaviorInput, VelocityBehavior, accessBehaviorMap } from './velocity-behavior.ts';
+import { VelocityBehaviorSpec, accessBehaviorMap } from './velocity-behavior.ts';
 
 type Behavior = {
-  speed: VelocityBehavior, // linear velocity movement behavior
-  rotation: VelocityBehavior, // angular velocity movement behavior
+  speed: VelocityBehaviorSpec, // linear velocity movement behavior
+  rotation: VelocityBehaviorSpec, // angular velocity movement behavior
 };
 
 type BehaviorInput = {
-  linear: VelocityBehaviorInput,
-  angular: VelocityBehaviorInput,
+  linear: string,
+  angular: string,
 };
 
 /*

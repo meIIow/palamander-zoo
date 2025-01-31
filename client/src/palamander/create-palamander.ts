@@ -1,7 +1,7 @@
 import { Section } from './morphology/section.ts';
 import segmentate from './morphology/segmentation/segmentate.ts'
 import { Palamander, PalSettings, PalamanderMap, calculatePivotIndex } from './palamander.ts';
-import { generateMove } from './movement/movement-agent.ts';
+import { generateMove } from './movement/movement.ts';
 import { BehaviorInput } from './movement/behavior.ts';
 
 type PalamanderSpec = {
@@ -80,8 +80,8 @@ async function createDefaultPalList(): Promise<Palamander[]> {
         branches: [],
       },
       movementBehavior: {
-        linear: { id: '', velocity: 0, interval: 0 },
-        angular: { id: '', velocity: 0, interval: 0 },
+        linear: '',
+        angular: '',
       },
       magnification: (type == 'crawdad' ? 10 : 20) / 2,
     }
@@ -104,8 +104,8 @@ function createDefaultPal(): Palamander {
       branches: [],
     },
     movementBehavior: {
-      linear: { id: '', velocity: 0, interval: 0 },
-      angular: { id: '', velocity: 0, interval: 0 },
+      linear: '',
+      angular: '',
     },
     suppressMove: { turn: false, speed: false },
     magnification: 20
@@ -128,8 +128,8 @@ function createAxolotl(): Palamander {
       branches: [],
     },
     movementBehavior: {
-      linear: { id: '', velocity: 0, interval: 0 },
-      angular: { id: '', velocity: 0, interval: 0 },
+      linear: '',
+      angular: '',
     },
     suppressMove: { turn: false, speed: false },
     magnification: 20

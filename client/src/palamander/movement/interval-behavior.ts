@@ -1,6 +1,6 @@
 import { SampleSpec } from "./movement-sample";
 
-function generateMeasuredSampleSpec(_magnitude: number): SampleSpec {
+function generateMeasuredSampleSpec(): SampleSpec {
   return {
     range: {
       min: 200,
@@ -12,7 +12,7 @@ function generateMeasuredSampleSpec(_magnitude: number): SampleSpec {
   };
 }
 
-function generateCommittedSampleSpec(_magnitude: number): SampleSpec {
+function generateCommittedSampleSpec(): SampleSpec {
   return {
     range: {
       min: 500,
@@ -24,7 +24,7 @@ function generateCommittedSampleSpec(_magnitude: number): SampleSpec {
   };
 }
 
-function generateFreneticSampleSpec(_magnitude: number): SampleSpec {
+function generateFreneticSampleSpec(): SampleSpec {
   return {
     range: {
       min: 200,

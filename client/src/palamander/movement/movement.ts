@@ -8,12 +8,14 @@ type Movement = {
   delta: Coords,
 }
 
+// To specify multiplicative transformations over normal movement behavior.
 type MovementFactor = {
   linear: number,
   rotational: number,
   interval: number,
 }
 
+// To short-circuit movement calculations and specify static values.
 type MovementOverride = {
   linear: VelocityOverride,
   rotational: VelocityOverride,

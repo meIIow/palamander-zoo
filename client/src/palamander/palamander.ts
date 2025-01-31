@@ -1,7 +1,7 @@
 import { createEngineCircle } from './common/circle.ts'
 import { Coords, shiftNegative, shift, toAngleVector } from './common/coords.ts'
 import { Segment, hydrateSegment, updateSegment, getBodySegments } from './morphology/segment.ts'
-import { Move, MovementFactor, MovementOverride } from './movement/movement-agent.ts'
+import { Move, MovementFactor, MovementOverride } from './movement/movement.ts'
 
 type Palamander = {
   type: string,

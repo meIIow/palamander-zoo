@@ -21,68 +21,56 @@ const defaultRotationSampleSpec: SampleSpec = {
   mirror: true,
 };
 
-const generatePlaceholderRotationBehaviorSpec: VelocityBehaviorSpecGenerator = (
-  _velocity: number, interval: number
-) => {
+const generatePlaceholderRotationBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
   return {
     limit: baselineLimit,
     velocity: defaultRotationSampleSpec,
-    interval: generateMeasuredSampleSpec(interval)
+    interval: generateMeasuredSampleSpec()
   }
 }
 
-const generateCoilingBehaviorSpec: VelocityBehaviorSpecGenerator = (
-  _velocity: number, interval: number
-) => {
+const generateCoilingBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
   const velocity = { ...defaultRotationSampleSpec };
   velocity.range.skewMin = 1;
   return {
     limit: { velocity: BASELINE_VELOCITY * 1.5, accel: BASELINE_ACCEL * 3, decel: BASELINE_ACCEL * 3 },
     velocity: velocity,
-    interval: generateFreneticSampleSpec(interval)
+    interval: generateFreneticSampleSpec()
   }
 }
 
-const generateTwirlingBehaviorSpec: VelocityBehaviorSpecGenerator = (
-  _velocity: number, interval: number
-) => {
+const generateTwirlingBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
   return {
     limit: { ...baselineLimit, accel: BASELINE_ACCEL * 2, decel: BASELINE_ACCEL * 2 },
     velocity: defaultRotationSampleSpec,
-    interval: generateMeasuredSampleSpec(interval)
+    interval: generateMeasuredSampleSpec()
   }
 }
 
-const generateCuriousBehaviorSpec: VelocityBehaviorSpecGenerator = (
-  _velocity: number, interval: number
-) => {
+const generateCuriousBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
   return {
     limit: { velocity: BASELINE_VELOCITY / 1.5, accel: BASELINE_ACCEL, decel: BASELINE_ACCEL },
     velocity: defaultRotationSampleSpec,
-    interval: generateMeasuredSampleSpec(interval)
+    interval: generateMeasuredSampleSpec()
   }
 }
 
-const generateOnwardBehaviorSpec: VelocityBehaviorSpecGenerator = (
-  _velocity: number, interval: number
-) => {
+const generateOnwardBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
   const velocity = { ...defaultRotationSampleSpec, zero: 0.3 };
   velocity.range.skewMin = 3;
   return {
     limit: { velocity: BASELINE_VELOCITY / 4, accel: BASELINE_ACCEL / 4, decel: BASELINE_ACCEL / 4 },
     velocity: velocity,
-    interval: generateCommittedSampleSpec(interval)
+    interval: generateCommittedSampleSpec()
   }
 }
 
-const generateWaryBehaviorSpec: VelocityBehaviorSpecGenerator = (
-  _velocity: number, interval: number
-) => {
+const generateWaryBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
   const velocity = { ...defaultRotationSampleSpec, zero: 0.3 };
   return {
     limit: { velocity: BASELINE_VELOCITY / 4, accel: BASELINE_ACCEL / 2, decel: BASELINE_ACCEL / 2 },
     velocity: velocity,
-    interval: generateMeasuredSampleSpec(interval)
+    interval: generateMeasuredSampleSpec()
   }
 }
 

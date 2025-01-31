@@ -36,7 +36,7 @@ function generateSampler(spec: SampleSpec): Sampler {
 // Generates a function to call repeatedly in order to get the specified sample.
 // Sampled value persists if corresponding sampled interval has not been exceeded.
 // Sampled value (and sampled interval) is replaced when original sampled interval is exceeded.
-function generateGetSample(sample: Sampler, sampleInterval: Sampler): TimedSampler {
+function generateTimedSampler(sample: Sampler, sampleInterval: Sampler): TimedSampler {
   let countdown = 0;
   let sampledVal = 0;
   return (interval: number) => {
@@ -54,5 +54,5 @@ function generateGetSample(sample: Sampler, sampleInterval: Sampler): TimedSampl
   }
 }
 
-export { generateGetSample, generateSampler };
+export { generateTimedSampler, generateSampler };
 export type { SampleSpec, SampleRange, TimedSampler };
