@@ -1,4 +1,4 @@
-import { SampleSpec } from "./movement-sample";
+import { SampleSpec } from "./sample";
 
 function generateMeasuredSampleSpec(): SampleSpec {
   return {

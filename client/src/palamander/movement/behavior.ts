@@ -1,30 +1,17 @@
-import { speedMap } from './speed-behavior.ts';
-import { rotationMap } from './rotation-behavior.ts';
-import { VelocityBehaviorSpec, accessBehaviorMap } from './velocity-behavior.ts';
+import { mapSpeedBehavior } from './speed-behavior.ts';
+import { mapRotationBehavior } from './rotation-behavior.ts';
 
-type Behavior = {
-  speed: VelocityBehaviorSpec, // linear velocity movement behavior
-  rotation: VelocityBehaviorSpec, // angular velocity movement behavior
-};
-
-type BehaviorInput = {
+type MovementBehavior = {
   linear: string,
-  angular: string,
+  rotational: string,
 };
 
-/*
-Behavior Ranges:
-Focused vs Distractible (interval)
-Squirrely vs Mellow (rotation)
-Zippy vs Lazy
-*/
-
-function generateBehavior(behaviorInput: BehaviorInput) {
+function processBehavior(behavior: MovementBehavior) {
   return {
-    speed: accessBehaviorMap(speedMap, behaviorInput.linear),
-    rotation: accessBehaviorMap(rotationMap, behaviorInput.angular),
+    linear: mapSpeedBehavior(behavior.linear),
+    rotational: mapRotationBehavior(behavior.rotational),
   }
 }
 
-export type { Behavior, BehaviorInput }
-export { generateBehavior }
+export type { MovementBehavior }
+export { processBehavior }

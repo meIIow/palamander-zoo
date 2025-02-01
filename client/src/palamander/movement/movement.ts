@@ -1,5 +1,5 @@
 import { Coords } from '../common/coords.ts'
-import { BehaviorInput, generateBehavior } from './behavior.ts';
+import { MovementBehavior, processBehavior } from './behavior.ts';
 import { VelocityIntegral, VelocityOverride, generateSampleVelocity } from './velocity.ts'
 
 type Movement = {
@@ -36,10 +36,10 @@ function calculateDelta(angle: number, dist: number): Coords {
   }
 }
 
-function generateMove(behavior: BehaviorInput): Move {
-  const movementBehavior = generateBehavior(behavior);
-  const sampleLinear = generateSampleVelocity(movementBehavior.speed);
-  const sampleRotational = generateSampleVelocity(movementBehavior.rotation);
+function generateMove(behavior: MovementBehavior): Move {
+  const movementBehavior = processBehavior(behavior);
+  const sampleLinear = generateSampleVelocity(movementBehavior.linear);
+  const sampleRotational = generateSampleVelocity(movementBehavior.rotational);
 
   let angle = 0; // tracks current orientation
   return (interval: number, factor: MovementFactor, override: MovementOverride): Movement => {

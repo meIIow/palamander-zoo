@@ -1,5 +1,16 @@
-import { VelocityLimit, VelocityBehaviorSpec } from './velocity-behavior.ts'
-import { generateSampler, generateTimedSampler } from './movement-sample.ts';
+import { SampleSpec, generateSampler, generateTimedSampler } from './sample.ts';
+
+type VelocitySampleSpec = {
+  limit: VelocityLimit,
+  velocity: SampleSpec;
+  interval: SampleSpec,
+}
+
+type VelocityLimit = {
+  velocity: number,
+  accel: number,
+  decel: number,
+};
 
 type VelocityIntegral = {
   distance: number,
@@ -16,10 +27,10 @@ function clipVelocity(curr: number, prev: number, limit: VelocityLimit): number 
   return curr;
 }
 
-function generateSampleVelocity(behavior: VelocityBehaviorSpec): VelocityIntegralSampler {
-  const limit = { ...behavior.limit };
-  const intervalSampler = generateSampler(behavior.interval);
-  const velocitySampler = generateSampler(behavior.velocity);
+function generateSampleVelocity(spec: VelocitySampleSpec): VelocityIntegralSampler {
+  const limit = { ...spec.limit };
+  const intervalSampler = generateSampler(spec.interval);
+  const velocitySampler = generateSampler(spec.velocity);
   const sample = generateTimedSampler(velocitySampler, intervalSampler);
   let prevVelocity = 0;
   return (interval: number, factor: number, override: VelocityOverride) => {
@@ -29,5 +40,5 @@ function generateSampleVelocity(behavior: VelocityBehaviorSpec): VelocityIntegra
   }
 }
 
-export type { VelocityIntegral, VelocityOverride, VelocityIntegralSampler }
+export type { VelocityIntegral, VelocityOverride, VelocityIntegralSampler, VelocitySampleSpec, VelocityLimit }
 export { generateSampleVelocity }

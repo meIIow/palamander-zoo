@@ -1,5 +1,6 @@
-import { BehaviorMap, VelocityBehaviorSpecGenerator, VelocityLimit } from './velocity-behavior.ts';
-import { SampleSpec } from './movement-sample.ts';
+import { BehaviorMap, VelocitySampleSpecGenerator, wrapBehaviorMap } from './velocity-behavior.ts';
+import { VelocityLimit, VelocitySampleSpec } from './velocity.ts'
+import { SampleSpec } from './sample.ts';
 import { generateMeasuredSampleSpec, generateCommittedSampleSpec, generateFreneticSampleSpec } from './interval-behavior.ts';
 
 const BASELINE_VELOCITY = 2500; // 25 (Pal Units / Second), ~ 2-10 (pal lengths / sec)
@@ -22,7 +23,7 @@ const defaultSpeedSampleSpec: SampleSpec = {
   mirror: false,
 };
 
-const generateDefaultSpeedBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
+const generateDefaultSpeedBehaviorSpec: VelocitySampleSpecGenerator = () => {
   return {
     limit: baselineLimit,
     velocity: defaultSpeedSampleSpec,
@@ -31,7 +32,7 @@ const generateDefaultSpeedBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
 }
 
 // Slower across the board, and with extra low distribution.
-const generateCautiousBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
+const generateCautiousBehaviorSpec: VelocitySampleSpecGenerator = () => {
   const velocity = { ...defaultSpeedSampleSpec, zero: 0.3 };
   velocity.range.skewMin = 3;
   return {
@@ -46,7 +47,7 @@ const generateCautiousBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
 }
 
 // Slower across the board.
-const generateDeliberateBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
+const generateDeliberateBehaviorSpec: VelocitySampleSpecGenerator = () => {
   const velocity = { ...defaultSpeedSampleSpec, zero: 0.2 };
   velocity.range.skewMin = 2;
   return {
@@ -61,7 +62,7 @@ const generateDeliberateBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
 }
 
 // Faster speed, even slightly faster acc/dec, more speed changing.
-const generateErraticBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
+const generateErraticBehaviorSpec: VelocitySampleSpecGenerator = () => {
   const velocity = { ...defaultSpeedSampleSpec, zero: 0.15 };
   velocity.range.skewMin = 2;
   return {
@@ -75,7 +76,7 @@ const generateErraticBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
   }
 }
 
-const generateFlittingBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
+const generateFlittingBehaviorSpec: VelocitySampleSpecGenerator = () => {
   return {
     limit: baselineLimit,
     velocity: defaultSpeedSampleSpec,
@@ -84,7 +85,7 @@ const generateFlittingBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
 }
 
 // Never fully stopped, with slow speed and slower acc/dec, less speed changing.
-const generateFloatingBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
+const generateFloatingBehaviorSpec: VelocitySampleSpecGenerator = () => {
   const velocity = { ...defaultSpeedSampleSpec, zero: 0 };
   velocity.range.skewMin = 1;
   return {
@@ -99,7 +100,7 @@ const generateFloatingBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
 }
 
 // Slower speed & acc/dec, with extra stopping chance.
-const generateHoveringBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
+const generateHoveringBehaviorSpec: VelocitySampleSpecGenerator = () => {
   const velocity = { ...defaultSpeedSampleSpec, zero: 0.3 };
   velocity.range.skewMin = 2;
   return {
@@ -114,7 +115,7 @@ const generateHoveringBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
 }
 
 // Slower across the board, but with higher distribution.
-const generatePushingBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
+const generatePushingBehaviorSpec: VelocitySampleSpecGenerator = () => {
   const velocity = { ...defaultSpeedSampleSpec, zero: 0.2 };
   velocity.range.skewMin = 1;
   return {
@@ -128,7 +129,7 @@ const generatePushingBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
   }
 }
 
-export const speedMap: BehaviorMap = {
+const speedMap: BehaviorMap = {
   'placeholder': generateDefaultSpeedBehaviorSpec,
   'cautious': generateCautiousBehaviorSpec,
   // 'dashing': generateDashingBehaviorSpec,
@@ -138,4 +139,8 @@ export const speedMap: BehaviorMap = {
   'floating': generateFloatingBehaviorSpec,
   'hovering': generateHoveringBehaviorSpec,
   'pushing': generatePushingBehaviorSpec,
+};
+
+export const mapSpeedBehavior = (behavior: string): VelocitySampleSpec => {
+  return wrapBehaviorMap(speedMap, behavior)
 };

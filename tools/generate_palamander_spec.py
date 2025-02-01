@@ -17,8 +17,8 @@ def createDefaultPalamanderSpec(type: str):
   return {
     'sectionTree': createDefaultSection(type),
     'movementBehavior': {
-      'linear': { 'id': '', 'velocity': 0, 'interval': 0 },
-      'angular': { 'id': '', 'velocity': 0, 'interval': 0 },
+      'linear': { 'id': '' },
+      'rotational': { 'id': '' },
     },
     'updateInterval': 50,
     'magnification': 10,
@@ -27,7 +27,7 @@ def createDefaultPalamanderSpec(type: str):
 def configurePalamanderSpec(type: str, linear: str, angular: str, mag: int):
   behavior = {
     'linear': linear,
-    'angular': angular,
+    'rotational': angular,
   }
   return { **createDefaultPalamanderSpec(type), 'movementBehavior': behavior, 'magnification': mag }
 

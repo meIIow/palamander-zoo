@@ -1,25 +1,13 @@
-import { SampleSpec } from './movement-sample.ts';
+import { VelocitySampleSpec } from './velocity.ts';
 
-type VelocityBehaviorSpec = {
-  limit: VelocityLimit,
-  velocity: SampleSpec;
-  interval: SampleSpec,
-}
+type VelocitySampleSpecGenerator = () => VelocitySampleSpec;
 
-type VelocityBehaviorSpecGenerator = () => VelocityBehaviorSpec;
-
-type VelocityLimit = {
-  velocity: number,
-  accel: number,
-  decel: number,
-};
-
-// A map from a movement ID to its corresponding behavior generator.
+// A map from a behavior ID to its corresponding behavior generator.
 interface BehaviorMap {
-  [key: string]: VelocityBehaviorSpecGenerator;
+  [key: string]: VelocitySampleSpecGenerator;
 }
 
-function accessBehaviorMap(map: BehaviorMap, behavior: string): VelocityBehaviorSpec {
+function wrapBehaviorMap(map: BehaviorMap, behavior: string): VelocitySampleSpec {
   let key = behavior;
   if (!(key in map)) {
     console.log(`${key} not present in sample map, falling back to placeholder.`);
@@ -28,5 +16,5 @@ function accessBehaviorMap(map: BehaviorMap, behavior: string): VelocityBehavior
   return map[key]();
 }
 
-export type { BehaviorMap, VelocityLimit, VelocityBehaviorSpecGenerator, VelocityBehaviorSpec };
-export { accessBehaviorMap };
+export type { BehaviorMap, VelocitySampleSpecGenerator };
+export { wrapBehaviorMap };

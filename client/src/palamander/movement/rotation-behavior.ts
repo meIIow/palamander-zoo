@@ -1,5 +1,6 @@
-import { BehaviorMap, VelocityBehaviorSpecGenerator, VelocityLimit } from './velocity-behavior.ts';
-import { SampleSpec } from './movement-sample.ts';
+import { BehaviorMap, VelocitySampleSpecGenerator, wrapBehaviorMap } from './velocity-behavior.ts';
+import { VelocityLimit, VelocitySampleSpec } from './velocity.ts'
+import { SampleSpec } from './sample.ts';
 import { generateMeasuredSampleSpec, generateFreneticSampleSpec, generateCommittedSampleSpec } from './interval-behavior.ts';
 
 const BASELINE_VELOCITY = 720; // 3 rotations / sec
@@ -21,7 +22,7 @@ const defaultRotationSampleSpec: SampleSpec = {
   mirror: true,
 };
 
-const generatePlaceholderRotationBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
+const generatePlaceholderRotationBehaviorSpec: VelocitySampleSpecGenerator = () => {
   return {
     limit: baselineLimit,
     velocity: defaultRotationSampleSpec,
@@ -29,7 +30,7 @@ const generatePlaceholderRotationBehaviorSpec: VelocityBehaviorSpecGenerator = (
   }
 }
 
-const generateCoilingBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
+const generateCoilingBehaviorSpec: VelocitySampleSpecGenerator = () => {
   const velocity = { ...defaultRotationSampleSpec };
   velocity.range.skewMin = 1;
   return {
@@ -39,7 +40,7 @@ const generateCoilingBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
   }
 }
 
-const generateTwirlingBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
+const generateTwirlingBehaviorSpec: VelocitySampleSpecGenerator = () => {
   return {
     limit: { ...baselineLimit, accel: BASELINE_ACCEL * 2, decel: BASELINE_ACCEL * 2 },
     velocity: defaultRotationSampleSpec,
@@ -47,7 +48,7 @@ const generateTwirlingBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
   }
 }
 
-const generateCuriousBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
+const generateCuriousBehaviorSpec: VelocitySampleSpecGenerator = () => {
   return {
     limit: { velocity: BASELINE_VELOCITY / 1.5, accel: BASELINE_ACCEL, decel: BASELINE_ACCEL },
     velocity: defaultRotationSampleSpec,
@@ -55,7 +56,7 @@ const generateCuriousBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
   }
 }
 
-const generateOnwardBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
+const generateOnwardBehaviorSpec: VelocitySampleSpecGenerator = () => {
   const velocity = { ...defaultRotationSampleSpec, zero: 0.3 };
   velocity.range.skewMin = 3;
   return {
@@ -65,7 +66,7 @@ const generateOnwardBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
   }
 }
 
-const generateWaryBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
+const generateWaryBehaviorSpec: VelocitySampleSpecGenerator = () => {
   const velocity = { ...defaultRotationSampleSpec, zero: 0.3 };
   return {
     limit: { velocity: BASELINE_VELOCITY / 4, accel: BASELINE_ACCEL / 2, decel: BASELINE_ACCEL / 2 },
@@ -74,11 +75,15 @@ const generateWaryBehaviorSpec: VelocityBehaviorSpecGenerator = () => {
   }
 }
 
-export const rotationMap: BehaviorMap = {
+const rotationMap: BehaviorMap = {
   'placeholder': generatePlaceholderRotationBehaviorSpec,
   'coiling': generateCoilingBehaviorSpec,
   'onward': generateOnwardBehaviorSpec,
   'twirling': generateTwirlingBehaviorSpec,
   'curious': generateCuriousBehaviorSpec,
   'wary': generateWaryBehaviorSpec,
+};
+
+export const mapRotationBehavior = (behavior: string): VelocitySampleSpec => {
+  return wrapBehaviorMap(rotationMap, behavior)
 };
