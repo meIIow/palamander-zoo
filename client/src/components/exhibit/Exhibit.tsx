@@ -5,7 +5,7 @@ import Tank from './Tank.tsx';
 import PrimaryFilter from './../common/PrimaryFilter.tsx'
 import { Palamander, PalSettings } from '../../palamander/palamander.ts';
 import { PalContext } from '../common/pal-context.ts';
-import { show as showPal, visible, exhibit } from './../../extension/storage.ts'
+import { show as showPal, visible, exhibit, getExhibit } from './../../extension/storage.ts'
 import Settings from './Settings.tsx'
 
 type StagedPals = (Palamander | null)[];
@@ -48,6 +48,20 @@ function Exhibit() {
 
   useEffect(()=> {
     (async () => {
+      // Sync staging with persistant data
+      const exhibited = await getExhibit();
+      setStaging((staging) => {
+        const staged = staging.staged.map((staged, i) => {
+          const palIndex = pals.findIndex(pal => pal.type == exhibited[i]);
+          if (palIndex == -1) return staged;
+          return { ...pals[palIndex] };
+        });
+        return {
+          ...staging,
+          staged,
+        };
+      });
+      // Sync visibility with persistant data
       const isVisible = await visible();
       setShow(isVisible);
     })();
