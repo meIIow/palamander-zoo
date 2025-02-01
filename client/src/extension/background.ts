@@ -1,5 +1,8 @@
-chrome.runtime.onInstalled.addListener(() => {
+import { syncPalMap } from "./storage";
+
+chrome.runtime.onInstalled.addListener(async () => {
   console.log("I was installed!");
+  await syncPalMap();
 });
 
 chrome.sidePanel
@@ -37,4 +40,6 @@ chrome.tabs.onActivated.addListener(async (info) => {
   await chrome.tabs.sendMessage(info.tabId, 'show');
 });
 
+// TODO(mellow): establish data persistence lifecycle
 console.log("I am a service worker.");
+syncPalMap();

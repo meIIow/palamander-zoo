@@ -159,5 +159,5 @@ async function readDefaultPalSpecs(): Promise<PalamanderSpec[]> {
     .map(([ _, spec ]) => spec ));
 }
 
-export type { PalamanderSpec }
-export { createDefaultPalList, createDefaultPal, createAxolotl, hydrate, readDefaultPalList, readDefaultPalMap, readDefaultPalSpecs };
+export type { PalamanderSpec, PalamanderSpecMap }
+export { createDefaultPalList, createDefaultPal, createAxolotl, hydrate, readDefaultPalList, readDefaultPalMap, readDefaultPalSpecMap, readDefaultPalSpecs };

@@ -15,6 +15,7 @@ def createDefaultSection(type: str):
 
 def createDefaultPalamanderSpec(type: str):
   return {
+    'type': type,
     'sectionTree': createDefaultSection(type),
     'movementBehavior': {
       'linear': { 'id': '' },

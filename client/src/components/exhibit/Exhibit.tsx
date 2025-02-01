@@ -5,7 +5,7 @@ import Tank from './Tank.tsx';
 import PrimaryFilter from './../common/PrimaryFilter.tsx'
 import { Palamander, PalSettings } from '../../palamander/palamander.ts';
 import { PalContext } from '../common/pal-context.ts';
-import { show as showPal, visible } from './../../extension/storage.ts'
+import { show as showPal, visible, exhibit } from './../../extension/storage.ts'
 import Settings from './Settings.tsx'
 
 type StagedPals = (Palamander | null)[];
@@ -55,7 +55,13 @@ function Exhibit() {
 
   const toggleShow = async (show: boolean) => {
     await showPal(!show);
+    await exhibit(staging.staged.map((pal => pal?.type ?? '')));
     setShow(!show);
+  }
+
+  const syncShow = async () => {
+    console.log(staging.staged.map((pal => pal?.type ?? '')));
+    await exhibit(staging.staged.map((pal => pal?.type ?? '')));
   }
 
   // Switch to a chosen index, then toggle on/off.
@@ -116,6 +122,7 @@ function Exhibit() {
   return (
     <div>
       <button className="rounded-full" onClick={() => toggleShow(show)}>{show ? 'hide' : 'show'}</button>;
+      <button className="rounded-full" onClick={() => syncShow()}>sync</button>;
       <div className="grid gap-3 grid-cols-1 240:grid-cols-2 360:grid-cols-3">
         {staging.staged.map((pal, i) => {
           return <Staging

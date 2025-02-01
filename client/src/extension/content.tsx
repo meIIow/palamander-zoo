@@ -3,9 +3,9 @@ import { createRoot, Root } from 'react-dom/client'
 import './content.css'
 import PalamanderView from '../components/palamander/PalamanderView.tsx'
 import { Palamander } from '../palamander/palamander.ts'
-import { createAxolotl } from '../palamander/create-palamander.ts'
+import { hydrate } from '../palamander/create-palamander.ts'
 import { generateWindowDisplayRange } from '../palamander/palamander-range.ts'
-import { visible } from './storage.ts'
+import { visible, getExhibit, getPalMap, exhibitChanged } from './storage.ts'
 
 const PALAMANDER_ROOT_ID = 'palamander-root';
 
@@ -27,12 +27,22 @@ const getPalamanderRoot = (() => {
   };
 })();
 
-async function createAxolotlTemp(): Promise<Palamander> {
-  return createAxolotl();
-}
+// async function createAxolotlTemp(): Promise<Palamander> {
+//   return createAxolotl();
+// }
 
 const [renderPalamander, clearPalamander] = (() => {
   let rendered = false; // protect rendered variable in closure
+  let pals: Array<Palamander | null> = [null, null, null];
+  const palMapPromise = getPalMap();
+  const updatePals: ((palTypes: string[]) => Promise<void>) = async (palTypes) => {
+    const palMap = await palMapPromise;
+    pals = pals.map((pal, i) => {
+      const modified = (pal == null) ? !!palTypes[i] : pal.type != palTypes[i];
+      if (!modified) return pals[i];
+      return (!!palTypes[i]) ? hydrate(palMap[palTypes[i]]) : null;
+    });
+  }
   const clearPalamander = () => {
     if (rendered == false) return;
     rendered = false;
@@ -49,10 +59,14 @@ const [renderPalamander, clearPalamander] = (() => {
     if (document.hidden) return;
     rendered = true;
     console.log("PALAMANDER: (re-)rendering pal");
-    const pal = await createAxolotlTemp();
+    await updatePals(await getExhibit());
+    const palViews = pals.map((pal, i) => {
+      if (pal == null) return null;
+      return (<PalamanderView pal={{ ...pal }} key={`${i}-${pal.type}`} display={generateWindowDisplayRange({ x: 0.5, y: 0.5 })}/>)
+    });
     getPalamanderRoot().render(
       <StrictMode>
-        <PalamanderView pal={pal} display={generateWindowDisplayRange({ x: 0.5, y: 0.5 })}/>
+        {palViews}
       </StrictMode>,
     )
   };
@@ -92,9 +106,8 @@ document.addEventListener("visibilitychange", async function() {
 
 // Case 3 or 4
 chrome.storage.onChanged.addListener(async (changes) => {
-    if ('show' in changes) await renderPalamander(true);
-  }
-)
+  if (exhibitChanged(changes)) await renderPalamander(true);
+})
 
 // Case 5
 chrome.runtime.onMessage.addListener(
