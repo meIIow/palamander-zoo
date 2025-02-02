@@ -1,10 +1,10 @@
 type Coords = {
   x: number;
   y: number;
-}
+};
 
 function createOrigin(): Coords {
-  return { x: 0, y: 0 }
+  return { x: 0, y: 0 };
 }
 
 function createSpawnFactor(): Coords {
@@ -45,11 +45,11 @@ function round(coordinates: Coords) {
 }
 
 function toAngleVector(angle: number): Coords {
-  const radians = angle * Math.PI / 180;
+  const radians = (angle * Math.PI) / 180;
   return {
     x: -Math.sin(radians),
     y: -Math.cos(radians),
-  }
+  };
 }
 
 function toVector(dist: number, angle: number) {
@@ -61,4 +61,14 @@ function toVector(dist: number, angle: number) {
 }
 
 export type { Coords };
-export { createOrigin, createSpawnFactor, shift, shiftNegative, stretch, stretchByElement, round, toAngleVector, toVector }
+export {
+  createOrigin,
+  createSpawnFactor,
+  shift,
+  shiftNegative,
+  stretch,
+  stretchByElement,
+  round,
+  toAngleVector,
+  toVector,
+};

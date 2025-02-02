@@ -7,10 +7,15 @@ interface BehaviorMap {
   [key: string]: VelocitySampleSpecGenerator;
 }
 
-function wrapBehaviorMap(map: BehaviorMap, behavior: string): VelocitySampleSpec {
+function wrapBehaviorMap(
+  map: BehaviorMap,
+  behavior: string,
+): VelocitySampleSpec {
   let key = behavior;
   if (!(key in map)) {
-    console.log(`${key} not present in sample map, falling back to placeholder.`);
+    console.log(
+      `${key} not present in sample map, falling back to placeholder.`,
+    );
     key = 'placeholder';
   }
   return map[key]();

@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import { resolve } from 'path'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { resolve } from 'path';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -13,7 +13,7 @@ export default defineConfig({
         popup: resolve(__dirname, 'popup.html'),
         demo: resolve(__dirname, 'demo.html'),
         test: resolve(__dirname, 'test.html'),
-        worker: resolve(__dirname, './extension/background.ts')
+        worker: resolve(__dirname, './extension/background.ts'),
       },
       output: {
         // Preserve name of entry files for chrome extension manifest reference.
@@ -21,5 +21,5 @@ export default defineConfig({
       },
     },
   },
-  publicDir: './../public'
+  publicDir: './../public',
 });

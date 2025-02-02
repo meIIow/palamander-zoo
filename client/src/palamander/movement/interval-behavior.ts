@@ -1,4 +1,4 @@
-import { SampleSpec } from "./sample";
+import { SampleSpec } from './sample';
 
 function generateMeasuredSampleSpec(): SampleSpec {
   return {
@@ -36,4 +36,8 @@ function generateFreneticSampleSpec(): SampleSpec {
   };
 }
 
-export { generateMeasuredSampleSpec, generateCommittedSampleSpec, generateFreneticSampleSpec}
+export {
+  generateMeasuredSampleSpec,
+  generateCommittedSampleSpec,
+  generateFreneticSampleSpec,
+};

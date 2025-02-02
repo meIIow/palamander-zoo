@@ -1,5 +1,5 @@
-import { Segment } from "../segment";
-import { Section } from "../section";
+import { Segment } from '../segment';
+import { Section } from '../section';
 
 // A function that breaks down a given Section into its component Segments.
 type SegmentationFunc = (parent: Segment, section: Section) => Segment[];
@@ -14,8 +14,8 @@ const preset = {
   curve: {
     squiggly: 20,
     muscley: 10,
-  }
-}
+  },
+};
 
 export type { SegmentationFunc };
 export { preset };

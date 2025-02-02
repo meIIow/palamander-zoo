@@ -1,39 +1,47 @@
-import { Coords } from '../common/coords.ts'
+import { Coords } from '../common/coords.ts';
 import { MovementBehavior, processBehavior } from './behavior.ts';
-import { VelocityIntegral, VelocityOverride, generateSampleVelocity } from './velocity.ts'
+import {
+  VelocityIntegral,
+  VelocityOverride,
+  generateSampleVelocity,
+} from './velocity.ts';
 
 type Movement = {
-  linear: VelocityIntegral,
-  rotational: VelocityIntegral,
-  delta: Coords,
-}
+  linear: VelocityIntegral;
+  rotational: VelocityIntegral;
+  delta: Coords;
+};
 
 // To specify multiplicative transformations over normal movement behavior.
 type MovementFactor = {
-  linear: number,
-  rotational: number,
-  interval: number,
-}
+  linear: number;
+  rotational: number;
+  interval: number;
+};
 
 // To short-circuit movement calculations and specify static values.
 type MovementOverride = {
-  linear: VelocityOverride,
-  rotational: VelocityOverride,
-  angle?: number,
-}
+  linear: VelocityOverride;
+  rotational: VelocityOverride;
+  angle?: number;
+};
 
-type Move = (interval: number, factor: MovementFactor, override: MovementOverride) => Movement;
+type Move = (
+  interval: number,
+  factor: MovementFactor,
+  override: MovementOverride,
+) => Movement;
 
 function compoundAngle(angle: number, turn: number, speed: number): number {
-  const speedFactor = (1 - speed / 100); // cannot turn as well at speed.
+  const speedFactor = 1 - speed / 100; // cannot turn as well at speed.
   return angle + turn * speedFactor;
 }
 
 function calculateDelta(angle: number, dist: number): Coords {
   return {
-    x: -Math.sin(angle * Math.PI / 180) * dist,
-    y: -Math.cos(angle * Math.PI / 180) * dist,
-  }
+    x: -Math.sin((angle * Math.PI) / 180) * dist,
+    y: -Math.cos((angle * Math.PI) / 180) * dist,
+  };
 }
 
 function generateMove(behavior: MovementBehavior): Move {
@@ -42,13 +50,23 @@ function generateMove(behavior: MovementBehavior): Move {
   const sampleRotational = generateSampleVelocity(movementBehavior.rotational);
 
   let angle = 0; // tracks current orientation
-  return (interval: number, factor: MovementFactor, override: MovementOverride): Movement => {
+  return (
+    interval: number,
+    factor: MovementFactor,
+    override: MovementOverride,
+  ): Movement => {
     interval *= factor.interval;
     const linear = sampleLinear(interval, factor.linear, override.linear);
-    const rotational = sampleRotational(interval, factor.rotational, override.rotational);
+    const rotational = sampleRotational(
+      interval,
+      factor.rotational,
+      override.rotational,
+    );
 
     // Tack angle turned onto previous direction to get compound angle of current direction.
-    angle = override.angle ?? compoundAngle(angle, rotational.distance, linear.velocity);
+    angle =
+      override.angle ??
+      compoundAngle(angle, rotational.distance, linear.velocity);
     rotational.distance = angle;
 
     // Complete movement by calculating coordinate offset from previous state.
@@ -57,9 +75,9 @@ function generateMove(behavior: MovementBehavior): Move {
       linear,
       rotational,
       delta,
-    }
+    };
   };
 }
 
-export type { Move, Movement, MovementFactor, MovementOverride }
-export { generateMove }
+export type { Move, Movement, MovementFactor, MovementOverride };
+export { generateMove };

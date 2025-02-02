@@ -1,11 +1,11 @@
-import { PalamanderSpecMap } from "../palamander/create-palamander";
+import { PalamanderSpecMap } from '../palamander/create-palamander';
 
 // WIP Storage Schema
 // roam: bool // whether to render the chosen palamanders or not
 // pal-{id}: nested segment config json, or maybe object with this as head plus other data (color, opacity, mov't bahavior, etc)
 // favorites: { fav-type: [pal-id] }
 // favorites-invers: { [pal-id]: fav-type }
-// 
+//
 // chosen: [pal-ids]
 // magnification: number
 // frametime: number (0.05 - 1)s
@@ -21,7 +21,7 @@ async function exhibit(pals: string[]): Promise<void> {
 }
 
 async function getExhibit(): Promise<Array<string>> {
-  const pals = await chrome.storage.local.get([ EXHIBIT_KEY ]);
+  const pals = await chrome.storage.local.get([EXHIBIT_KEY]);
   return pals[EXHIBIT_KEY as keyof typeof pals] ?? ['', '', ''];
 }
 
@@ -30,8 +30,8 @@ function show(show: boolean): Promise<void> {
 }
 
 async function visible(): Promise<boolean> {
-  const show = await chrome.storage.local.get([ SHOW_KEY ])
-  return !!(show[SHOW_KEY as keyof typeof show]);
+  const show = await chrome.storage.local.get([SHOW_KEY]);
+  return !!show[SHOW_KEY as keyof typeof show];
 }
 
 async function syncPalMap(): Promise<void> {
@@ -41,12 +41,22 @@ async function syncPalMap(): Promise<void> {
 }
 
 async function getPalMap(): Promise<PalamanderSpecMap> {
-  const pals = await chrome.storage.local.get([ PAL_MAP_KEY ]);
+  const pals = await chrome.storage.local.get([PAL_MAP_KEY]);
   return pals[PAL_MAP_KEY as keyof typeof pals];
 }
 
-function exhibitChanged(changes: { [key: string]: chrome.storage.StorageChange }): boolean {
-  return ((SHOW_KEY in changes) || (EXHIBIT_KEY in changes));
+function exhibitChanged(changes: {
+  [key: string]: chrome.storage.StorageChange;
+}): boolean {
+  return SHOW_KEY in changes || EXHIBIT_KEY in changes;
 }
 
-export { show, visible, exhibit, getExhibit, syncPalMap, getPalMap, exhibitChanged }
+export {
+  show,
+  visible,
+  exhibit,
+  getExhibit,
+  syncPalMap,
+  getPalMap,
+  exhibitChanged,
+};

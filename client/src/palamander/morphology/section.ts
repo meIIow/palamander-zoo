@@ -1,4 +1,4 @@
-import { Segment } from './segment.ts'
+import { Segment } from './segment.ts';
 
 // Represents a Palamander Section, which is used to generate a corresponding list of Segments.
 // Some of these fields may be irrelevant (ignored) for some Section types.
@@ -34,7 +34,7 @@ function createBranch(section: Section, type: string): Section {
 }
 
 function deepClone(section: Section): Section {
-  const next = (section.next == null) ? null : deepClone(section.next);
+  const next = section.next == null ? null : deepClone(section.next);
   const branches = section.branches.map((branch) => deepClone(branch));
   return { ...section, next, branches };
 }
@@ -44,7 +44,7 @@ function passthru(section: Section): Section {
 }
 
 function replace(section: Section): Section {
-  const replacement =  { ...section };
+  const replacement = { ...section };
   section.next = null;
   section.branches = [];
   return replacement;
@@ -61,8 +61,16 @@ function follow(section: Section, next: Section): Segment[] {
 }
 
 function calculateRadius(parent: Segment, section: Section): number {
-  return parent.circle.radius * section.size / 100;
+  return (parent.circle.radius * section.size) / 100;
 }
 
-export type { Section }
-export { calculateRadius, createSection, createBranch, deepClone, passthru, replace, follow }
+export type { Section };
+export {
+  calculateRadius,
+  createSection,
+  createBranch,
+  deepClone,
+  passthru,
+  replace,
+  follow,
+};

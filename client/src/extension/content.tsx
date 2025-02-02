@@ -1,11 +1,11 @@
-import { StrictMode } from 'react'
-import { createRoot, Root } from 'react-dom/client'
-import './content.css'
-import PalamanderView from '../components/palamander/PalamanderView.tsx'
-import { Palamander } from '../palamander/palamander.ts'
-import { hydrate } from '../palamander/create-palamander.ts'
-import { generateWindowDisplayRange } from '../palamander/palamander-range.ts'
-import { visible, getExhibit, getPalMap, exhibitChanged } from './storage.ts'
+import { StrictMode } from 'react';
+import { createRoot, Root } from 'react-dom/client';
+import './content.css';
+import PalamanderView from '../components/palamander/PalamanderView.tsx';
+import { Palamander } from '../palamander/palamander.ts';
+import { hydrate } from '../palamander/create-palamander.ts';
+import { generateWindowDisplayRange } from '../palamander/palamander-range.ts';
+import { visible, getExhibit, getPalMap, exhibitChanged } from './storage.ts';
 
 const PALAMANDER_ROOT_ID = 'palamander-root';
 
@@ -13,7 +13,7 @@ function getPalamanderRootElement(): HTMLElement {
   const existingRoot = document.getElementById(PALAMANDER_ROOT_ID);
   if (existingRoot !== null) return existingRoot;
 
-  const root = document.createElement("div");
+  const root = document.createElement('div');
   root.id = PALAMANDER_ROOT_ID;
   document.body.appendChild(root);
   return root;
@@ -35,42 +35,42 @@ const [renderPalamander, clearPalamander] = (() => {
   let rendered = false; // protect rendered variable in closure
   let pals: Array<Palamander | null> = [null, null, null];
   const palMapPromise = getPalMap();
-  const updatePals: ((palTypes: string[]) => Promise<void>) = async (palTypes) => {
+  const updatePals: (palTypes: string[]) => Promise<void> = async (
+    palTypes,
+  ) => {
     const palMap = await palMapPromise;
     pals = pals.map((pal, i) => {
-      const modified = (pal == null) ? !!palTypes[i] : pal.type != palTypes[i];
+      const modified = pal == null ? !!palTypes[i] : pal.type != palTypes[i];
       if (!modified) return pals[i];
-      return (!!palTypes[i]) ? hydrate(palMap[palTypes[i]]) : null;
+      return !!palTypes[i] ? hydrate(palMap[palTypes[i]]) : null;
     });
-  }
+  };
   const clearPalamander = () => {
     if (rendered == false) return;
     rendered = false;
-    console.log("PALAMANDER: clearing pal");
-    getPalamanderRoot().render(
-      <StrictMode>
-        {null}
-      </StrictMode>,
-    )
-  }
+    console.log('PALAMANDER: clearing pal');
+    getPalamanderRoot().render(<StrictMode>{null}</StrictMode>);
+  };
   const renderPalamander = async (rerender: boolean = true) => {
-    if (! (await visible())) return clearPalamander();
+    if (!(await visible())) return clearPalamander();
     if (rendered && !rerender) return;
     if (document.hidden) return;
     rendered = true;
-    console.log("PALAMANDER: (re-)rendering pal");
+    console.log('PALAMANDER: (re-)rendering pal');
     await updatePals(await getExhibit());
     const palViews = pals.map((pal, i) => {
       if (pal == null) return null;
-      return (<PalamanderView pal={{ ...pal }} key={`${i}-${pal.type}`} display={generateWindowDisplayRange({ x: 0.5, y: 0.5 })}/>)
+      return (
+        <PalamanderView
+          pal={{ ...pal }}
+          key={`${i}-${pal.type}`}
+          display={generateWindowDisplayRange({ x: 0.5, y: 0.5 })}
+        />
+      );
     });
-    getPalamanderRoot().render(
-      <StrictMode>
-        {palViews}
-      </StrictMode>,
-    )
+    getPalamanderRoot().render(<StrictMode>{palViews}</StrictMode>);
   };
-  return [ renderPalamander, clearPalamander ];
+  return [renderPalamander, clearPalamander];
 })();
 
 // Pal Render/Clear LifeCycle:
@@ -94,28 +94,32 @@ const [renderPalamander, clearPalamander] = (() => {
 //    which may happen if the extension was installed/enabled after the tab was opened, etc.
 
 // Case 1
-document.addEventListener("visibilitychange", async function() {
-  if (document.hidden) {
-    console.log("PALAMANDER: tab is now hidden");
-    clearPalamander();
-  } else {
-    console.log("PALAMANDER: tab is now visible");
-    await renderPalamander(true); // if Pals are already shown, respawn them.
-  }
-}, false);
+document.addEventListener(
+  'visibilitychange',
+  async function () {
+    if (document.hidden) {
+      console.log('PALAMANDER: tab is now hidden');
+      clearPalamander();
+    } else {
+      console.log('PALAMANDER: tab is now visible');
+      await renderPalamander(true); // if Pals are already shown, respawn them.
+    }
+  },
+  false,
+);
 
 // Case 3 or 4
 chrome.storage.onChanged.addListener(async (changes) => {
   if (exhibitChanged(changes)) await renderPalamander(true);
-})
+});
 
 // Case 5
 chrome.runtime.onMessage.addListener(
-  async function(request, _sender, _sendResponse) {
-    if (request.greeting === "show") {
+  async function (request, _sender, _sendResponse) {
+    if (request.greeting === 'show') {
       await renderPalamander();
     }
-  }
+  },
 );
 
 // Case 2. (for render)

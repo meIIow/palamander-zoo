@@ -4,17 +4,19 @@ import { FilterContext } from './filter-context.ts';
 
 function PrimaryFilter({ active }: { active: boolean }) {
   const { filter, dispatch } = useContext(FilterContext);
-  const toggle: (color: string) => void = active
-    ? (color: string) => dispatch({ type: 'TOGGLE', color })
-    : (_: string) => {}
-  const extras: { [text: string]: () => void } = active
-    ? { 'clear': () => dispatch({ type: 'CLEAR' }) }
-    : { 'locked': () => {} }
+  const toggle: (color: string) => void =
+    active ?
+      (color: string) => dispatch({ type: 'TOGGLE', color })
+    : (_: string) => {};
+  const extras: { [text: string]: () => void } =
+    active ?
+      { clear: () => dispatch({ type: 'CLEAR' }) }
+    : { locked: () => {} };
   return (
     <div>
-      <Filter filter={filter} toggle={toggle} extras={extras}/>
+      <Filter filter={filter} toggle={toggle} extras={extras} />
     </div>
-  )
+  );
 }
 
-export default PrimaryFilter
+export default PrimaryFilter;

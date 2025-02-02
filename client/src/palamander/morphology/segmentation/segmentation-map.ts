@@ -1,4 +1,4 @@
-import { SegmentationFunc } from "./segmentation";
+import { SegmentationFunc } from './segmentation';
 
 import { composites } from './segmentate-composite';
 import { pals } from './segmentate-pal';
@@ -20,4 +20,4 @@ export const segmentationMap: SegmentationMap = {
   ...bodies,
   ...sets,
   ...parts,
-}
+};

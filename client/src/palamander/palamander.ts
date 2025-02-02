@@ -1,41 +1,56 @@
-import { createEngineCircle } from './common/circle.ts'
-import { Coords, shiftNegative, shift, toAngleVector } from './common/coords.ts'
-import { Segment, hydrateSegment, updateSegment, getBodySegments } from './morphology/segment.ts'
-import { Move, MovementFactor, MovementOverride } from './movement/movement.ts'
+import { createEngineCircle } from './common/circle.ts';
+import {
+  Coords,
+  shiftNegative,
+  shift,
+  toAngleVector,
+} from './common/coords.ts';
+import {
+  Segment,
+  hydrateSegment,
+  updateSegment,
+  getBodySegments,
+} from './morphology/segment.ts';
+import { Move, MovementFactor, MovementOverride } from './movement/movement.ts';
 
 type Palamander = {
-  type: string,
+  type: string;
   body: Segment[];
   pivotIndex: number;
   move: Move;
-  override: Override,
+  override: Override;
   settings: PalSettings;
 };
 
 type PalSettings = {
-  updateInterval: number,
-  magnification: number,
-  color: string,
+  updateInterval: number;
+  magnification: number;
+  color: string;
 };
 
 type PalamanderMap = {
-  [key: string]: Palamander,
-}
+  [key: string]: Palamander;
+};
 
 type PalamanderState = {
   head: Segment;
   delta: Coords;
   center: Coords;
-}
+};
 
 type Override = {
-  freeze: boolean,
-  move: MovementOverride,
-}
+  freeze: boolean;
+  move: MovementOverride;
+};
 
-type AnimationFunc = (update: (state: PalamanderState) => PalamanderState) => void;
+type AnimationFunc = (
+  update: (state: PalamanderState) => PalamanderState,
+) => void;
 
-const startUpdateLoop = (pal: Palamander, animate: AnimationFunc): () => void => {
+const startUpdateLoop = (
+  pal: Palamander,
+  animate: AnimationFunc,
+): (() => void) => {
   if (pal.override.freeze) return () => {};
   const locked = { ...pal }; // safe from changes to top-level pal values
   const updateCircle = createEngineCircle(pal.body[0].circle);
@@ -43,10 +58,17 @@ const startUpdateLoop = (pal: Palamander, animate: AnimationFunc): () => void =>
   const factor: MovementFactor = { linear: 1, rotational: 1, interval: 1 }; // hard-code no-op move factor
   const intervalId = setInterval(() => {
     const currTime = Date.now();
-    const interval = currTime-prevTime;
+    const interval = currTime - prevTime;
     const movement = locked.move(interval, factor, locked.override.move);
     animate((state: PalamanderState) => {
-      const head = updateSegment(state.head, updateCircle, movement.rotational.distance,  movement.rotational.distance, interval,  movement.rotational.velocity);
+      const head = updateSegment(
+        state.head,
+        updateCircle,
+        movement.rotational.distance,
+        movement.rotational.distance,
+        interval,
+        movement.rotational.velocity,
+      );
       const center = calculatePivotCoords(head, locked.pivotIndex);
       const centerDelta = shiftNegative(state.center, center);
       const delta = shift(shift(state.delta, movement.delta), centerDelta);
@@ -63,7 +85,12 @@ const startUpdateLoop = (pal: Palamander, animate: AnimationFunc): () => void =>
 
 function initializePalamanderState(pal: Palamander): PalamanderState {
   const initialAngle = pal.override.move.angle ?? 0;
-  const head = hydrateSegment(pal.body[0], createEngineCircle(pal.body[0].circle), initialAngle, Date.now())
+  const head = hydrateSegment(
+    pal.body[0],
+    createEngineCircle(pal.body[0].circle),
+    initialAngle,
+    Date.now(),
+  );
   const center = calculatePivotCoords(head, pal.pivotIndex);
   return {
     head,
@@ -86,7 +113,10 @@ function calculatePivotIndex(body: Segment[]): number {
   return 0;
 }
 
-function calculateFractionalCoordinates(body: Segment[], index: number): Coords {
+function calculateFractionalCoordinates(
+  body: Segment[],
+  index: number,
+): Coords {
   const segment = body[Math.floor(index)];
   const angleVector = toAngleVector(segment.bodyAngle.absolute);
   const length = 2 * segment.circle.radius - segment.overlap;
@@ -101,7 +131,11 @@ function calculateFractionalCoordinates(body: Segment[], index: number): Coords 
 function calculatePivotCoords(head: Segment, index: number): Coords {
   const body = getBodySegments(head);
   const center = calculateFractionalCoordinates(body, index);
-  return calculateTangent(center, head.circle.center, -body[Math.floor(index)].bodyAngle.absolute);
+  return calculateTangent(
+    center,
+    head.circle.center,
+    -body[Math.floor(index)].bodyAngle.absolute,
+  );
 }
 
 function calculateTangent(a: Coords, b: Coords, angle: number): Coords {
@@ -109,18 +143,24 @@ function calculateTangent(a: Coords, b: Coords, angle: number): Coords {
   const bPrime = changeBasis(b, angle);
   const cPrime = {
     x: bPrime.x,
-    y: aPrime.y
+    y: aPrime.y,
   };
   return changeBasis(cPrime, -angle);
 }
 
 function changeBasis(coordinate: Coords, angle: number) {
-  const radiants = angle * Math.PI / 180;
+  const radiants = (angle * Math.PI) / 180;
   return {
     x: coordinate.x * Math.cos(radiants) + coordinate.y * Math.sin(radiants),
-    y: -coordinate.x * Math.sin(radiants) + coordinate.y * Math.cos(radiants)
-  }
+    y: -coordinate.x * Math.sin(radiants) + coordinate.y * Math.cos(radiants),
+  };
 }
 
-export { startUpdateLoop, initializePalamanderState, calculatePivotIndex, getBodySegments, calculateFractionalCoordinates }; 
+export {
+  startUpdateLoop,
+  initializePalamanderState,
+  calculatePivotIndex,
+  getBodySegments,
+  calculateFractionalCoordinates,
+};
 export type { Palamander, PalSettings, PalamanderMap, PalamanderState };

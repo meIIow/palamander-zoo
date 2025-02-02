@@ -1,10 +1,10 @@
-import { useState } from 'react'
-import PalamanderGrid from '../palamander/PalamanderGrid.tsx'
+import { useState } from 'react';
+import PalamanderGrid from '../palamander/PalamanderGrid.tsx';
 
 function App() {
-  const [speed, setSpeed] = useState(true)
-  const [turn, setTurn] = useState(true)
-  const [reset, setReset] = useState(0)
+  const [speed, setSpeed] = useState(true);
+  const [turn, setTurn] = useState(true);
+  const [reset, setReset] = useState(0);
 
   return (
     <>
@@ -14,18 +14,14 @@ function App() {
         </button>
       </div>
       <div className="card">
-        <button onClick={() => setTurn((turn) => !turn)}>
-          Toggle Turn
-        </button>
+        <button onClick={() => setTurn((turn) => !turn)}>Toggle Turn</button>
       </div>
       <div className="card">
-        <button onClick={() => setReset((reset) => reset+1)}>
-          Respawn
-        </button>
+        <button onClick={() => setReset((reset) => reset + 1)}>Respawn</button>
       </div>
-      <PalamanderGrid suppress={{ turn, speed }} reset={reset}/>
+      <PalamanderGrid suppress={{ turn, speed }} reset={reset} />
     </>
-  )
+  );
 }
 
-export default App
+export default App;

@@ -3,10 +3,10 @@ import { useState, useEffect } from 'react';
 import PalamanderView from './PalamanderView.tsx';
 import { Palamander } from '../../palamander/palamander.ts';
 import { createDefaultPal } from '../../palamander/create-palamander.ts';
-import { generateWindowDisplayRange } from '../../palamander/palamander-range.ts'
+import { generateWindowDisplayRange } from '../../palamander/palamander-range.ts';
 
 async function createPalsTemp(): Promise<Palamander[]> {
-  return [ createDefaultPal( )];
+  return [createDefaultPal()];
 }
 
 // Convenience Component for describing Palamander Segment trees and behavior.
@@ -16,7 +16,7 @@ async function createPalsTemp(): Promise<Palamander[]> {
 function PalamanderSpawner() {
   const [palamanders, setPalamanders] = useState<Array<Palamander>>(() => []);
 
-  useEffect(()=> {
+  useEffect(() => {
     const getPals = async () => {
       const x = await createPalsTemp();
       console.log(x);
@@ -27,11 +27,17 @@ function PalamanderSpawner() {
 
   return (
     <>
-      {palamanders.length <= 0 ? null : palamanders.map((pal, i) => (
-        <PalamanderView pal={pal} display={generateWindowDisplayRange({ x: 0.5, y: 0.5 })} key={i}/>
-      ))}
+      {palamanders.length <= 0 ? null : (
+        palamanders.map((pal, i) => (
+          <PalamanderView
+            pal={pal}
+            display={generateWindowDisplayRange({ x: 0.5, y: 0.5 })}
+            key={i}
+          />
+        ))
+      )}
     </>
-  )
+  );
 }
 
-export default PalamanderSpawner
+export default PalamanderSpawner;

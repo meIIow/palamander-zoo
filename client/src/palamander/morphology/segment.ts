@@ -1,6 +1,10 @@
 import { Wriggle, generateCompositeWriggle } from './animation/wriggle.ts';
 import { WriggleSpec } from './animation/wriggle-spec.ts';
-import { Circle, calculateCenter, createDefaultCircle } from '../common/circle.ts';
+import {
+  Circle,
+  calculateCenter,
+  createDefaultCircle,
+} from '../common/circle.ts';
 
 type BodyAngle = {
   // Overall body angle at this segment
@@ -12,7 +16,7 @@ type BodyAngle = {
   // Relative angle off of absolute body angle to render this segment
   // Ex: 0 for spine, 30 for arm
   relative: number;
-}
+};
 
 type SegmentSpec = {
   radius: number;
@@ -62,8 +66,11 @@ function calculateAbsoluteBodyAngle(
   parentAbsoluteBodyAngle: number,
 ): number {
   return stepMagnitude < 1 ?
-    stepMagnitude*parentAbsoluteBodyAnglePrev + (1-stepMagnitude)*absoluteBodyAnglePrev :
-    (parentAbsoluteBodyAnglePrev + (stepMagnitude-1)*parentAbsoluteBodyAngle) / stepMagnitude;
+      stepMagnitude * parentAbsoluteBodyAnglePrev +
+        (1 - stepMagnitude) * absoluteBodyAnglePrev
+    : (parentAbsoluteBodyAnglePrev +
+        (stepMagnitude - 1) * parentAbsoluteBodyAngle) /
+        stepMagnitude;
 }
 
 // Adjust segment's absolute body angle to be within acceptable range of parent's
@@ -73,10 +80,10 @@ function clipAbsoluteBodyAngle(
   parentAbsoluteBodyAngle: number,
 ): number {
   if (parentAbsoluteBodyAngle - absoluteBodyAngle > curveRange) {
-    return absoluteBodyAngle = parentAbsoluteBodyAngle-curveRange;
+    return (absoluteBodyAngle = parentAbsoluteBodyAngle - curveRange);
   }
   if (absoluteBodyAngle - parentAbsoluteBodyAngle > curveRange) {
-    return absoluteBodyAngle = parentAbsoluteBodyAngle+curveRange;
+    return (absoluteBodyAngle = parentAbsoluteBodyAngle + curveRange);
   }
   return absoluteBodyAngle;
 }
@@ -85,69 +92,78 @@ function updateBodyAngle(
   stepMagnitude: number,
   parentAbsoluteBodyAnglePrev: number,
   parentAbsoluteBodyAngle: number,
-  bodyAnglePrev: BodyAngle
+  bodyAnglePrev: BodyAngle,
 ): BodyAngle {
   let absoluteBodyAngle = calculateAbsoluteBodyAngle(
     stepMagnitude,
     bodyAnglePrev.absolute,
     parentAbsoluteBodyAnglePrev,
-    parentAbsoluteBodyAngle
+    parentAbsoluteBodyAngle,
   );
 
-  const bodyAngle = {...bodyAnglePrev}
-  bodyAngle.absolute =
-      clipAbsoluteBodyAngle(bodyAngle.curveRange, absoluteBodyAngle, parentAbsoluteBodyAngle)
+  const bodyAngle = { ...bodyAnglePrev };
+  bodyAngle.absolute = clipAbsoluteBodyAngle(
+    bodyAngle.curveRange,
+    absoluteBodyAngle,
+    parentAbsoluteBodyAngle,
+  );
   return bodyAngle;
 }
 
-// Initialize segments with consistent spawn data 
+// Initialize segments with consistent spawn data
 function hydrateSegment(
-    segment: Segment,
-    parentCircle: Circle,
-    bodyAngleAbsolute: number,
-    depth = 0): Segment {
+  segment: Segment,
+  parentCircle: Circle,
+  bodyAngleAbsolute: number,
+  depth = 0,
+): Segment {
   const circle = {
     center: calculateCenter(
       segment.circle,
       parentCircle,
       segment.overlap,
-      bodyAngleAbsolute + segment.bodyAngle.relative + segment.wriggle(0, 0)),
-    radius: segment.circle.radius
-  }
-  const bodyAngle = {...segment.bodyAngle}
+      bodyAngleAbsolute + segment.bodyAngle.relative + segment.wriggle(0, 0),
+    ),
+    radius: segment.circle.radius,
+  };
+  const bodyAngle = { ...segment.bodyAngle };
   bodyAngle.absolute = bodyAngleAbsolute;
   return {
     ...segment,
     circle,
     bodyAngle,
-    children: segment.children.map(
-      (child) => hydrateSegment(child, circle, bodyAngleAbsolute, depth+1)
-    )
-  }
+    children: segment.children.map((child) =>
+      hydrateSegment(child, circle, bodyAngleAbsolute, depth + 1),
+    ),
+  };
 }
 
 function updateSegment(
-    segment: Segment,
-    parentCircle: Circle,
-    parentAbsoluteBodyAngle: number,
-    parentAbsoluteBodyAnglePrev: number,
-    interval: number,
-    speed: number): Segment {
+  segment: Segment,
+  parentCircle: Circle,
+  parentAbsoluteBodyAngle: number,
+  parentAbsoluteBodyAnglePrev: number,
+  interval: number,
+  speed: number,
+): Segment {
   const stepMagnitude = interval / segment.propagationInterval;
   const bodyAngle = updateBodyAngle(
     stepMagnitude,
     parentAbsoluteBodyAnglePrev,
     parentAbsoluteBodyAngle,
-    segment.bodyAngle
+    segment.bodyAngle,
   );
   const circle = {
     center: calculateCenter(
       segment.circle,
       parentCircle,
       segment.overlap,
-      bodyAngle.absolute + bodyAngle.relative + segment.wriggle(interval, speed)),
-    radius: segment.circle.radius
-  }
+      bodyAngle.absolute +
+        bodyAngle.relative +
+        segment.wriggle(interval, speed),
+    ),
+    radius: segment.circle.radius,
+  };
   return {
     ...segment,
     circle,
@@ -159,22 +175,31 @@ function updateSegment(
         bodyAngle.absolute,
         segment.bodyAngle.absolute,
         interval,
-        speed
+        speed,
       );
-    })
-  }
+    }),
+  };
 }
 
 function getSegmentCircles(segment: Segment): Array<Circle> {
-  return [segment.circle, ...segment.children.map(child => getSegmentCircles(child)).flat()]
+  return [
+    segment.circle,
+    ...segment.children.map((child) => getSegmentCircles(child)).flat(),
+  ];
 }
 
 function getBodySegments(segment: Segment): Segment[] {
   if (!segment.primary) return [];
-  return [segment, ...segment.children.map(child => getBodySegments(child)).flat()];
+  return [
+    segment,
+    ...segment.children.map((child) => getBodySegments(child)).flat(),
+  ];
 }
 
-function createDefaultSegment(radius: number, propagationInterval: number = 100): Segment {
+function createDefaultSegment(
+  radius: number,
+  propagationInterval: number = 100,
+): Segment {
   return {
     circle: createDefaultCircle(radius),
     bodyAngle: {
@@ -187,19 +212,27 @@ function createDefaultSegment(radius: number, propagationInterval: number = 100)
     propagationInterval: propagationInterval,
     primary: false,
     children: [],
-  }
+  };
 }
 
 function createSegment(
-    radius: number,
-    angle: number,
-    overlapMult: number,
-    propagationInterval: number = 100): Segment {
+  radius: number,
+  angle: number,
+  overlapMult: number,
+  propagationInterval: number = 100,
+): Segment {
   const segment = createDefaultSegment(radius, propagationInterval);
   segment.bodyAngle.relative = angle;
   segment.overlap = radius * overlapMult;
   return segment;
 }
 
-export { updateSegment, hydrateSegment, getSegmentCircles, createDefaultSegment, createSegment, getBodySegments };
+export {
+  updateSegment,
+  hydrateSegment,
+  getSegmentCircles,
+  createDefaultSegment,
+  createSegment,
+  getBodySegments,
+};
 export type { Segment, SegmentSpec };

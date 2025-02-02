@@ -1,7 +1,15 @@
-import { BehaviorMap, VelocitySampleSpecGenerator, wrapBehaviorMap } from './velocity-behavior.ts';
-import { VelocityLimit, VelocitySampleSpec } from './velocity.ts'
+import {
+  BehaviorMap,
+  VelocitySampleSpecGenerator,
+  wrapBehaviorMap,
+} from './velocity-behavior.ts';
+import { VelocityLimit, VelocitySampleSpec } from './velocity.ts';
 import { SampleSpec } from './sample.ts';
-import { generateMeasuredSampleSpec, generateCommittedSampleSpec, generateFreneticSampleSpec } from './interval-behavior.ts';
+import {
+  generateMeasuredSampleSpec,
+  generateCommittedSampleSpec,
+  generateFreneticSampleSpec,
+} from './interval-behavior.ts';
 
 const BASELINE_VELOCITY = 2500; // 25 (Pal Units / Second), ~ 2-10 (pal lengths / sec)
 const BASELINE_ACCEL = 1000; // 10 (Pal Units / Second), ~ 1-4 (pal lengths / sec)
@@ -11,7 +19,7 @@ const baselineLimit: VelocityLimit = {
   velocity: BASELINE_VELOCITY,
   accel: BASELINE_ACCEL,
   decel: BASELINE_DECEL,
-}
+};
 
 const defaultSpeedSampleSpec: SampleSpec = {
   range: {
@@ -27,9 +35,9 @@ const generateDefaultSpeedBehaviorSpec: VelocitySampleSpecGenerator = () => {
   return {
     limit: baselineLimit,
     velocity: defaultSpeedSampleSpec,
-    interval: generateMeasuredSampleSpec()
-  }
-}
+    interval: generateMeasuredSampleSpec(),
+  };
+};
 
 // Slower across the board, and with extra low distribution.
 const generateCautiousBehaviorSpec: VelocitySampleSpecGenerator = () => {
@@ -42,9 +50,9 @@ const generateCautiousBehaviorSpec: VelocitySampleSpecGenerator = () => {
       decel: BASELINE_DECEL / 1.5,
     },
     velocity: defaultSpeedSampleSpec,
-    interval: generateMeasuredSampleSpec()
-  }
-}
+    interval: generateMeasuredSampleSpec(),
+  };
+};
 
 // Slower across the board.
 const generateDeliberateBehaviorSpec: VelocitySampleSpecGenerator = () => {
@@ -57,9 +65,9 @@ const generateDeliberateBehaviorSpec: VelocitySampleSpecGenerator = () => {
       decel: BASELINE_DECEL / 1.5,
     },
     velocity: defaultSpeedSampleSpec,
-    interval: generateMeasuredSampleSpec()
-  }
-}
+    interval: generateMeasuredSampleSpec(),
+  };
+};
 
 // Faster speed, even slightly faster acc/dec, more speed changing.
 const generateErraticBehaviorSpec: VelocitySampleSpecGenerator = () => {
@@ -72,17 +80,17 @@ const generateErraticBehaviorSpec: VelocitySampleSpecGenerator = () => {
       decel: BASELINE_DECEL,
     },
     velocity,
-    interval: generateFreneticSampleSpec()
-  }
-}
+    interval: generateFreneticSampleSpec(),
+  };
+};
 
 const generateFlittingBehaviorSpec: VelocitySampleSpecGenerator = () => {
   return {
     limit: baselineLimit,
     velocity: defaultSpeedSampleSpec,
-    interval: generateMeasuredSampleSpec()
-  }
-}
+    interval: generateMeasuredSampleSpec(),
+  };
+};
 
 // Never fully stopped, with slow speed and slower acc/dec, less speed changing.
 const generateFloatingBehaviorSpec: VelocitySampleSpecGenerator = () => {
@@ -95,9 +103,9 @@ const generateFloatingBehaviorSpec: VelocitySampleSpecGenerator = () => {
       decel: BASELINE_ACCEL / 5,
     },
     velocity,
-    interval: generateCommittedSampleSpec()
-  }
-}
+    interval: generateCommittedSampleSpec(),
+  };
+};
 
 // Slower speed & acc/dec, with extra stopping chance.
 const generateHoveringBehaviorSpec: VelocitySampleSpecGenerator = () => {
@@ -110,9 +118,9 @@ const generateHoveringBehaviorSpec: VelocitySampleSpecGenerator = () => {
       decel: BASELINE_DECEL / 3,
     },
     velocity,
-    interval: generateMeasuredSampleSpec()
-  }
-}
+    interval: generateMeasuredSampleSpec(),
+  };
+};
 
 // Slower across the board, but with higher distribution.
 const generatePushingBehaviorSpec: VelocitySampleSpecGenerator = () => {
@@ -125,22 +133,22 @@ const generatePushingBehaviorSpec: VelocitySampleSpecGenerator = () => {
       decel: BASELINE_DECEL / 1.5,
     },
     velocity: defaultSpeedSampleSpec,
-    interval: generateMeasuredSampleSpec()
-  }
-}
+    interval: generateMeasuredSampleSpec(),
+  };
+};
 
 const speedMap: BehaviorMap = {
-  'placeholder': generateDefaultSpeedBehaviorSpec,
-  'cautious': generateCautiousBehaviorSpec,
+  placeholder: generateDefaultSpeedBehaviorSpec,
+  cautious: generateCautiousBehaviorSpec,
   // 'dashing': generateDashingBehaviorSpec,
-  'deliberate': generateDeliberateBehaviorSpec,
-  'erratic': generateErraticBehaviorSpec,
-  'flitting': generateFlittingBehaviorSpec,
-  'floating': generateFloatingBehaviorSpec,
-  'hovering': generateHoveringBehaviorSpec,
-  'pushing': generatePushingBehaviorSpec,
+  deliberate: generateDeliberateBehaviorSpec,
+  erratic: generateErraticBehaviorSpec,
+  flitting: generateFlittingBehaviorSpec,
+  floating: generateFloatingBehaviorSpec,
+  hovering: generateHoveringBehaviorSpec,
+  pushing: generatePushingBehaviorSpec,
 };
 
 export const mapSpeedBehavior = (behavior: string): VelocitySampleSpec => {
-  return wrapBehaviorMap(speedMap, behavior)
+  return wrapBehaviorMap(speedMap, behavior);
 };

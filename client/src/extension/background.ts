@@ -1,13 +1,13 @@
-import { syncPalMap } from "./storage";
+import { syncPalMap } from './storage';
 
 chrome.runtime.onInstalled.addListener(async () => {
-  console.log("I was installed!");
+  console.log('I was installed!');
   await syncPalMap();
 });
 
 chrome.sidePanel
-          .setPanelBehavior({ openPanelOnActionClick: true })
-          .catch((error) => console.error(error));
+  .setPanelBehavior({ openPanelOnActionClick: true })
+  .catch((error) => console.error(error));
 
 // Normally, the content script determines whether to render Pals itself.
 // The content script has access to the document visibility values/events...
@@ -24,22 +24,24 @@ chrome.sidePanel
 chrome.tabs.onActivated.addListener(async (info) => {
   console.log(`Tab ${info.tabId} was activated`);
   const scriptHadNotRun = await chrome.scripting.executeScript({
-    target: {tabId: info.tabId},
-    files: ['assets/content-wrapper.js']
+    target: { tabId: info.tabId },
+    files: ['assets/content-wrapper.js'],
   });
 
   // TODO(mellow): script execution should return true/false, but instead always returns null
   // Can still just continue with these follow-ups (they will end up no-ops)...
   //    but if possible, should skip if context script ha
-  console.log(`Content Script was missing from Tab ${info.tabId}: ${scriptHadNotRun}`);
+  console.log(
+    `Content Script was missing from Tab ${info.tabId}: ${scriptHadNotRun}`,
+  );
   // if (scriptHadNotRun) {}
   await chrome.scripting.insertCSS({
-    target: {tabId: info.tabId},
-    files: ['assets/content.css']
+    target: { tabId: info.tabId },
+    files: ['assets/content.css'],
   });
   await chrome.tabs.sendMessage(info.tabId, 'show');
 });
 
 // TODO(mellow): establish data persistence lifecycle
-console.log("I am a service worker.");
+console.log('I am a service worker.');
 syncPalMap();
