@@ -1,35 +1,24 @@
+import type { Coords } from './common/coords.ts';
+import type { Segment } from './morphology/segment.ts';
+import { MovementBehavior } from './movement/behavior.ts';
+import type { Move } from './movement/movement.ts';
+import { PalModifier } from './palamander-modifier.ts';
+
 import { createEngineCircle } from './common/circle.ts';
+import { shiftNegative, shift, toAngleVector } from './common/coords.ts';
 import {
-  Coords,
-  shiftNegative,
-  shift,
-  toAngleVector,
-} from './common/coords.ts';
-import {
-  Segment,
   hydrateSegment,
   updateSegment,
   getBodySegments,
 } from './morphology/segment.ts';
-import { Move, MovementFactor, MovementOverride } from './movement/movement.ts';
 
 type Palamander = {
   type: string;
+  behavior: MovementBehavior;
+  size: number;
   body: Segment[];
   pivotIndex: number;
-  move: Move;
-  override: Override;
-  settings: PalSettings;
-};
-
-type PalSettings = {
-  updateInterval: number;
-  magnification: number;
-  color: string;
-};
-
-type PalamanderMap = {
-  [key: string]: Palamander;
+  mod: PalModifier;
 };
 
 type PalamanderState = {
@@ -38,28 +27,24 @@ type PalamanderState = {
   center: Coords;
 };
 
-type Override = {
-  freeze: boolean;
-  move: MovementOverride;
-};
-
 type AnimationFunc = (
   update: (state: PalamanderState) => PalamanderState,
 ) => void;
 
+// Initiates primary update loop for Palamander movement
 const startUpdateLoop = (
   pal: Palamander,
+  move: Move,
   animate: AnimationFunc,
 ): (() => void) => {
-  if (pal.override.freeze) return () => {};
-  const locked = { ...pal }; // safe from changes to top-level pal values
+  if (pal.mod.override.freeze) return () => {};
+  const mod = { ...pal.mod }; // safe from changes to pal.mod fields
   const updateCircle = createEngineCircle(pal.body[0].circle);
   let prevTime = Date.now();
-  const factor: MovementFactor = { linear: 1, rotational: 1, interval: 1 }; // hard-code no-op move factor
   const intervalId = setInterval(() => {
     const currTime = Date.now();
     const interval = currTime - prevTime;
-    const movement = locked.move(interval, factor, locked.override.move);
+    const movement = move(interval, mod.factor, mod.override.move);
     animate((state: PalamanderState) => {
       const head = updateSegment(
         state.head,
@@ -69,7 +54,7 @@ const startUpdateLoop = (
         interval,
         movement.rotational.velocity,
       );
-      const center = calculatePivotCoords(head, locked.pivotIndex);
+      const center = calculatePivotCoords(head, pal.pivotIndex);
       const centerDelta = shiftNegative(state.center, center);
       const delta = shift(shift(state.delta, movement.delta), centerDelta);
       return {
@@ -79,12 +64,12 @@ const startUpdateLoop = (
       };
     });
     prevTime = currTime;
-  }, locked.settings.updateInterval);
+  }, mod.updateInterval);
   return () => clearInterval(intervalId);
 };
 
 function initializePalamanderState(pal: Palamander): PalamanderState {
-  const initialAngle = pal.override.move.angle ?? 0;
+  const initialAngle = pal.mod.override.move.angle ?? 0;
   const head = hydrateSegment(
     pal.body[0],
     createEngineCircle(pal.body[0].circle),
@@ -163,4 +148,4 @@ export {
   getBodySegments,
   calculateFractionalCoordinates,
 };
-export type { Palamander, PalSettings, PalamanderMap, PalamanderState };
+export type { Palamander, PalamanderState };

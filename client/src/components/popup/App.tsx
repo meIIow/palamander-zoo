@@ -1,21 +1,21 @@
 import { useState, useEffect, useReducer } from 'react';
+
 import Collection from '../collection/Collection.tsx';
 import Exhibit from '../exhibit/Exhibit.tsx';
+import { FilterContext, PalFiltersContext } from '../common/filter-context.ts';
+import { PalContext, FilteredPalContext } from '../common/pal-context.ts';
+
+import type { PalamanderFilters } from '../common/color-filter.ts';
+import type { Palamander } from '../../palamander/palamander.ts';
+
 import {
   initColorFilter,
-  PalamanderFilters,
   filterPals,
   pullPalamanderFilters,
   syncPalamanderFilters,
 } from '../common/color-filter.ts';
-import { Palamander } from '../../palamander/palamander.ts';
 import { readDefaultPalMap } from '../../palamander/create-palamander.ts';
-import {
-  FilterContext,
-  PalFiltersContext,
-  reduceColorFilter,
-} from '../common/filter-context.ts';
-import { PalContext, FilteredPalContext } from '../common/pal-context.ts';
+import { reduceColorFilter } from '../common/filter-context.ts';
 
 function App() {
   const [pals, setPals] = useState<Array<Palamander>>([]);

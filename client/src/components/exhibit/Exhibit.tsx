@@ -1,17 +1,25 @@
 import { useState, useEffect, useContext } from 'react';
+
+import Settings from './Settings.tsx';
 import Staging from './Staging.tsx';
-import CardMatrix from '../common/CardMatrix.tsx';
 import Tank from './Tank.tsx';
+import CardMatrix from '../common/CardMatrix.tsx';
 import PrimaryFilter from './../common/PrimaryFilter.tsx';
-import { Palamander, PalSettings } from '../../palamander/palamander.ts';
+
+import type { Palamander } from '../../palamander/palamander.ts';
+import type { PalModifier } from '../../palamander/palamander-modifier.ts';
+
 import { PalContext } from '../common/pal-context.ts';
+import {
+  createNoopMovementFactor,
+  createNoopOverride,
+} from '../../palamander/palamander-modifier.ts';
 import {
   show as showPal,
   visible,
   exhibit,
   getExhibit,
 } from './../../extension/storage.ts';
-import Settings from './Settings.tsx';
 
 type StagedPals = (Palamander | null)[];
 
@@ -27,7 +35,7 @@ const cloneStagingState = (stagingState: StagingState) => {
   };
 };
 
-type StagedSettings = { [type: string]: PalSettings }[];
+type StagedSettings = { [type: string]: PalModifier }[];
 const cloneStagedSettings = (
   stagedSettings: StagedSettings,
 ): StagedSettings => {
@@ -44,7 +52,9 @@ const getStagedSettings = (
 ) => {
   return stagedSettings[index]?.[key] ?? defaultStagedSettings;
 };
-const defaultStagedSettings: PalSettings = {
+const defaultStagedSettings: PalModifier = {
+  override: createNoopOverride(),
+  factor: createNoopMovementFactor(),
   updateInterval: 50,
   magnification: 10,
   color: '#000000', // black
@@ -128,8 +138,8 @@ function Exhibit() {
   const generateCustomize = (
     index: number,
     key: string,
-  ): ((settings: PalSettings) => void) => {
-    return (settings: PalSettings) =>
+  ): ((settings: PalModifier) => void) => {
+    return (settings: PalModifier) =>
       setSettings((state) => {
         const clone = cloneStagedSettings(state);
         clone[index][key] = { ...settings };
@@ -148,7 +158,7 @@ function Exhibit() {
 
   const selection =
     !isSelected ?
-      <Tank pals={staged.filter((pal) => pal != null)} />
+      <Tank pals={staged} />
     : <div>
         <PrimaryFilter active={true} />
         <CardMatrix choose={set} />

@@ -1,12 +1,12 @@
-import { PalSettings } from '../../palamander/palamander.ts';
+import { PalModifier } from '../../palamander/palamander-modifier.ts';
 import { ChangeEvent } from 'react';
 
 function Settings({
   settings,
   customize,
 }: {
-  settings: PalSettings;
-  customize: (settings: PalSettings) => void;
+  settings: PalModifier;
+  customize: (settings: PalModifier) => void;
 }) {
   const customizeColor = (event: ChangeEvent<HTMLInputElement>) => {
     return customize({ ...settings, color: event.target.value });

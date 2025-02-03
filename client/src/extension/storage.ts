@@ -1,4 +1,5 @@
-import { PalamanderSpecMap } from '../palamander/create-palamander';
+import type { Dict } from '../palamander/common/types.ts';
+import type { PalamanderSpec } from '../palamander/create-palamander.ts';
 
 // WIP Storage Schema
 // roam: bool // whether to render the chosen palamanders or not
@@ -40,7 +41,7 @@ async function syncPalMap(): Promise<void> {
   return chrome.storage.local.set({ [PAL_MAP_KEY]: palMap });
 }
 
-async function getPalMap(): Promise<PalamanderSpecMap> {
+async function getPalMap(): Promise<Dict<PalamanderSpec>> {
   const pals = await chrome.storage.local.get([PAL_MAP_KEY]);
   return pals[PAL_MAP_KEY as keyof typeof pals];
 }

@@ -13,7 +13,8 @@ type CardProps = {
 
 const setStaticPal = (pal: Palamander): Palamander => {
   const moveOverride = { linear: { velocity: 0 }, rotational: {}, angle: 270 };
-  return { ...pal, override: { freeze: false, move: moveOverride } };
+  const mod = { ...pal.mod, override: { freeze: false, move: moveOverride } };
+  return { ...pal, mod };
 };
 
 function Staging({ pal, active, selected, select, hover }: CardProps) {

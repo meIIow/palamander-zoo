@@ -1,7 +1,15 @@
 import { useState } from 'react';
+
 import PalamanderView from '../palamander/PalamanderView.tsx';
-import { Palamander } from '../../palamander/palamander.ts';
+
+import type { Palamander } from '../../palamander/palamander.ts';
+
 import { generateBoundedDisplayRange } from '../../palamander/palamander-range.ts';
+import {
+  createPointedOverride,
+  createStillOverride,
+  createSpinOverride,
+} from '../../palamander/palamander-modifier.ts';
 import PalamanderFilter from './PalamanderFilter.tsx';
 
 type CardProps = {
@@ -12,30 +20,21 @@ type CardProps = {
 const setStaticPal = (pal: Palamander): Palamander => {
   return {
     ...pal,
-    override: {
-      freeze: false,
-      move: { linear: { velocity: 0 }, rotational: {}, angle: 225 },
-    },
+    mod: { ...pal.mod, override: createPointedOverride(225) },
   };
 };
 
 const StopSpinningPal = (pal: Palamander): Palamander => {
   return {
     ...pal,
-    override: {
-      freeze: false,
-      move: { linear: { velocity: 0 }, rotational: { velocity: 0 } },
-    },
+    mod: { ...pal.mod, override: createStillOverride() },
   };
 };
 
 const setSpinningPal = (pal: Palamander): Palamander => {
   return {
     ...pal,
-    override: {
-      freeze: false,
-      move: { linear: { velocity: 0 }, rotational: { velocity: 25 } },
-    },
+    mod: { ...pal.mod, override: createSpinOverride(25) },
   };
 };
 

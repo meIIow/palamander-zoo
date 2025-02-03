@@ -1,13 +1,12 @@
-import { Section } from './morphology/section.ts';
+import type { Dict } from './common/types.ts';
+import type { Section } from './morphology/section.ts';
+import type { MovementBehavior } from './movement/behavior.ts';
+import type { Palamander } from './palamander.ts';
+import type { PalModifier } from './palamander-modifier.ts';
+
 import segmentate from './morphology/segmentation/segmentate.ts';
-import {
-  Palamander,
-  PalSettings,
-  PalamanderMap,
-  calculatePivotIndex,
-} from './palamander.ts';
-import { generateMove } from './movement/movement.ts';
-import { MovementBehavior } from './movement/behavior.ts';
+import { calculatePivotIndex } from './palamander.ts';
+import { createFallbackMod } from './palamander-modifier.ts';
 
 type PalamanderSpec = {
   type: string;
@@ -15,10 +14,6 @@ type PalamanderSpec = {
   movementBehavior: MovementBehavior;
   magnification: number;
 };
-
-interface PalamanderSpecMap {
-  [key: string]: PalamanderSpec;
-}
 
 const defaultPalList = [
   'axolotl',
@@ -37,27 +32,18 @@ const defaultPalList = [
   // 'jelly'
 ];
 
-const defaultPalParams = {
-  updateInterval: 50,
-  magnification: 1,
-  color: 'teal',
-};
-
 function hydrate(
   spec: PalamanderSpec,
-  settings: PalSettings = defaultPalParams,
+  mod: PalModifier = createFallbackMod(),
 ): Palamander {
   const body = segmentate(spec.sectionTree);
   return {
     type: spec.type,
+    behavior: spec.movementBehavior,
+    size: spec.magnification,
     body,
     pivotIndex: calculatePivotIndex(body),
-    override: { freeze: false, move: { linear: {}, rotational: {} } },
-    move: generateMove(spec.movementBehavior),
-    settings: {
-      ...settings,
-      magnification: spec.magnification * settings.magnification,
-    },
+    mod,
   };
 }
 
@@ -65,7 +51,7 @@ function createPalList(specs: PalamanderSpec[]): Palamander[] {
   return specs.map((spec) => hydrate(spec));
 }
 
-function hydratePalMap(specMap: PalamanderSpecMap): PalamanderMap {
+function hydratePalMap(specMap: Dict<PalamanderSpec>): Dict<Palamander> {
   return Object.fromEntries(
     Object.entries(specMap)
       .map(([type, spec]) => [type, hydrate({ ...spec, type })])
@@ -146,13 +132,13 @@ function createAxolotl(): Palamander {
   return hydrate(palSpec);
 }
 
-async function readDefaultPalSpecMap(): Promise<PalamanderSpecMap> {
+async function readDefaultPalSpecMap(): Promise<Dict<PalamanderSpec>> {
   const rawData = await fetch('./../pals.json');
-  const palSpecs: PalamanderSpecMap = JSON.parse(await rawData.text());
+  const palSpecs: Dict<PalamanderSpec> = JSON.parse(await rawData.text());
   return palSpecs;
 }
 
-async function readDefaultPalMap(): Promise<PalamanderMap> {
+async function readDefaultPalMap(): Promise<Dict<Palamander>> {
   return hydratePalMap(await readDefaultPalSpecMap());
 }
 
@@ -162,13 +148,13 @@ async function readDefaultPalList(): Promise<Palamander[]> {
 
 async function readDefaultPalSpecs(): Promise<PalamanderSpec[]> {
   const rawData = await fetch('./../pals.json');
-  const palSpecs: PalamanderSpecMap = JSON.parse(await rawData.text());
+  const palSpecs: Dict<PalamanderSpec> = JSON.parse(await rawData.text());
   return Object.entries(palSpecs)
     .filter(([type, _]) => defaultPalList.includes(type))
     .map(([_, spec]) => spec);
 }
 
-export type { PalamanderSpec, PalamanderSpecMap };
+export type { PalamanderSpec };
 export {
   createDefaultPalList,
   createDefaultPal,

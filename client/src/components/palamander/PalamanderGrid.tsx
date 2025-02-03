@@ -26,9 +26,10 @@ function PalamanderGrid({
         rotational: { velocity: suppress.turn ? 0 : undefined },
       };
       const pals = (await readDefaultPalList()).map((pal) => {
+        const override = { ...pal.mod.override, ...movementOverride };
         return {
           ...pal,
-          override: { ...pal.override, move: movementOverride },
+          mod: { ...pal.mod, override },
         };
       });
       setPalamanders(pals);

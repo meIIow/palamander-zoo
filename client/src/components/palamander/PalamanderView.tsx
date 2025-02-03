@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from 'react';
 import SegmentView from './SegmentView.tsx';
 import { shift } from '../../palamander/common/coords.ts';
 import { getSegmentCircles } from '../../palamander/morphology/segment.ts';
+import { generateMove } from '../../palamander/movement/movement.ts';
 import {
   Palamander,
   startUpdateLoop,
@@ -18,10 +19,11 @@ type PalamanderProps = {
 function PalamanderView({ pal, display }: PalamanderProps) {
   const divRef: React.MutableRefObject<null | HTMLDivElement> = useRef(null);
   const [state, setState] = useState(() => initializePalamanderState(pal));
+  const move = useRef(generateMove(pal.behavior));
 
   useEffect(() => {
     // Initialize loop that triggers new render by updating the 'head' Segment state.
-    return startUpdateLoop(pal, setState);
+    return startUpdateLoop(pal, move.current, setState);
   }, [pal]);
 
   if (divRef.current != null)
@@ -38,8 +40,8 @@ function PalamanderView({ pal, display }: PalamanderProps) {
                   center: shift(circle.center, state.delta),
                 }}
                 display={display}
-                magnification={pal.settings.magnification}
-                color={pal.settings.color}
+                magnification={(pal.size * pal.mod.magnification) / 100}
+                color={pal.mod.color}
                 key={i}
               />
             );
