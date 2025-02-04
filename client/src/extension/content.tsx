@@ -1,8 +1,13 @@
+import './content.css';
+
 import { StrictMode } from 'react';
 import { createRoot, Root } from 'react-dom/client';
-import './content.css';
+
 import PalamanderView from '../components/palamander/PalamanderView.tsx';
-import { Palamander } from '../palamander/palamander.ts';
+
+import type { Palamander } from '../palamander/palamander.ts';
+import type { Exhibited } from './storage.ts';
+
 import { hydrate } from '../palamander/create-palamander.ts';
 import { generateWindowDisplayRange } from '../palamander/palamander-range.ts';
 import { visible, getExhibit, getPalMap, exhibitChanged } from './storage.ts';
@@ -27,22 +32,17 @@ const getPalamanderRoot = (() => {
   };
 })();
 
-// async function createAxolotlTemp(): Promise<Palamander> {
-//   return createAxolotl();
-// }
-
 const [renderPalamander, clearPalamander] = (() => {
   let rendered = false; // protect rendered variable in closure
   let pals: Array<Palamander | null> = [null, null, null];
   const palMapPromise = getPalMap();
-  const updatePals: (palTypes: string[]) => Promise<void> = async (
-    palTypes,
-  ) => {
+  const updatePals = async (exhibited: Exhibited) => {
     const palMap = await palMapPromise;
     pals = pals.map((pal, i) => {
-      const modified = pal == null ? !!palTypes[i] : pal.type != palTypes[i];
-      if (!modified) return pals[i];
-      return !!palTypes[i] ? hydrate(palMap[palTypes[i]]) : null;
+      const { type, mod } = exhibited[i];
+      const modified = pal == null ? !!type : pal.type != type;
+      if (!modified) return pal == null ? null : { ...pal, mod };
+      return !!type ? hydrate(palMap[type], mod) : null;
     });
   };
   const clearPalamander = () => {
@@ -58,6 +58,7 @@ const [renderPalamander, clearPalamander] = (() => {
     rendered = true;
     console.log('PALAMANDER: (re-)rendering pal');
     await updatePals(await getExhibit());
+    console.log(pals);
     const palViews = pals.map((pal, i) => {
       if (pal == null) return null;
       return (

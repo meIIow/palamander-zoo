@@ -1,29 +1,22 @@
 import type { Dict } from '../palamander/common/types.ts';
 import type { PalamanderSpec } from '../palamander/create-palamander.ts';
-
-// WIP Storage Schema
-// roam: bool // whether to render the chosen palamanders or not
-// pal-{id}: nested segment config json, or maybe object with this as head plus other data (color, opacity, mov't bahavior, etc)
-// favorites: { fav-type: [pal-id] }
-// favorites-invers: { [pal-id]: fav-type }
-//
-// chosen: [pal-ids]
-// magnification: number
-// frametime: number (0.05 - 1)s
-// playspeed: number (0.2 - 1 - 5)x
-// behavior?: string or enum, mellow, squirlly, speedy
+import type { PalModifier } from '../palamander/palamander-modifier.ts';
 
 const SHOW_KEY = 'show';
 const EXHIBIT_KEY = 'exhibit';
 const PAL_MAP_KEY = 'pal-map';
 
-async function exhibit(pals: string[]): Promise<void> {
+type Exhibited = { type: string; mod: PalModifier }[];
+
+const createEmptyExhibit = () => [{ type: '' }, { type: '' }, { type: '' }];
+
+async function exhibit(pals: Exhibited): Promise<void> {
   return await chrome.storage.local.set({ [EXHIBIT_KEY]: pals });
 }
 
-async function getExhibit(): Promise<Array<string>> {
+async function getExhibit(): Promise<Exhibited> {
   const pals = await chrome.storage.local.get([EXHIBIT_KEY]);
-  return pals[EXHIBIT_KEY as keyof typeof pals] ?? ['', '', ''];
+  return pals[EXHIBIT_KEY as keyof typeof pals] ?? createEmptyExhibit();
 }
 
 function show(show: boolean): Promise<void> {
@@ -52,6 +45,7 @@ function exhibitChanged(changes: {
   return SHOW_KEY in changes || EXHIBIT_KEY in changes;
 }
 
+export type { Exhibited };
 export {
   show,
   visible,

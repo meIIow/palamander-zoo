@@ -8,6 +8,7 @@ import PrimaryFilter from './../common/PrimaryFilter.tsx';
 
 import type { Palamander } from '../../palamander/palamander.ts';
 import type { PalModifier } from '../../palamander/palamander-modifier.ts';
+import type { Exhibited } from './../../extension/storage.ts';
 
 import { PalContext } from '../common/pal-context.ts';
 import {
@@ -21,46 +22,59 @@ import {
   getExhibit,
 } from './../../extension/storage.ts';
 
-type StagedPals = (Palamander | null)[];
-
+type Staged = { pal?: Palamander; mod: PalModifier }[];
 type StagingState = {
-  staged: StagedPals;
+  staged: Staged;
   active: number;
   selected: number;
 };
-const cloneStagingState = (stagingState: StagingState) => {
-  return {
-    ...stagingState,
-    staged: [...stagingState.staged],
-  };
+
+const createDefaultStagingState = () => ({
+  staged: [1, 2, 3].map(() => ({ mod: createDefaultMod() })),
+  active: -1,
+  selected: -1,
+});
+
+const cloneStagingState = (staging: StagingState) => ({
+  ...staging,
+  staged: cloneStaged(staging.staged),
+});
+
+const cloneStaged = (staged: Staged) => {
+  return staged.map(({ pal, mod }) => ({ pal, mod: { ...mod } }));
 };
 
-type StagedMods = { [type: string]: PalModifier }[];
-const cloneStagedMods = (mods: StagedMods): StagedMods => {
-  return mods.map((mod) => {
-    return Object.fromEntries(
-      Object.entries(mod).map(([key, mod]) => [key, { ...mod }]),
-    );
-  });
-};
-const getStagedMods = (mods: StagedMods, index: number, key: string) => {
-  return mods[index]?.[key] ?? defaultStagedMods;
-};
-const defaultStagedMods: PalModifier = {
+const createDefaultMod = () => ({
   override: createNoopOverride(),
   factor: createNoopMovementFactor(),
   updateInterval: 50,
   magnification: 100,
   color: '#000000', // black
-};
+});
+
+function stagedFromExhibited(
+  pals: Palamander[],
+  staged: Staged,
+  exhibited: Exhibited,
+): Staged {
+  return exhibited.map(({ type, mod }, i) => {
+    const palIndex = pals.findIndex((pal) => pal.type == type);
+    if (palIndex == -1) return staged[i];
+    return { ...pals[palIndex], mod };
+  });
+}
+
+function exhibitedFromStaged(staged: Staged): Exhibited {
+  return staged.map(({ pal, mod }) => ({
+    type: pal?.type ?? '',
+    mod,
+  }));
+}
 
 function Exhibit() {
-  const [staging, setStaging] = useState<StagingState>({
-    staged: [null, null, null],
-    active: -1,
-    selected: -1,
-  });
-  const [mods, setMods] = useState<StagedMods>([{}, {}, {}]);
+  const [staging, setStaging] = useState<StagingState>(
+    createDefaultStagingState(),
+  );
   const [show, setShow] = useState(false);
   const pals = useContext(PalContext);
 
@@ -68,17 +82,10 @@ function Exhibit() {
     (async () => {
       // Sync staging with persistant data
       const exhibited = await getExhibit();
-      setStaging((staging) => {
-        const staged = staging.staged.map((staged, i) => {
-          const palIndex = pals.findIndex((pal) => pal.type == exhibited[i]);
-          if (palIndex == -1) return staged;
-          return { ...pals[palIndex] };
-        });
-        return {
-          ...staging,
-          staged,
-        };
-      });
+      setStaging((staging) => ({
+        ...staging,
+        staged: stagedFromExhibited(pals, staging.staged, exhibited),
+      }));
       // Sync visibility with persistant data
       const isVisible = await visible();
       setShow(isVisible);
@@ -87,13 +94,12 @@ function Exhibit() {
 
   const toggleShow = async (show: boolean) => {
     await showPal(!show);
-    await exhibit(staging.staged.map((pal) => pal?.type ?? ''));
+    await exhibit(exhibitedFromStaged(staging.staged));
     setShow(!show);
   };
 
   const syncShow = async () => {
-    console.log(staging.staged.map((pal) => pal?.type ?? ''));
-    await exhibit(staging.staged.map((pal) => pal?.type ?? ''));
+    await exhibit(exhibitedFromStaged(staging.staged));
   };
 
   // Switch to a chosen index, then toggle on/off.
@@ -120,8 +126,13 @@ function Exhibit() {
     setStaging((staging) => {
       const palIndex = pals.findIndex((pal) => pal.type == type);
       if (palIndex == -1) return cloneStagingState(staging);
-      const staged = [...staging.staged];
-      staged[staging.selected] = { ...pals[palIndex] };
+      const staged = cloneStaged(staging.staged);
+      const selectedType = staging.staged[staging.selected].pal?.type;
+      if (type != selectedType)
+        staged[staging.selected] = {
+          pal: { ...pals[palIndex] },
+          mod: createDefaultMod(),
+        };
       return {
         staged,
         selected: -1,
@@ -129,25 +140,22 @@ function Exhibit() {
       };
     });
 
-  const generateCustomize = (
-    index: number,
-    key: string,
-  ): ((mods: PalModifier) => void) => {
-    return (mods: PalModifier) =>
-      setMods((state) => {
-        const clone = cloneStagedMods(state);
-        clone[index][key] = { ...mods };
-        return clone;
+  const generateCustomize = (index: number): ((mod: PalModifier) => void) => {
+    return (mod: PalModifier) =>
+      setStaging((staging) => {
+        const staged = cloneStaged(staging.staged);
+        staged[index] = { pal: staged[index].pal, mod: { ...mod } };
+        return {
+          ...staging,
+          staged,
+        };
       });
   };
 
   const isSelected = !(staging.selected < 0 || staging.selected > 2);
   const isActive = !(staging.active < 0 || staging.active > 2);
-  const activeType = staging.staged[staging.active]?.type ?? '';
-  const staged = staging.staged.map((pal, i) => {
-    return pal !== null ?
-        { ...pal, mod: mods[i]?.[pal.type] ?? defaultStagedMods }
-      : null;
+  const staged = staging.staged.map(({ pal, mod }) => {
+    return pal ? { ...pal, mod } : null;
   });
 
   const selection =
@@ -161,8 +169,8 @@ function Exhibit() {
   const customizer =
     isActive && !isSelected ?
       <Modifier
-        mod={getStagedMods(mods, staging.active, activeType)}
-        customize={generateCustomize(staging.active, activeType)}
+        mod={staging.staged[staging.active].mod}
+        customize={generateCustomize(staging.active)}
       />
     : null;
 
@@ -177,10 +185,10 @@ function Exhibit() {
       </button>
       ;
       <div className="grid gap-3 grid-cols-1 240:grid-cols-2 360:grid-cols-3">
-        {staging.staged.map((pal, i) => {
+        {staging.staged.map(({ pal }, i) => {
           return (
             <Staging
-              pal={pal}
+              pal={pal ?? null}
               active={staging.active == i}
               selected={staging.selected == i}
               key={`${i}-${pal == null ? '' : pal.type}`}
