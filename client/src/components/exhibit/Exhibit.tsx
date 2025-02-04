@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 
-import Settings from './Settings.tsx';
+import Modifier from './Modifier.tsx';
 import Staging from './Staging.tsx';
 import Tank from './Tank.tsx';
 import CardMatrix from '../common/CardMatrix.tsx';
@@ -35,28 +35,22 @@ const cloneStagingState = (stagingState: StagingState) => {
   };
 };
 
-type StagedSettings = { [type: string]: PalModifier }[];
-const cloneStagedSettings = (
-  stagedSettings: StagedSettings,
-): StagedSettings => {
-  return stagedSettings.map((settings) => {
+type StagedMods = { [type: string]: PalModifier }[];
+const cloneStagedMods = (mods: StagedMods): StagedMods => {
+  return mods.map((mod) => {
     return Object.fromEntries(
-      Object.entries(settings).map(([key, s]) => [key, { ...s }]),
+      Object.entries(mod).map(([key, mod]) => [key, { ...mod }]),
     );
   });
 };
-const getStagedSettings = (
-  stagedSettings: StagedSettings,
-  index: number,
-  key: string,
-) => {
-  return stagedSettings[index]?.[key] ?? defaultStagedSettings;
+const getStagedMods = (mods: StagedMods, index: number, key: string) => {
+  return mods[index]?.[key] ?? defaultStagedMods;
 };
-const defaultStagedSettings: PalModifier = {
+const defaultStagedMods: PalModifier = {
   override: createNoopOverride(),
   factor: createNoopMovementFactor(),
   updateInterval: 50,
-  magnification: 10,
+  magnification: 100,
   color: '#000000', // black
 };
 
@@ -66,7 +60,7 @@ function Exhibit() {
     active: -1,
     selected: -1,
   });
-  const [settings, setSettings] = useState<StagedSettings>([{}, {}, {}]);
+  const [mods, setMods] = useState<StagedMods>([{}, {}, {}]);
   const [show, setShow] = useState(false);
   const pals = useContext(PalContext);
 
@@ -138,11 +132,11 @@ function Exhibit() {
   const generateCustomize = (
     index: number,
     key: string,
-  ): ((settings: PalModifier) => void) => {
-    return (settings: PalModifier) =>
-      setSettings((state) => {
-        const clone = cloneStagedSettings(state);
-        clone[index][key] = { ...settings };
+  ): ((mods: PalModifier) => void) => {
+    return (mods: PalModifier) =>
+      setMods((state) => {
+        const clone = cloneStagedMods(state);
+        clone[index][key] = { ...mods };
         return clone;
       });
   };
@@ -152,7 +146,7 @@ function Exhibit() {
   const activeType = staging.staged[staging.active]?.type ?? '';
   const staged = staging.staged.map((pal, i) => {
     return pal !== null ?
-        { ...pal, settings: settings[i]?.[pal.type] ?? defaultStagedSettings }
+        { ...pal, mod: mods[i]?.[pal.type] ?? defaultStagedMods }
       : null;
   });
 
@@ -166,8 +160,8 @@ function Exhibit() {
 
   const customizer =
     isActive && !isSelected ?
-      <Settings
-        settings={getStagedSettings(settings, staging.active, activeType)}
+      <Modifier
+        mod={getStagedMods(mods, staging.active, activeType)}
         customize={generateCustomize(staging.active, activeType)}
       />
     : null;
