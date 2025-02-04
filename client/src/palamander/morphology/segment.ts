@@ -1,10 +1,12 @@
-import { Wriggle, generateCompositeWriggle } from './animation/wriggle.ts';
-import { WriggleSpec } from './animation/wriggle-spec.ts';
+import type { Wriggle } from './animation/wriggle.ts';
+import type { Circle } from '../common/circle.ts';
+
 import {
-  Circle,
-  calculateCenter,
-  createDefaultCircle,
-} from '../common/circle.ts';
+  compound,
+  syncWriggle,
+  generateCompositeWriggle,
+} from './animation/wriggle.ts';
+import { calculateCenter, createDefaultCircle } from '../common/circle.ts';
 
 type BodyAngle = {
   // Overall body angle at this segment
@@ -16,15 +18,6 @@ type BodyAngle = {
   // Relative angle off of absolute body angle to render this segment
   // Ex: 0 for spine, 30 for arm
   relative: number;
-};
-
-type SegmentSpec = {
-  radius: number;
-  bodyAngle: BodyAngle;
-  wriggle: Array<WriggleSpec>;
-  overlap: number;
-  propagationInterval: number;
-  children: Array<SegmentSpec>;
 };
 
 // Represents one segment of a Palamander.
@@ -117,12 +110,13 @@ function hydrateSegment(
   bodyAngleAbsolute: number,
   depth = 0,
 ): Segment {
+  const wriggle = syncWriggle(segment.wriggle, 0, 0);
   const circle = {
     center: calculateCenter(
       segment.circle,
       parentCircle,
       segment.overlap,
-      bodyAngleAbsolute + segment.bodyAngle.relative + segment.wriggle(0, 0),
+      bodyAngleAbsolute + segment.bodyAngle.relative + compound(wriggle),
     ),
     radius: segment.circle.radius,
   };
@@ -132,6 +126,7 @@ function hydrateSegment(
     ...segment,
     circle,
     bodyAngle,
+    wriggle,
     children: segment.children.map((child) =>
       hydrateSegment(child, circle, bodyAngleAbsolute, depth + 1),
     ),
@@ -153,14 +148,13 @@ function updateSegment(
     parentAbsoluteBodyAngle,
     segment.bodyAngle,
   );
+  const wriggle = syncWriggle(segment.wriggle, interval, speed);
   const circle = {
     center: calculateCenter(
       segment.circle,
       parentCircle,
       segment.overlap,
-      bodyAngle.absolute +
-        bodyAngle.relative +
-        segment.wriggle(interval, speed),
+      bodyAngle.absolute + bodyAngle.relative + compound(wriggle),
     ),
     radius: segment.circle.radius,
   };
@@ -168,6 +162,7 @@ function updateSegment(
     ...segment,
     circle,
     bodyAngle,
+    wriggle,
     children: segment.children.map((child) => {
       return updateSegment(
         child,
@@ -235,4 +230,4 @@ export {
   createSegment,
   getBodySegments,
 };
-export type { Segment, SegmentSpec };
+export type { Segment };

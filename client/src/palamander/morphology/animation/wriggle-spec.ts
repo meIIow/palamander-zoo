@@ -118,7 +118,7 @@ function generateSupressionGradient(
   };
 }
 
-export type { WriggleSpec, WaveSpec };
+export type { WriggleSpec, WaveSpec, SpeedSuppression };
 export {
   createCurlSpec,
   createSquiggleSpec,

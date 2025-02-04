@@ -1,10 +1,64 @@
-import { WriggleSpec, suppressNothing } from './wriggle-spec.ts';
+import type { WriggleSpec, SpeedSuppression } from './wriggle-spec.ts';
+import { suppressNothing } from './wriggle-spec.ts';
 
 const FULL_CYCLE = 2 * Math.PI;
-type Wriggle = (interval: number, speed: number) => number;
 
-// Generalized Wriggle Generator.
-function generateWriggle(spec: WriggleSpec): Wriggle {
+type Wriggle = WriggleComponent[];
+type WriggleComponent = {
+  // Static fields
+  offset: number;
+  accelerate: (speed: number) => number;
+  suppress: SpeedSuppression;
+  suppressionDelta: number;
+  progressPerElapsed: number;
+  range: number;
+  // Dynamic fields
+  suppressed: number;
+  progress: number;
+  magnitude: number;
+};
+
+function compound(wriggle: Wriggle): number {
+  return wriggle.reduce((acc, component) => acc + component.magnitude, 0);
+}
+
+function syncWriggle(
+  wriggle: Wriggle,
+  interval: number,
+  speed: number,
+): Wriggle {
+  return wriggle.map((component) =>
+    syncWriggleComponent(component, interval, speed),
+  );
+}
+
+function syncWriggleComponent(
+  wriggle: WriggleComponent,
+  interval: number,
+  speed: number,
+): WriggleComponent {
+  const progress =
+    wriggle.progress +
+    interval * wriggle.progressPerElapsed * wriggle.accelerate(speed);
+  let magnitude = Math.sin(wriggle.offset + progress) * wriggle.range;
+  let suppression = magnitude - wriggle.suppress(magnitude, speed);
+  const delta = wriggle.suppressionDelta * interval;
+  suppression = Math.max(
+    Math.min(suppression, wriggle.suppressed + delta),
+    wriggle.suppressed - delta,
+  );
+  const suppressed = suppression;
+  magnitude -= suppressed;
+  return {
+    ...wriggle,
+    suppressed,
+    progress,
+    magnitude,
+  };
+}
+
+// Converts WriggleSpec to WriggleComponent.
+function createWriggleComponent(spec: WriggleSpec): WriggleComponent {
   const squiggleIndexOffset = FULL_CYCLE * -spec.i * spec.squiggleRate;
   const offset = squiggleIndexOffset - (spec.offset ?? 0);
 
@@ -17,29 +71,26 @@ function generateWriggle(spec: WriggleSpec): Wriggle {
   const progressPerElapsed = FULL_CYCLE / (spec.period * 1000); // how much cycle passes per ms
   const range = spec.synchronize ? spec.range * spec.i : spec.range; // range compounds when synced
 
-  let suppressed = 0;
-  let progress = 0;
-  return (interval: number, speed: number): number => {
-    progress += interval * progressPerElapsed * accelerate(speed);
-    const wriggle = Math.sin(offset + progress) * range;
-    let suppression = wriggle - suppress(wriggle, speed);
-    const delta = suppressionDelta * interval;
-    suppression = Math.max(
-      Math.min(suppression, suppressed + delta),
-      suppressed - delta,
-    );
-    suppressed = suppression;
-    return wriggle - suppressed;
+  const suppressed = 0;
+  const progress = 0;
+  const magnitude = 0;
+  return {
+    offset,
+    accelerate,
+    suppress,
+    suppressionDelta,
+    progressPerElapsed,
+    range,
+    suppressed,
+    progress,
+    magnitude,
   };
 }
 
 // Combines wriggles into a super wriggle. Useful if we want a rotation and a curl/squiggle.
 function generateCompositeWriggle(specs: Array<WriggleSpec>): Wriggle {
-  const wriggles = specs.map((spec: WriggleSpec) => generateWriggle(spec));
-  return (interval: number, speed: number) => {
-    return wriggles.reduce((acc, wriggle) => acc + wriggle(interval, speed), 0);
-  };
+  return specs.map((spec: WriggleSpec) => createWriggleComponent(spec));
 }
 
 export type { Wriggle };
-export { generateWriggle, generateCompositeWriggle };
+export { compound, syncWriggle, generateCompositeWriggle };

@@ -1,9 +1,6 @@
 import { Segment, createSegment } from '../segment';
 import { Section } from '../section';
-import {
-  generateCompositeWriggle,
-  generateWriggle,
-} from '../animation/wriggle';
+import { generateCompositeWriggle } from '../animation/wriggle';
 import { createCurlSpec, createRotationSpec } from '../animation/wriggle-spec';
 import {
   SegmentsSpec,
@@ -141,7 +138,7 @@ const segmentateFlipper: SegmentationFunc = (
       period: preset.period.relaxed,
       offset: section.offset,
     };
-    segment.wriggle = generateWriggle(createRotationSpec(waveSpec));
+    segment.wriggle = generateCompositeWriggle([createRotationSpec(waveSpec)]);
     curr = segment;
   });
   return flipper;
