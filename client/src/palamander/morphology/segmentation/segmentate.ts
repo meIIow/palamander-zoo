@@ -26,20 +26,20 @@ export default function segmentate(sectionTree: Section): Segment[] {
     // Next segment keys off last parent section segment, w/ grandparent as fallback.
     const last = !parents.length ? grandparent : parents[parents.length - 1];
     const follows =
-      section.next == null ? [] : processSection(last, section.next);
+      section.next == null ? [] : processSection({ ...last }, section.next);
 
     // Branches index off full chain (including next), w/ grandparent short-circuit available.
     const branchParents = [...parents, ...follows, grandparent];
     section.branches.forEach((branch) => {
       const parent = branchParents[branch.index];
-      processSection(parent, branch);
+      processSection(parent, { ...branch });
     });
 
     return follows;
   };
 
   // Return body segments from segmentation of sectionTree
-  const body = processSection(createDefaultSegment(100), sectionTree);
+  const body = processSection(createDefaultSegment(100), { ...sectionTree });
   body.forEach((segment) => (segment.primary = true));
   return body;
 }
