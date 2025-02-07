@@ -27,7 +27,7 @@ function Collection() {
     : <CardMatrix choose={choose} />;
 
   return (
-    <div>
+    <div className="w-[360px] bg-purple-500">
       <PrimaryFilter active={chosen < 0 || chosen >= pals.length} />
       {content}
     </div>

@@ -20,7 +20,7 @@ type CardProps = {
 const setStaticPal = (pal: Palamander): Palamander => {
   return {
     ...pal,
-    mod: { ...pal.mod, override: createPointedOverride(225) },
+    mod: { ...pal.mod, override: createPointedOverride(270) },
   };
 };
 
@@ -49,20 +49,32 @@ function Card({ pal, choose }: CardProps) {
     setHovered((_) => hover);
     setInitial((_) => false);
   };
+
+  const cardTab =
+    'absolute hover:z-20 hover:w-full w-6 h-6 rounded-sm bg-green-500';
   return (
-    <div>
+    <div
+      className="aspect-square flex justify-center items-center bg-slate-500"
+      onClick={() => choose(palamander.type)}
+    >
       <div
-        className="border hover:size-28 size-[104px] rounded-md border-black"
+        className="relative hover:size-full size-11/12 rounded-lg overflow-hidden bg-red-500"
         onMouseEnter={() => registerHover(true)}
         onMouseLeave={() => registerHover(false)}
       >
-        <div className="pal-boundry" onClick={() => choose(palamander.type)}>
+        <div className={`${cardTab} top-0 left-0`}>{pal.type}</div>
+        <div
+          className="pal-boundry pointer-events-none 
+ rounded-br-3xl z-10 rounded-tl-3xl bg-orange-500"
+        >
           <PalamanderView
             pal={palamander}
             display={generateBoundedDisplayRange({ x: 0.5, y: 0.5 })}
           />
         </div>
-        <PalamanderFilter type={pal.type} />
+        <div className={`${cardTab} bottom-0 right-0`}>
+          <PalamanderFilter type={pal.type} />
+        </div>
       </div>
     </div>
   );

@@ -7,7 +7,7 @@ function PalamanderFilter({ type }: { type: string }) {
   const { filters, set } = useContext(PalFiltersContext);
   const filter = type in filters ? filters[type] : initColorFilter();
   return (
-    <div>
+    <div className="size-full">
       <Filter
         filter={filter}
         toggle={(color: string) => set(type, color)}

@@ -15,7 +15,7 @@ function CardMatrix({ choose }: { choose: (type: string) => void }) {
       ));
 
   return (
-    <div className="grid gap-3 grid-cols-1 240:grid-cols-2 360:grid-cols-3">
+    <div className="grid grid-cols-1 240:grid-cols-2 360:grid-cols-3">
       {cards}
     </div>
   );

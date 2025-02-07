@@ -16,15 +16,17 @@ function Filter({ filter, toggle, extras }: FiltersProps) {
     );
   });
   return (
-    <div>
+    <div className="flex size-full justify-evenly items-stretch bg-blue-500">
       {FILTER_COLORS.map((color) => {
         return (
-          <FilterColor
-            color={color}
-            active={filter[color]}
-            key={color}
-            toggle={toggle}
-          />
+          <div className="flex bg-red-500 flex-1 justify-center items-center">
+            <FilterColor
+              color={color}
+              active={filter[color]}
+              key={color}
+              toggle={toggle}
+            />
+          </div>
         );
       })}
       {!buttons.length ? null : buttons}

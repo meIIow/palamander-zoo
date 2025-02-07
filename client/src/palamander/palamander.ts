@@ -37,11 +37,10 @@ const startUpdateLoop = (
   move: Move,
   animate: AnimationFunc,
 ): (() => void) => {
-  if (pal.mod.override.freeze) return () => {};
   const mod = { ...pal.mod }; // safe from changes to pal.mod fields
   const updateCircle = createEngineCircle(pal.body[0].circle);
   let prevTime = Date.now();
-  const intervalId = setInterval(() => {
+  const update = () => {
     const currTime = Date.now();
     const interval = currTime - prevTime;
     const movement = move(interval, mod.factor, mod.override.move);
@@ -64,7 +63,9 @@ const startUpdateLoop = (
       };
     });
     prevTime = currTime;
-  }, mod.updateInterval);
+  };
+  if (pal.mod.override.freeze) return update;
+  const intervalId = setInterval(update, mod.updateInterval);
   return () => clearInterval(intervalId);
 };
 
