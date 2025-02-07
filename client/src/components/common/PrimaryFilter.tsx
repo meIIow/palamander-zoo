@@ -13,7 +13,7 @@ function PrimaryFilter({ active }: { active: boolean }) {
       { clear: () => dispatch({ type: 'CLEAR' }) }
     : { locked: () => {} };
   return (
-    <div>
+    <div className="size-full">
       <Filter filter={filter} toggle={toggle} extras={extras} />
     </div>
   );

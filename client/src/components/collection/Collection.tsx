@@ -27,9 +27,11 @@ function Collection() {
     : <CardMatrix choose={choose} />;
 
   return (
-    <div className="w-[360px] bg-purple-500">
-      <PrimaryFilter active={chosen < 0 || chosen >= pals.length} />
-      {content}
+    <div className="flex flex-col w-full bg-purple-500 gap-4">
+      <div className="basis-12 grow-0 shrink-0">
+        <PrimaryFilter active={chosen < 0 || chosen >= pals.length} />
+      </div>
+      <div className="grow-0 overflow-y-auto">{content}</div>
     </div>
   );
 }
