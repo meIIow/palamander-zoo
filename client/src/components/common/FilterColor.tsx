@@ -18,11 +18,14 @@ function FilterColor({ color, active, toggle }: FilterProps) {
   const style = active ? filled : empty;
   return (
     <div className="flex h-full max-w-full aspect-square bg-yellow-300 justify-center items-center">
-      <div
+      <button
         className="rounded-full aspect-square size-11/12"
         style={style}
-        onClick={() => toggle(color)}
-      ></div>
+        onClick={(event) => {
+          event.stopPropagation();
+          toggle(color);
+        }}
+      ></button>
     </div>
   );
 }

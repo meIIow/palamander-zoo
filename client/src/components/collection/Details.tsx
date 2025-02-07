@@ -1,4 +1,8 @@
+import { SlArrowLeft, SlArrowRight } from 'react-icons/sl';
+
+import Button from '../common/Button.tsx';
 import PalamanderView from '../palamander/PalamanderView.tsx';
+
 import { Palamander } from '../../palamander/palamander.ts';
 import { generateBoundedDisplayRange } from '../../palamander/palamander-range.ts';
 
@@ -11,27 +15,27 @@ type DetailsProps = {
 };
 
 function Details({ pal, index, count, shift, release }: DetailsProps) {
-  const prev = (
-    <button className="rounded-full" onClick={() => shift(index - 1)}>
-      prev
-    </button>
-  );
-  const next = (
-    <button className="rounded-full" onClick={() => shift(index + 1)}>
-      next
-    </button>
-  );
-  const exit = (
-    <button className="rounded-full" onClick={() => release()}>
-      exit
-    </button>
-  );
+  const buttonPlaceholder = <div className="h-full aspect-square" />;
+  const prev =
+    index <= 0 ? buttonPlaceholder : (
+      <Button content={<SlArrowLeft />} onClick={() => shift(index - 1)} />
+    );
+  const next =
+    index >= count - 1 ?
+      buttonPlaceholder
+    : <Button content={<SlArrowRight />} onClick={() => shift(index + 1)} />;
   return (
     <div className="w-full h-full">
-      {index <= 0 ? null : prev}
-      {index >= count - 1 ? null : next}
-      {exit}
-      <div className="flex justify-center items-center border size-80 rounded-md border-black">
+      <div className="flex w-full h-8 justify-evenly">
+        {prev}
+        <div className="w-1/3 text-center">{pal.type}</div>
+        {next}
+      </div>
+      <div
+        className="flex justify-center items-center w-full aspect-square rounded-md bg-yellow-100"
+        onClick={() => release()}
+        style={{ cursor: 'zoom-out' }}
+      >
         <div className="pal-boundry">
           <PalamanderView
             pal={pal}

@@ -58,6 +58,7 @@ function Card({ pal, choose, expand }: CardProps) {
     <div
       className="aspect-square flex justify-center items-center bg-slate-500"
       onClick={() => choose(palamander.type)}
+      style={{ cursor: 'zoom-in' }}
     >
       <div
         className="relative hover:size-full size-11/12 rounded-lg overflow-hidden bg-red-500"
