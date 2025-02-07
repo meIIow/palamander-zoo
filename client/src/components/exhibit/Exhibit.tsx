@@ -62,6 +62,7 @@ function Exhibit() {
         <PrimaryFilter active={true} />
         <CardMatrix
           choose={(key: string) => setStaging({ type: 'SET', pals, key })}
+          expand={false}
         />
       </div>;
 

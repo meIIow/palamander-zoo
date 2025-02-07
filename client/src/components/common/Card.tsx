@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import Nook from './Nook.tsx';
+import PalamanderFilter from './PalamanderFilter.tsx';
 import PalamanderView from '../palamander/PalamanderView.tsx';
 
 import type { Palamander } from '../../palamander/palamander.ts';
@@ -10,11 +12,11 @@ import {
   createStillOverride,
   createSpinOverride,
 } from '../../palamander/palamander-modifier.ts';
-import PalamanderFilter from './PalamanderFilter.tsx';
 
 type CardProps = {
   pal: Palamander;
   choose: (type: string) => void;
+  expand: boolean;
 };
 
 const setStaticPal = (pal: Palamander): Palamander => {
@@ -38,20 +40,20 @@ const setSpinningPal = (pal: Palamander): Palamander => {
   };
 };
 
-function Card({ pal, choose }: CardProps) {
+function Card({ pal, choose, expand }: CardProps) {
   const [hovered, setHovered] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const [initial, setInitial] = useState(true);
   const palamander =
     initial ? setStaticPal(pal)
     : hovered ? setSpinningPal(pal)
     : StopSpinningPal(pal);
+  const registerExpanded = (expanded: boolean) => setExpanded(expanded);
   const registerHover = (hover: boolean) => {
     setHovered((_) => hover);
     setInitial((_) => false);
   };
 
-  const cardTab =
-    'absolute hover:z-20 hover:w-full w-6 h-6 rounded-sm bg-green-500';
   return (
     <div
       className="aspect-square flex justify-center items-center bg-slate-500"
@@ -62,7 +64,12 @@ function Card({ pal, choose }: CardProps) {
         onMouseEnter={() => registerHover(true)}
         onMouseLeave={() => registerHover(false)}
       >
-        <div className={`${cardTab} top-0 left-0`}>{pal.type}</div>
+        <Nook
+          content={<div>{pal.type}</div>}
+          corner="top-0 left-0"
+          expand={expand || expanded}
+          set={registerExpanded}
+        />
         <div
           className="pal-boundry pointer-events-none 
  rounded-br-3xl z-10 rounded-tl-3xl bg-orange-500"
@@ -72,9 +79,12 @@ function Card({ pal, choose }: CardProps) {
             display={generateBoundedDisplayRange({ x: 0.5, y: 0.5 })}
           />
         </div>
-        <div className={`${cardTab} bottom-0 right-0`}>
-          <PalamanderFilter type={pal.type} />
-        </div>
+        <Nook
+          content={<PalamanderFilter type={pal.type} />}
+          corner="bottom-0 right-0"
+          expand={expand || expanded}
+          set={registerExpanded}
+        />
       </div>
     </div>
   );

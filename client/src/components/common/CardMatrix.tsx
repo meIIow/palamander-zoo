@@ -2,7 +2,12 @@ import Card from './Card.tsx';
 import { useContext } from 'react';
 import { FilteredPalContext } from './pal-context.ts';
 
-function CardMatrix({ choose }: { choose: (type: string) => void }) {
+type CardMatrixProps = {
+  choose: (type: string) => void;
+  expand: boolean;
+};
+
+function CardMatrix({ choose, expand }: CardMatrixProps) {
   const pals = useContext(FilteredPalContext);
 
   const cards =
@@ -10,7 +15,7 @@ function CardMatrix({ choose }: { choose: (type: string) => void }) {
       null
     : pals.map((pal) => (
         <div key={pal.type}>
-          <Card pal={pal} choose={choose} />
+          <Card pal={pal} choose={choose} expand={expand} />
         </div>
       ));
 
