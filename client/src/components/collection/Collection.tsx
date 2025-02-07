@@ -1,5 +1,5 @@
 import { useState, useContext } from 'react';
-import CardMatrix from '../common/CardMatrix.tsx';
+import DeckView from '../common/DeckView.tsx';
 import Details from './Details.tsx';
 import PrimaryFilter from '../common/PrimaryFilter.tsx';
 import { FilteredPalContext } from '../common/pal-context.ts';
@@ -27,7 +27,7 @@ function Collection() {
         release={release}
         shift={shift}
       />
-    : <CardMatrix choose={choose} expand={expand} />;
+    : <DeckView choose={choose} expand={expand} />;
 
   return (
     <div className="flex flex-col w-full bg-purple-500 gap-4">

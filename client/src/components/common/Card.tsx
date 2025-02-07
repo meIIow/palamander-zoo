@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
 import Nook from './Nook.tsx';
-import PalamanderFilter from './PalamanderFilter.tsx';
 import PalamanderView from '../palamander/PalamanderView.tsx';
 
 import type { Palamander } from '../../palamander/palamander.ts';
@@ -16,7 +15,10 @@ import {
 type CardProps = {
   pal: Palamander;
   choose: (type: string) => void;
+  upper?: JSX.Element;
+  lower?: JSX.Element;
   expand: boolean;
+  cursor: string;
 };
 
 const setStaticPal = (pal: Palamander): Palamander => {
@@ -40,7 +42,7 @@ const setSpinningPal = (pal: Palamander): Palamander => {
   };
 };
 
-function Card({ pal, choose, expand }: CardProps) {
+function Card({ pal, choose, upper, lower, expand, cursor }: CardProps) {
   const [hovered, setHovered] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [initial, setInitial] = useState(true);
@@ -54,38 +56,50 @@ function Card({ pal, choose, expand }: CardProps) {
     setInitial((_) => false);
   };
 
+  const upperNook =
+    !upper ? null : (
+      <Nook
+        content={upper}
+        corner="top-0 left-0"
+        expand={expand || expanded}
+        set={registerExpanded}
+      />
+    );
+
+  const lowerNook =
+    !lower ? null : (
+      <Nook
+        content={lower}
+        corner="bottom-0 right-0"
+        expand={expand || expanded}
+        set={registerExpanded}
+      />
+    );
+
+  const topCornerStyle = !upper ? '' : 'rounded-tl-3xl';
+  const lowCornerStyle = !lower ? '' : 'rounded-br-3xl';
+
   return (
     <div
       className="aspect-square flex justify-center items-center bg-slate-500"
       onClick={() => choose(palamander.type)}
-      style={{ cursor: 'zoom-in' }}
+      style={{ cursor: cursor }}
     >
       <div
         className="relative hover:size-full size-11/12 rounded-lg overflow-hidden bg-red-500"
         onMouseEnter={() => registerHover(true)}
         onMouseLeave={() => registerHover(false)}
       >
-        <Nook
-          content={<div>{pal.type}</div>}
-          corner="top-0 left-0"
-          expand={expand || expanded}
-          set={registerExpanded}
-        />
+        {upperNook}
         <div
-          className="pal-boundry pointer-events-none 
- rounded-br-3xl z-10 rounded-tl-3xl bg-orange-500"
+          className={`pal-boundry pointer-events-none z-10 ${topCornerStyle} ${lowCornerStyle} bg-orange-500`}
         >
           <PalamanderView
             pal={palamander}
             display={generateBoundedDisplayRange({ x: 0.5, y: 0.5 })}
           />
         </div>
-        <Nook
-          content={<PalamanderFilter type={pal.type} />}
-          corner="bottom-0 right-0"
-          expand={expand || expanded}
-          set={registerExpanded}
-        />
+        {lowerNook}
       </div>
     </div>
   );

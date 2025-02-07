@@ -3,7 +3,7 @@ import { useState, useReducer, useEffect, useContext } from 'react';
 import Modifier from './Modifier.tsx';
 import Staging from './Staging.tsx';
 import Tank from './Tank.tsx';
-import CardMatrix from '../common/CardMatrix.tsx';
+import DeckSelect from '../common/DeckSelect.tsx';
 import PrimaryFilter from './../common/PrimaryFilter.tsx';
 
 import type { PalModifier } from '../../palamander/palamander-modifier.ts';
@@ -60,9 +60,8 @@ function Exhibit() {
       <Tank pals={staged} />
     : <div>
         <PrimaryFilter active={true} />
-        <CardMatrix
+        <DeckSelect
           choose={(key: string) => setStaging({ type: 'SET', pals, key })}
-          expand={false}
         />
       </div>;
 
