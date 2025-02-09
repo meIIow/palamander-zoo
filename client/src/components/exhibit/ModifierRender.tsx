@@ -13,10 +13,15 @@ function roundedFactorFromPercent(percent: number): number {
   return Math.round(percent) / 100;
 }
 
-const generateLogLabel = (label: string, percent: number) => {
+const generateFactorLabel = (
+  label: string,
+  value: number,
+  percent: boolean,
+) => {
+  if (!percent) value *= 100;
   return () => (
     <div>
-      {label}: x{roundedFactorFromPercent(percent)}
+      {label}: x{roundedFactorFromPercent(value)}
     </div>
   );
 };
@@ -33,7 +38,7 @@ function ModifierRender({ mod, customize }: ModifierProps) {
   const customizeMagnification = (magnification: number) => {
     customize({
       ...mod,
-      magnification,
+      magnification: magnification * 100,
     });
   };
   const customizeInterval = (updateInterval: number) => {
@@ -42,22 +47,28 @@ function ModifierRender({ mod, customize }: ModifierProps) {
       updateInterval,
     });
   };
+  const customizeMotion = (motion: number) => {
+    customize({
+      ...mod,
+      motion,
+    });
+  };
   return (
     <div>
       <div>
         <RangeLog
-          label={generateLogLabel('magnification', mod.magnification)}
+          label={generateFactorLabel('magnification', mod.magnification, true)}
           base={5}
-          percent={mod.magnification}
+          value={mod.magnification / 100}
           update={customizeMagnification}
         />
       </div>
       <div>
         <RangeLog
-          label={generateLogLabel('motion', 100)}
+          label={generateFactorLabel('motion', mod.motion, false)}
           base={5}
-          percent={100}
-          update={(_: number) => {}}
+          value={mod.motion}
+          update={customizeMotion}
         />
       </div>
       <div>

@@ -6,6 +6,7 @@ type SegmentViewProps = {
   display: DisplayRange;
   magnification: number;
   color: string;
+  opacity: number;
 };
 
 function SegmentView({
@@ -13,8 +14,9 @@ function SegmentView({
   display,
   magnification,
   color,
+  opacity,
 }: SegmentViewProps) {
-  const styles = display.styleSegment(circle, magnification, color);
+  const styles = display.styleSegment(circle, magnification, color, opacity);
   return (
     <>
       {styles.map((style, i) => (

@@ -121,6 +121,7 @@ class DisplayRange {
     circle: Circle,
     magnification: number,
     color: string,
+    opacity: number,
   ): React.CSSProperties[] {
     if (this.#range == undefined) return [];
     if (this.#spawn == undefined) return [];
@@ -138,6 +139,7 @@ class DisplayRange {
         height: `${size}px`,
         width: `${size}px`,
         backgroundColor: color,
+        opacity: opacity,
         position: this.#options.fixed ? 'fixed' : 'absolute',
         borderRadius: '50%',
       };

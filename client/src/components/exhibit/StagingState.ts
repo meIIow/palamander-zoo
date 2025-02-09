@@ -28,8 +28,10 @@ const initMod = () => ({
   override: createNoopOverride(),
   factor: createNoopMovementFactor(),
   updateInterval: 50,
+  motion: 1,
   magnification: 100,
   color: '#000000', // black
+  opacity: 1,
 });
 
 const cloneStagingState = (staging: StagingState) => ({

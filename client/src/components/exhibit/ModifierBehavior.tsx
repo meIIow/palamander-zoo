@@ -1,3 +1,4 @@
+import type { MovementFactor } from '../../palamander/movement/movement.ts';
 import type { PalModifier } from '../../palamander/palamander-modifier.ts';
 
 import RangeLog from './../common/RangeLog.tsx';
@@ -15,27 +16,57 @@ const generateBehaviorlabel = (low: string, high: string) => {
   );
 };
 
-function ModifierBehavior({}: ModifierProps) {
+type ModifyFactor = (
+  factor: MovementFactor,
+  interval: number,
+) => MovementFactor;
+
+const modifyLinearFactor = (factor: MovementFactor, linear: number) => ({
+  ...factor,
+  linear,
+});
+
+const modifyRotationalFactor = (
+  factor: MovementFactor,
+  rotational: number,
+) => ({
+  ...factor,
+  rotational,
+});
+
+const modifyintervalFactor = (factor: MovementFactor, interval: number) => ({
+  ...factor,
+  interval,
+});
+
+function ModifierBehavior({ mod, customize }: ModifierProps) {
+  const generateCustomizeFactor = (modifyFactor: ModifyFactor) => {
+    return (value: number) =>
+      customize({
+        ...mod,
+        factor: modifyFactor(mod.factor, value),
+      });
+  };
   return (
     <div>
       <div>
         <RangeLog
           label={generateBehaviorlabel('lazy', 'zippey')}
           base={2}
-          percent={100}
-          update={(_: number) => {}}
+          value={mod.factor.linear}
+          update={generateCustomizeFactor(modifyLinearFactor)}
         />
         <RangeLog
           label={generateBehaviorlabel('mellow', 'squirrely')}
           base={2}
-          percent={100}
-          update={(_: number) => {}}
+          value={mod.factor.rotational}
+          update={generateCustomizeFactor(modifyRotationalFactor)}
         />
         <RangeLog
           label={generateBehaviorlabel('focused', 'hyper')}
           base={2}
-          percent={100}
-          update={(_: number) => {}}
+          value={mod.factor.interval}
+          update={generateCustomizeFactor(modifyintervalFactor)}
         />
       </div>
     </div>

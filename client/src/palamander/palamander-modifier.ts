@@ -4,9 +4,11 @@ import type { MovementFactor, MovementOverride } from './movement/movement.ts';
 type PalModifier = {
   override: Override;
   factor: MovementFactor;
+  motion: number;
   updateInterval: number;
   magnification: number;
   color: string;
+  opacity: number;
 };
 
 type Override = {
@@ -17,9 +19,11 @@ type Override = {
 export const createFallbackMod = () => ({
   override: { freeze: false, move: { linear: {}, rotational: {} } },
   factor: { linear: 1, rotational: 1, interval: 1 },
+  motion: 1,
   updateInterval: 50,
   magnification: 100,
   color: 'teal',
+  opacity: 1,
 });
 
 export const createNoopOverride = () => ({

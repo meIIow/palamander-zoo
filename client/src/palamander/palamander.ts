@@ -42,7 +42,7 @@ const startUpdateLoop = (
   let prevTime = Date.now();
   const update = () => {
     const currTime = Date.now();
-    const interval = currTime - prevTime;
+    const interval = (currTime - prevTime) * mod.motion;
     const movement = move(interval, mod.factor, mod.override.move);
     animate((state: PalamanderState) => {
       const head = updateSegment(

@@ -6,7 +6,7 @@ type RangeLogProps = {
   label: () => JSX.Element;
   range?: RangeConfig;
   base: number;
-  percent: number;
+  value: number;
   update: (value: number) => void;
 };
 
@@ -17,24 +17,24 @@ const defaultRange = {
   step: 20,
 };
 
-function logFromPercent(percent: number, base: number): number {
-  return Math.log(percent / 100) / Math.log(base);
+function toLog(value: number, base: number): number {
+  return Math.log(value) / Math.log(base);
 }
 
-function logToPercent(log: number, base: number): number {
-  return 100 * Math.pow(base, log);
+function fromLog(log: number, base: number): number {
+  return Math.pow(base, log);
 }
 
-function RangeLog({ label, range, percent, base, update }: RangeLogProps) {
+function RangeLog({ label, range, value, base, update }: RangeLogProps) {
   range = range ?? defaultRange;
   const onChange = (input: number) => {
-    update(logToPercent(input, base));
+    update(fromLog(input, base));
   };
   return (
     <Range
       label={label}
       range={range}
-      value={logFromPercent(percent, base)}
+      value={toLog(value, base)}
       update={onChange}
     />
   );

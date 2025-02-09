@@ -42,6 +42,7 @@ function PalamanderView({ pal, display }: PalamanderProps) {
                 display={display}
                 magnification={(pal.size * pal.mod.magnification) / 100}
                 color={pal.mod.color}
+                opacity={pal.mod.opacity}
                 key={i}
               />
             );

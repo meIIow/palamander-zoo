@@ -13,6 +13,12 @@ function ModifierColor({ mod, customize }: ModifierProps) {
   const customizeColor = (event: ChangeEvent<HTMLInputElement>) => {
     return customize({ ...mod, color: event.target.value });
   };
+  const customizeOpacity = (opacity: number) => {
+    customize({
+      ...mod,
+      opacity,
+    });
+  };
   return (
     <div>
       <div>
@@ -22,8 +28,8 @@ function ModifierColor({ mod, customize }: ModifierProps) {
           <Range
             label={() => <div>Opacity</div>}
             range={{ min: 10, max: 100, step: 5, scale: 100 }}
-            value={1}
-            update={() => {}}
+            value={mod.opacity}
+            update={customizeOpacity}
           />
         </div>
       </div>
