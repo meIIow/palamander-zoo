@@ -21,6 +21,8 @@ import {
   getExhibit,
 } from './../../extension/storage.ts';
 
+const BG_EXHIBIT_SECT = 'bg-cyan-500';
+
 function Exhibit() {
   const [staging, setStaging] = useReducer(reduceStaging, initStagingState());
   const [show, setShow] = useState(false);
@@ -68,6 +70,7 @@ function Exhibit() {
   const customizer =
     isActive && !isSelected && staged[staging.active] ?
       <Modifier
+        type={staging.staged[staging.active].pal?.type ?? 'empty'}
         mod={staging.staged[staging.active].mod}
         customize={(mod: PalModifier) =>
           setStaging({ type: 'MODIFY', index: staging.active, mod })
@@ -76,31 +79,53 @@ function Exhibit() {
     : null;
 
   return (
-    <div>
-      <button className="rounded-full" onClick={() => toggleShow(show)}>
-        {show ? 'hide' : 'show'}
-      </button>
-      ;
-      <button className="rounded-full" onClick={() => syncShow()}>
-        sync
-      </button>
-      ;
-      <div className="grid gap-3 grid-cols-1 240:grid-cols-2 360:grid-cols-3">
-        {staging.staged.map(({ pal }, i) => {
-          return (
-            <Staging
-              pal={pal ?? null}
-              active={staging.active == i}
-              selected={staging.selected == i}
-              key={`${i}-${pal == null ? '' : pal.type}`}
-              select={() => setStaging({ type: 'TOGGLE', index: i })}
-              hover={() => setStaging({ type: 'ACTIVATE', index: i })}
-            />
-          );
-        })}
+    <div className="flex flex-col w-full bg-purple-500 gap-4">
+      <div
+        className={`w-full flex justify-evenly basis-8 grow-0 shrink-0 ${BG_EXHIBIT_SECT}`}
+      >
+        <button
+          className="rounded-full w-1/6 bg-slate-50"
+          onClick={() => toggleShow(show)}
+        >
+          {show ? 'hide' : 'show'}
+        </button>
+        <button
+          className="rounded-full w-1/6 bg-slate-50"
+          onClick={() => syncShow()}
+        >
+          sync
+        </button>
+        <button
+          className="rounded-full w-1/6 bg-slate-50"
+          onClick={() => syncShow()}
+        >
+          load
+        </button>
+        <button
+          className="rounded-full w-1/6 bg-slate-50"
+          onClick={() => syncShow()}
+        >
+          save
+        </button>
       </div>
-      {selection}
-      {customizer}
+      <div className={`grow-0 ${BG_EXHIBIT_SECT}`}>
+        <div className="grid grid-cols-1 240:grid-cols-2 360:grid-cols-3">
+          {staging.staged.map(({ pal }, i) => {
+            return (
+              <Staging
+                pal={pal ?? null}
+                active={staging.active == i}
+                selected={staging.selected == i}
+                key={`${i}-${pal == null ? '' : pal.type}`}
+                select={() => setStaging({ type: 'TOGGLE', index: i })}
+                hover={() => setStaging({ type: 'ACTIVATE', index: i })}
+              />
+            );
+          })}
+        </div>
+        {selection}
+        {customizer}
+      </div>
     </div>
   );
 }

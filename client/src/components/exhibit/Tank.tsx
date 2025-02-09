@@ -14,7 +14,7 @@ function Tank({ pals }: { pals: (Palamander | null)[] }) {
   });
 
   return (
-    <div className="size-80 border">
+    <div className="w-full aspect-golden">
       {<div className="pal-boundry">{palContent}</div>}
     </div>
   );

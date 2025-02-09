@@ -1,58 +1,23 @@
-import { PalModifier } from '../../palamander/palamander-modifier.ts';
-import { ChangeEvent } from 'react';
+import type { PalModifier } from '../../palamander/palamander-modifier.ts';
+
+import ModifierBehavior from './ModifierBehavior.tsx';
+import ModifierRender from './ModifierRender.tsx';
+import ModifierColor from './ModifierColor.tsx';
 
 type ModifierProps = {
+  type: string;
   mod: PalModifier;
   customize: (modifier: PalModifier) => void;
 };
 
-function Modifier({ mod, customize }: ModifierProps) {
-  const customizeColor = (event: ChangeEvent<HTMLInputElement>) => {
-    return customize({ ...mod, color: event.target.value });
-  };
-  const customizeMagnification = (event: ChangeEvent<HTMLInputElement>) => {
-    return customize({
-      ...mod,
-      magnification: 100 * Math.pow(5, parseInt(event.target.value) / 100),
-    });
-  };
-  const customizeInterval = (event: ChangeEvent<HTMLInputElement>) => {
-    return customize({
-      ...mod,
-      updateInterval: parseInt(event.target.value),
-    });
-  };
-  const magExponent = Math.log(mod.magnification / 100) / Math.log(5);
+function Modifier({ type, mod, customize }: ModifierProps) {
   return (
     <div>
-      <div>
-        Settings
-        <div>
-          Color
-          <input type="color" value={mod.color} onChange={customizeColor} />
-        </div>
-        <div>
-          <input
-            type="range"
-            min="-100"
-            value={magExponent * 100}
-            max="100"
-            step="20"
-            onChange={customizeMagnification}
-          />
-          {`Magnification: ${Math.round(mod.magnification * 100) / 10000}x`}
-        </div>
-        <div>
-          <input
-            type="range"
-            min="30"
-            value={mod.updateInterval}
-            max="250"
-            step="20"
-            onChange={customizeInterval}
-          />
-          {`Interval: ${mod.updateInterval}`}
-        </div>
+      Customize this {type}
+      <div className="flex">
+        <ModifierRender mod={mod} customize={customize} />
+        <ModifierColor mod={mod} customize={customize} />
+        <ModifierBehavior mod={mod} customize={customize} />
       </div>
     </div>
   );

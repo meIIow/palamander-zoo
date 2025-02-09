@@ -38,11 +38,14 @@ function Staging({ pal, active, selected, select, hover }: CardProps) {
     );
 
   const border = selected ? 'border-4' : 'border';
-  const size = active || hovered ? 'size-28' : 'size-[104px]';
+  const size = active || hovered ? 'size-full' : 'size-11/12';
   return (
-    <div>
+    <div
+      className="aspect-square flex justify-center items-center bg-slate-500"
+      style={{ cursor: 'pointer' }}
+    >
       <div
-        className={`${border} ${size} rounded-md border-black`}
+        className={`${border} ${size} relative rounded-lg overflow-hidden bg-red-500 border-black`}
         onMouseEnter={() => registerHover(true)}
         onMouseLeave={() => registerHover(false)}
         onClick={() => select()}
