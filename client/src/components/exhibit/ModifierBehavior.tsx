@@ -48,7 +48,7 @@ function ModifierBehavior({ mod, customize }: ModifierProps) {
       });
   };
   return (
-    <div>
+    <div className="flex flex-col items-stretch justify-center">
       <div>
         <RangeLog
           label={generateBehaviorlabel('lazy', 'zippey')}

@@ -3,6 +3,9 @@ import { ChangeEvent } from 'react';
 import type { PalModifier } from '../../palamander/palamander-modifier.ts';
 
 import Range from './../common/Range.tsx';
+import RangeLog from '../common/RangeLog.tsx';
+
+import { generateFactorLabel } from './modifier-label.tsx';
 
 type ModifierProps = {
   mod: PalModifier;
@@ -13,6 +16,12 @@ function ModifierColor({ mod, customize }: ModifierProps) {
   const customizeColor = (event: ChangeEvent<HTMLInputElement>) => {
     return customize({ ...mod, color: event.target.value });
   };
+  const customizeMagnification = (magnification: number) => {
+    customize({
+      ...mod,
+      magnification: magnification * 100,
+    });
+  };
   const customizeOpacity = (opacity: number) => {
     customize({
       ...mod,
@@ -20,18 +29,26 @@ function ModifierColor({ mod, customize }: ModifierProps) {
     });
   };
   return (
-    <div>
+    <div className="flex flex-col items-stretch">
       <div>
         Color
         <input type="color" value={mod.color} onChange={customizeColor} />
-        <div>
-          <Range
-            label={() => <div>Opacity</div>}
-            range={{ min: 10, max: 100, step: 5, scale: 100 }}
-            value={mod.opacity}
-            update={customizeOpacity}
-          />
-        </div>
+      </div>
+      <div>
+        <RangeLog
+          label={generateFactorLabel('magnification', mod.magnification, true)}
+          base={5}
+          value={mod.magnification / 100}
+          update={customizeMagnification}
+        />
+      </div>
+      <div>
+        <Range
+          label={() => <div>Opacity</div>}
+          range={{ min: 10, max: 100, step: 5, scale: 100 }}
+          value={mod.opacity}
+          update={customizeOpacity}
+        />
       </div>
     </div>
   );
