@@ -21,6 +21,7 @@ import {
   exhibit,
   getExhibit,
 } from './../../extension/storage.ts';
+import { getStagingCardColor } from '../common/card-color.ts';
 
 const BG_EXHIBIT_SECT = 'bg-cyan-500';
 
@@ -79,6 +80,7 @@ function Exhibit() {
         customize={(mod: PalModifier) =>
           setStaging({ type: 'MODIFY', index: staging.active, mod })
         }
+        color={getStagingCardColor()[staging.active].active}
       />
     : null;
 
@@ -121,6 +123,7 @@ function Exhibit() {
                 active={staging.active == i}
                 selected={staging.selected == i}
                 key={`${i}-${pal == null ? '' : pal.type}`}
+                color={getStagingCardColor()[i]}
                 select={() => setStaging({ type: 'TOGGLE', index: i })}
                 hover={() => setStaging({ type: 'ACTIVATE', index: i })}
               />

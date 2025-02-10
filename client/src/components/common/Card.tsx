@@ -11,6 +11,7 @@ import {
   createStillOverride,
   createSpinOverride,
 } from '../../palamander/palamander-modifier.ts';
+import { CardColor } from './card-color.ts';
 
 type CardProps = {
   pal: Palamander;
@@ -18,6 +19,7 @@ type CardProps = {
   upper?: JSX.Element;
   lower?: JSX.Element;
   expand: boolean;
+  color: CardColor;
   cursor: string;
 };
 
@@ -42,7 +44,7 @@ const setSpinningPal = (pal: Palamander): Palamander => {
   };
 };
 
-function Card({ pal, choose, upper, lower, expand, cursor }: CardProps) {
+function Card({ pal, choose, upper, lower, expand, color, cursor }: CardProps) {
   const [hovered, setHovered] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [initial, setInitial] = useState(true);
@@ -78,6 +80,7 @@ function Card({ pal, choose, upper, lower, expand, cursor }: CardProps) {
 
   const topCornerStyle = !upper ? '' : 'rounded-tl-3xl';
   const lowCornerStyle = !lower ? '' : 'rounded-br-3xl';
+  const colorStyle = hovered ? color.active : color.passive;
 
   return (
     <div
@@ -86,13 +89,13 @@ function Card({ pal, choose, upper, lower, expand, cursor }: CardProps) {
       style={{ cursor: cursor }}
     >
       <div
-        className="relative hover:size-full size-11/12 rounded-lg overflow-hidden bg-red-500"
+        className={`relative hover:size-full size-11/12 rounded-lg overflow-hidden`}
         onMouseEnter={() => registerHover(true)}
         onMouseLeave={() => registerHover(false)}
       >
         {upperNook}
         <div
-          className={`pal-boundry pointer-events-none z-10 ${topCornerStyle} ${lowCornerStyle} bg-orange-500`}
+          className={`pal-boundry pointer-events-none z-10 ${topCornerStyle} ${lowCornerStyle} ${colorStyle}`}
         >
           <PalamanderView
             pal={palamander}

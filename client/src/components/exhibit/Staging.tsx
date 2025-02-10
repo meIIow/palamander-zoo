@@ -3,10 +3,13 @@ import PalamanderView from '../palamander/PalamanderView.tsx';
 import { Palamander } from '../../palamander/palamander.ts';
 import { generateBoundedDisplayRange } from '../../palamander/palamander-range.ts';
 
+import { type CardColor } from '../common/card-color.ts';
+
 type CardProps = {
   pal: Palamander | null;
   active: boolean;
   selected: boolean;
+  color: CardColor;
   select: () => void;
   hover?: () => void;
 };
@@ -17,7 +20,7 @@ const setStaticPal = (pal: Palamander): Palamander => {
   return { ...pal, mod };
 };
 
-function Staging({ pal, active, selected, select, hover }: CardProps) {
+function Staging({ pal, active, selected, color, select, hover }: CardProps) {
   const [hovered, setHovered] = useState(false);
   const palamander = pal == null ? null : setStaticPal(pal);
 
@@ -38,6 +41,7 @@ function Staging({ pal, active, selected, select, hover }: CardProps) {
     );
 
   const border = selected ? 'border-4' : 'border';
+  const colorStyle = active ? color.active : color.passive;
   const size = active || hovered ? 'size-full' : 'size-11/12';
   return (
     <div
@@ -45,7 +49,7 @@ function Staging({ pal, active, selected, select, hover }: CardProps) {
       style={{ cursor: 'pointer' }}
     >
       <div
-        className={`${border} ${size} relative rounded-lg overflow-hidden bg-red-500 border-black`}
+        className={`${border} ${size} relative rounded-lg overflow-hidden ${colorStyle} border-black`}
         onMouseEnter={() => registerHover(true)}
         onMouseLeave={() => registerHover(false)}
         onClick={() => select()}

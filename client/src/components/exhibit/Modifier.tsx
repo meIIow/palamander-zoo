@@ -10,6 +10,7 @@ type ModifierProps = {
   category: ModifierCategory;
   change: (modifier: ModifierCategory) => void;
   customize: (modifier: PalModifier) => void;
+  color: string;
 };
 
 enum ModifierCategory {
@@ -30,7 +31,7 @@ function createModificationToggle(
   );
 }
 
-function Modifier({ mod, category, change, customize }: ModifierProps) {
+function Modifier({ mod, category, change, customize, color }: ModifierProps) {
   // const [modification, set] = useState<ModifierCategory>(ModifierCategory.None);
 
   let modifier = null;
@@ -43,7 +44,7 @@ function Modifier({ mod, category, change, customize }: ModifierProps) {
   }
 
   return (
-    <div className="flex flex-col items-stretch">
+    <div className={`flex flex-col items-stretch ${color}`}>
       <div className="flex justify-evenly">
         {createModificationToggle(ModifierCategory.Rendering, change)}
         {createModificationToggle(ModifierCategory.Image, change)}
