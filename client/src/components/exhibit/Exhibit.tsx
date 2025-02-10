@@ -13,6 +13,7 @@ import {
   reduceStaging,
   exhibitedFromStaged,
 } from './StagingState.ts';
+import { ModifierCategory } from './Modifier.tsx';
 import { PalContext } from '../common/pal-context.ts';
 import {
   show as showPal,
@@ -25,6 +26,7 @@ const BG_EXHIBIT_SECT = 'bg-cyan-500';
 
 function Exhibit() {
   const [staging, setStaging] = useReducer(reduceStaging, initStagingState());
+  const [modifier, setModifier] = useState(ModifierCategory.Image);
   const [show, setShow] = useState(false);
   const pals = useContext(PalContext);
 
@@ -72,6 +74,8 @@ function Exhibit() {
       <Modifier
         type={staging.staged[staging.active].pal?.type ?? 'empty'}
         mod={staging.staged[staging.active].mod}
+        category={modifier}
+        change={(category: ModifierCategory) => setModifier(category)}
         customize={(mod: PalModifier) =>
           setStaging({ type: 'MODIFY', index: staging.active, mod })
         }
