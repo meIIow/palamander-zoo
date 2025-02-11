@@ -131,14 +131,14 @@ function set(
   type: string,
 ): StagingState {
   const palIndex = pals.findIndex((pal) => pal.type == type);
-  if (palIndex == -1) return cloneStagingState(staging);
   const staged = cloneStaged(staging.staged);
-  const selectedType = staging.staged[staging.selected].pal?.type;
-  if (type != selectedType)
+  const prevType = staging.staged[staging.selected].pal?.type;
+  if (type != prevType) {
     staged[staging.selected] = {
-      pal: { ...pals[palIndex] },
+      pal: palIndex < 0 ? undefined : { ...pals[palIndex] },
       mod: initMod(),
     };
+  }
   return {
     staged,
     selected: -1,

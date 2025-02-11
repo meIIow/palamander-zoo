@@ -8,7 +8,7 @@ function DeckSelect({ choose }: SelectDeckProps) {
   const cursor = 'pointer';
   return (
     <div>
-      <Deck choose={choose} expand={false} cursor={cursor} />
+      <Deck choose={choose} blank={true} expand={false} cursor={cursor} />
     </div>
   );
 }

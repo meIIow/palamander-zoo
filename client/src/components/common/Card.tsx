@@ -14,7 +14,7 @@ import {
 import { CardColor } from './card-color.ts';
 
 type CardProps = {
-  pal: Palamander;
+  pal?: Palamander;
   choose: (type: string) => void;
   upper?: JSX.Element;
   lower?: JSX.Element;
@@ -23,21 +23,21 @@ type CardProps = {
   cursor: string;
 };
 
-const setStaticPal = (pal: Palamander): Palamander => {
+const setPalStatic = (pal: Palamander): Palamander => {
   return {
     ...pal,
     mod: { ...pal.mod, override: createPointedOverride(270) },
   };
 };
 
-const StopSpinningPal = (pal: Palamander): Palamander => {
+const stopPalSpinning = (pal: Palamander): Palamander => {
   return {
     ...pal,
     mod: { ...pal.mod, override: createStillOverride() },
   };
 };
 
-const setSpinningPal = (pal: Palamander): Palamander => {
+const setPalSpinning = (pal: Palamander): Palamander => {
   return {
     ...pal,
     mod: { ...pal.mod, override: createSpinOverride(25) },
@@ -48,10 +48,10 @@ function Card({ pal, choose, upper, lower, expand, color, cursor }: CardProps) {
   const [hovered, setHovered] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [initial, setInitial] = useState(true);
-  const palamander =
-    initial ? setStaticPal(pal)
-    : hovered ? setSpinningPal(pal)
-    : StopSpinningPal(pal);
+  const setPalMotion =
+    initial ? setPalStatic
+    : hovered ? stopPalSpinning
+    : setPalSpinning;
   const registerExpanded = (expanded: boolean) => setExpanded(expanded);
   const registerHover = (hover: boolean) => {
     setHovered((_) => hover);
@@ -85,7 +85,7 @@ function Card({ pal, choose, upper, lower, expand, color, cursor }: CardProps) {
   return (
     <div
       className="aspect-square flex justify-center items-center bg-slate-500"
-      onClick={() => choose(palamander.type)}
+      onClick={() => choose(pal?.type ?? '')}
       style={{ cursor: cursor }}
     >
       <div
@@ -97,10 +97,12 @@ function Card({ pal, choose, upper, lower, expand, color, cursor }: CardProps) {
         <div
           className={`pal-boundry pointer-events-none z-10 ${topCornerStyle} ${lowCornerStyle} ${colorStyle}`}
         >
-          <PalamanderView
-            pal={palamander}
-            display={generateBoundedDisplayRange({ x: 0.5, y: 0.5 })}
-          />
+          {pal == undefined ? null : (
+            <PalamanderView
+              pal={setPalMotion(pal)}
+              display={generateBoundedDisplayRange({ x: 0.5, y: 0.5 })}
+            />
+          )}
         </div>
         {lowerNook}
       </div>

@@ -12,12 +12,21 @@ type DeckProps = {
   choose: (type: string) => void;
   toUpper?: (pal: Palamander) => JSX.Element | undefined;
   toLower?: (pal: Palamander) => JSX.Element | undefined;
+  blank?: boolean;
   expand: boolean;
   color?: CardColor;
   cursor: string;
 };
 
-function Deck({ choose, toUpper, toLower, expand, color, cursor }: DeckProps) {
+function Deck({
+  choose,
+  toUpper,
+  toLower,
+  blank,
+  expand,
+  color,
+  cursor,
+}: DeckProps) {
   const pals = useContext(FilteredPalContext);
 
   color = color ?? getDefaultCardColor();
@@ -37,9 +46,16 @@ function Deck({ choose, toUpper, toLower, expand, color, cursor }: DeckProps) {
           />
         </div>
       ));
+  const blankCard =
+    !blank ? null : (
+      <div key={'blank'}>
+        <Card choose={choose} expand={expand} color={color} cursor={cursor} />
+      </div>
+    );
 
   return (
     <div className="grid grid-cols-1 240:grid-cols-2 360:grid-cols-3">
+      {blankCard}
       {cards}
     </div>
   );
