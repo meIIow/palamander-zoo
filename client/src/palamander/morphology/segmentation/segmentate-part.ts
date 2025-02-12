@@ -1,15 +1,18 @@
-import { Segment, createSegment } from '../segment';
-import { Section } from '../section';
+import type { Section } from '../section.ts';
+import type { Segment } from '../segment.ts';
+import type { Segmentation } from './segmentation.ts';
+import type { SegmentationFunc } from './segmentation-func.ts';
+
+import { createSegment } from '../segment';
 import { generateCompositeWriggle } from '../animation/wriggle';
 import { createCurlSpec, createRotationSpec } from '../animation/wriggle-spec';
 import {
-  SegmentsSpec,
   addCurve,
   createNoodleLimb,
   createRotation,
   createDefault,
-} from './segments';
-import { SegmentationFunc, preset } from './segmentation-func.ts';
+  preset,
+} from './segmentation.ts';
 
 /* ------------------------------------------------------------
  * Lower-Level Segmentations: Re-usable (in Pals or Chimera)
@@ -20,7 +23,7 @@ const segmentateClaw: SegmentationFunc = (
   section: Section,
 ): Segment[] => {
   const dir = section.mirror ? -1 : 1;
-  const upperArmSpec: SegmentsSpec = {
+  const upperArmSpec: Segmentation = {
     count: 3,
     radius: section.size * 0.4,
     taperFactor: 1,
@@ -35,7 +38,7 @@ const segmentateClaw: SegmentationFunc = (
     acceleration: 0,
   };
   const upperArm = createRotation(parent, upperArmSpec, upperArmWaveSpec);
-  const lowerArmSpec: SegmentsSpec = {
+  const lowerArmSpec: Segmentation = {
     ...upperArmSpec,
     angle: upperArmSpec.angle + 45 * dir,
   };
@@ -57,7 +60,7 @@ const segmentateCurl: SegmentationFunc = (
   parent: Segment,
   section: Section,
 ): Segment[] => {
-  const spec: SegmentsSpec = {
+  const spec: Segmentation = {
     count: section.count,
     radius: (parent.circle.radius * section.size) / 100,
     taperFactor: 0.9,
@@ -79,7 +82,7 @@ const segmentateFeeler: SegmentationFunc = (
   parent: Segment,
   section: Section,
 ): Segment[] => {
-  const spec: SegmentsSpec = {
+  const spec: Segmentation = {
     count: 5,
     radius: (parent.circle.radius * 20) / 100,
     taperFactor: 0.9,
@@ -96,7 +99,7 @@ const segmentateFishTail: SegmentationFunc = (
   section: Section,
 ): Segment[] => {
   const count = section.count;
-  const tailSpec: SegmentsSpec = {
+  const tailSpec: Segmentation = {
     count,
     radius: section.size,
     taperFactor: 0.88,
@@ -149,7 +152,7 @@ const segmentateFrogLeg: SegmentationFunc = (
   section: Section,
 ): Segment[] => {
   const dir = section.mirror ? -1 : 1;
-  const upperLegSpec: SegmentsSpec = {
+  const upperLegSpec: Segmentation = {
     count: 3,
     radius: parent.circle.radius,
     taperFactor: 0.85,
@@ -164,7 +167,7 @@ const segmentateFrogLeg: SegmentationFunc = (
   };
   const upperLeg = createRotation(parent, upperLegSpec, upperLegWave);
 
-  const lowerLegSpec: SegmentsSpec = {
+  const lowerLegSpec: Segmentation = {
     ...upperLegSpec,
     radius: parent.circle.radius * 0.7,
     angle: parent.bodyAngle.relative + 10 * dir,
@@ -201,7 +204,7 @@ const segmentateHair: SegmentationFunc = (
   parent: Segment,
   section: Section,
 ): Segment[] => {
-  const spec: SegmentsSpec = {
+  const spec: Segmentation = {
     count: section.count,
     radius: (parent.circle.radius * section.size) / 100,
     taperFactor: 1,
@@ -231,7 +234,7 @@ const segmentateMandible: SegmentationFunc = (
   section: Section,
 ): Segment[] => {
   const curve = section.angle < 0 ? -10 : 10;
-  const spec: SegmentsSpec = {
+  const spec: Segmentation = {
     count: section.count,
     radius: (parent.circle.radius * section.size) / 100,
     taperFactor: 0.8,
@@ -261,7 +264,7 @@ const segmentateMonkeyArm: SegmentationFunc = (
   const shoulder = createSegment(section.size * 0.7, 130 * dir, 0.6);
   pec.children.push(shoulder);
 
-  const upperArmSpec: SegmentsSpec = {
+  const upperArmSpec: Segmentation = {
     count: 2,
     radius: section.size * 0.45,
     taperFactor: 0.9,
@@ -276,7 +279,7 @@ const segmentateMonkeyArm: SegmentationFunc = (
   };
   const upperArm = createRotation(shoulder, upperArmSpec, upperArmWaveSpec);
 
-  const forearmSpec: SegmentsSpec = {
+  const forearmSpec: Segmentation = {
     count: 3,
     radius: section.size * 0.45,
     taperFactor: 0.9,
@@ -302,7 +305,7 @@ const segmentateNoodleLimb: SegmentationFunc = (
   parent: Segment,
   section: Section,
 ): Segment[] => {
-  const spec: SegmentsSpec = {
+  const spec: Segmentation = {
     count: section.count,
     radius: (parent.circle.radius * section.size) / 100,
     taperFactor: 0.9,
@@ -328,7 +331,7 @@ const segmentateRigidLeg: SegmentationFunc = (
   parent: Segment,
   section: Section,
 ): Segment[] => {
-  const spec: SegmentsSpec = {
+  const spec: Segmentation = {
     count: section.count,
     radius: (parent.circle.radius * section.size) / 100,
     taperFactor: 1,
@@ -349,7 +352,7 @@ const segmentateSimpleLimb: SegmentationFunc = (
   parent: Segment,
   section: Section,
 ): Segment[] => {
-  const spec: SegmentsSpec = {
+  const spec: Segmentation = {
     count: section.count,
     radius: (parent.circle.radius * section.size) / 100,
     taperFactor: 0.9,

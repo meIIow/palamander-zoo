@@ -12,7 +12,7 @@ import {
 } from '../animation/wriggle-spec.ts';
 
 // Config for a series of segments.
-export type SegmentsSpec = {
+export type Segmentation = {
   count: number;
   radius: number;
   taperFactor: number;
@@ -21,10 +21,23 @@ export type SegmentsSpec = {
   curveRange: number;
 };
 
+// Common preset values for section behavior.
+export const preset = {
+  period: {
+    relaxed: 3.5,
+    deliberate: 2.75,
+    frenetic: 2,
+  },
+  curve: {
+    squiggly: 20,
+    muscley: 10,
+  },
+};
+
 // Creates a series of segments with gradually increasing squiggle magnitude, supressed at speed.
 export function createSquiggleGradient(
   parent: Segment,
-  spec: SegmentsSpec,
+  spec: Segmentation,
   waveSpec: WaveSpec,
   initialRange: number,
   supressionRange: { front: number; back: number },
@@ -49,41 +62,49 @@ export function createSquiggleGradient(
 // Creates a noodly limb that pulls inward at high speed.
 export function createNoodleLimb(
   parent: Segment,
-  spec: SegmentsSpec,
+  segmentation: Segmentation,
   waveSpec: WaveSpec,
   pullTowards: number,
 ): Segment[] {
   const generateWiggleSpec = (i: number) => {
-    const wiggleSpec = createSquiggleSpec(waveSpec, i, spec.count * 2);
-    wiggleSpec.suppress = generateTuckAtSpeed(spec.angle, pullTowards, 0.5);
+    const wiggleSpec = createSquiggleSpec(waveSpec, i, segmentation.count * 2);
+    wiggleSpec.suppress = generateTuckAtSpeed(
+      segmentation.angle,
+      pullTowards,
+      0.5,
+    );
     return [wiggleSpec];
   };
-  return createDefault(parent, spec, generateWiggleSpec);
+  return createDefault(parent, segmentation, generateWiggleSpec);
 }
 
 // Creates a straight line of segments that rotate together.
 export function createRotation(
   parent: Segment,
-  spec: SegmentsSpec,
+  segmentation: Segmentation,
   waveSpec: WaveSpec,
 ): Segment[] {
   const generateWriggleSpec = (_: number) => [createRotationSpec(waveSpec)];
-  return createDefault(parent, spec, generateWriggleSpec);
+  return createDefault(parent, segmentation, generateWriggleSpec);
 }
 
 // Creates a default series of segments, one after another, from segments spec and wriggle specs.
 export function createDefault(
   parent: Segment,
-  spec: SegmentsSpec,
+  segmentation: Segmentation,
   generateWriggleSpec: (i: number) => WriggleSpec[] = (_: number) => [],
 ): Segment[] {
   const segments = [];
   let curr = parent;
-  let radius = spec.radius;
-  for (let i = 0; i < spec.count; i++) {
-    radius = radius * spec.taperFactor;
-    const next = createSegment(radius, spec.angle, spec.overlapMult);
-    next.bodyAngle.curveRange = spec.curveRange;
+  let radius = segmentation.radius;
+  for (let i = 0; i < segmentation.count; i++) {
+    radius = radius * segmentation.taperFactor;
+    const next = createSegment(
+      radius,
+      segmentation.angle,
+      segmentation.overlapMult,
+    );
+    next.bodyAngle.curveRange = segmentation.curveRange;
     (next.wriggle = generateCompositeWriggle(generateWriggleSpec(i))),
       curr.children.push(next);
     curr = next;

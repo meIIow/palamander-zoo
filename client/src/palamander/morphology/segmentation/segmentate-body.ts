@@ -1,18 +1,20 @@
-import { Segment } from '../segment';
+import type { Section } from '../section.ts';
+import type { Segment } from '../segment.ts';
+import type { Segmentation } from './segmentation.ts';
+import type { SegmentationFunc } from './segmentation-func.ts';
+
 import {
-  SegmentsSpec,
   createDefault,
   calculateTaper,
   createSquiggleGradient,
-} from './segments';
+  preset,
+} from './segmentation.ts';
 import {
-  Section,
   createBranch,
   createSection,
   calculateRadius,
   follow,
 } from '../section';
-import { SegmentationFunc, preset } from './segmentation-func.ts';
 import { createSquiggleSpec } from '../animation/wriggle-spec.ts';
 
 /* -----------------------------------------------
@@ -24,7 +26,7 @@ const segmentateEelBody: SegmentationFunc = (
   section: Section,
 ): Segment[] => {
   const taperFactor = calculateTaper(0.45, section.count);
-  const spec: SegmentsSpec = {
+  const segmentation: Segmentation = {
     count: section.count,
     radius: calculateRadius(parent, section),
     taperFactor,
@@ -37,7 +39,7 @@ const segmentateEelBody: SegmentationFunc = (
     period: preset.period.relaxed,
     offset: section.offset,
   };
-  return createSquiggleGradient(parent, spec, waveSpec, 15, {
+  return createSquiggleGradient(parent, segmentation, waveSpec, 15, {
     front: 0.5,
     back: -0.5,
   });
@@ -66,7 +68,7 @@ const segmentateInchwormBody: SegmentationFunc = (
   parent: Segment,
   section: Section,
 ): Segment[] => {
-  const spec: SegmentsSpec = {
+  const segmentation: Segmentation = {
     count: section.count,
     radius: calculateRadius(parent, section),
     taperFactor: 1,
@@ -82,7 +84,7 @@ const segmentateInchwormBody: SegmentationFunc = (
   const generateWriggleSpec = (i: number) => [
     createSquiggleSpec(waveSpec, i, section.count * 0.75),
   ];
-  const body = createDefault(parent, spec, generateWriggleSpec);
+  const body = createDefault(parent, segmentation, generateWriggleSpec);
   return [...body];
 };
 
