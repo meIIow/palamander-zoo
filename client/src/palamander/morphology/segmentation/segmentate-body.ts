@@ -12,7 +12,7 @@ import {
   calculateRadius,
   follow,
 } from '../section';
-import { SegmentationFunc, preset } from './segmentation.ts';
+import { SegmentationFunc, preset } from './segmentation-func.ts';
 import { createSquiggleSpec } from '../animation/wriggle-spec.ts';
 
 /* -----------------------------------------------

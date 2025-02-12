@@ -1,4 +1,4 @@
-import { SegmentationFunc } from './segmentation';
+import { SegmentationFunc } from './segmentation-func';
 
 import { composites } from './segmentate-composite';
 import { pals } from './segmentate-pal';

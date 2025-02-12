@@ -1,6 +1,6 @@
 import { Segment } from '../segment';
 import { Section, createBranch, deepClone, passthru, follow } from '../section';
-import { SegmentationFunc } from './segmentation.ts';
+import { SegmentationFunc } from './segmentation-func.ts';
 
 /* -----------------------------------------------------------------------------------------
  * Composite Segmentations: Utility Segmentations for Composing Lower-Level Segmentations

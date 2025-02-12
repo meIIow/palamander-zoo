@@ -9,7 +9,7 @@ import {
   createRotation,
   createDefault,
 } from './segments';
-import { SegmentationFunc, preset } from './segmentation.ts';
+import { SegmentationFunc, preset } from './segmentation-func.ts';
 
 /* ------------------------------------------------------------
  * Lower-Level Segmentations: Re-usable (in Pals or Chimera)

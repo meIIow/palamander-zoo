@@ -2,7 +2,7 @@ import { Segment, createSegment, createDefaultSegment } from '../segment';
 import { Section, createBranch, createSection, follow } from '../section';
 import { createSquiggleSpec } from '../animation/wriggle-spec';
 import { createDefault } from './segments';
-import { SegmentationFunc, preset } from './segmentation.ts';
+import { SegmentationFunc, preset } from './segmentation-func.ts';
 
 // An axolotl has a newt body and gilly head.
 const segmentateAxolotl: SegmentationFunc = (

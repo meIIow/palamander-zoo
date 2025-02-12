@@ -1,6 +1,6 @@
 import { Segment, createSegment, createDefaultSegment } from '../segment';
 import { Section, createBranch } from '../section';
-import { SegmentationFunc } from './segmentation.ts';
+import { SegmentationFunc } from './segmentation-func.ts';
 
 /* -----------------------------------------------
  * Granular Segmentations: Re-usable Head Types

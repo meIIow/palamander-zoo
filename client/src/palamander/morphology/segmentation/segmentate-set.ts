@@ -1,6 +1,6 @@
 import { Segment } from '../segment';
 import { Section, createSection, replace, follow } from '../section';
-import { SegmentationFunc } from './segmentation.ts';
+import { SegmentationFunc } from './segmentation-func.ts';
 
 /* ----------------------------------------------------------------------
  * Duplication Segmentations: Define Sets of Lower-Level Segmentations
