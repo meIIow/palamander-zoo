@@ -141,7 +141,8 @@ function updateSegment(
   interval: number,
   speed: number,
 ): Segment {
-  const stepMagnitude = interval / segment.propagationInterval;
+  const stepMagnitude =
+    (interval / segment.propagationInterval) * (1 + speed / 100); // uncoil quicker at speed
   const bodyAngle = updateBodyAngle(
     stepMagnitude,
     parentAbsoluteBodyAnglePrev,

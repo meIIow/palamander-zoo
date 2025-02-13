@@ -20,6 +20,7 @@ type VelocityIntegral = {
 type VelocityOverride = Partial<VelocityIntegral>;
 type VelocityIntegralSampler = (
   interval: number,
+  intervalFactor: number,
   factor: number,
   override: VelocityOverride,
 ) => VelocityIntegral;
@@ -29,9 +30,12 @@ function clipVelocity(
   curr: number,
   prev: number,
   limit: VelocityLimit,
+  effectiveInterval: number,
 ): number {
-  if (prev - curr > limit.decel) return prev - limit.decel;
-  if (curr - prev > limit.accel) return prev + limit.accel;
+  const decel = (limit.decel * effectiveInterval) / 1000;
+  const accel = (limit.accel * effectiveInterval) / 1000;
+  if (prev - curr > decel) return prev - decel;
+  if (curr - prev > accel) return prev + accel;
   return curr;
 }
 
@@ -43,12 +47,25 @@ function generateSampleVelocity(
   const velocitySampler = generateSampler(spec.velocity);
   const sample = generateTimedSampler(velocitySampler, intervalSampler);
   let prevVelocity = 0;
-  return (interval: number, factor: number, override: VelocityOverride) => {
+  return (
+    interval: number,
+    intervalFactor: number,
+    factor: number,
+    override: VelocityOverride,
+  ) => {
+    const effectiveInterval = interval * intervalFactor;
     const velocity =
-      override.velocity ?? clipVelocity(sample(interval), prevVelocity, limit);
+      override.velocity ??
+      clipVelocity(
+        sample(effectiveInterval),
+        prevVelocity,
+        limit,
+        effectiveInterval,
+      );
     const distance =
       override.distance ??
       (interval / 1000) * (velocity / 100) * limit.velocity * factor;
+    prevVelocity = velocity;
     return { velocity, distance };
   };
 }

@@ -55,10 +55,15 @@ function generateMove(behavior: MovementBehavior): Move {
     factor: MovementFactor,
     override: MovementOverride,
   ): Movement => {
-    interval *= factor.interval;
-    const linear = sampleLinear(interval, factor.linear, override.linear);
+    const linear = sampleLinear(
+      interval,
+      factor.interval,
+      factor.linear,
+      override.linear,
+    );
     const rotational = sampleRotational(
       interval,
+      factor.interval,
       factor.rotational,
       override.rotational,
     );
@@ -68,6 +73,8 @@ function generateMove(behavior: MovementBehavior): Move {
       override.angle ??
       compoundAngle(angle, rotational.distance, linear.velocity);
     rotational.distance = angle;
+
+    // console.log(rotational, linear);
 
     // Complete movement by calculating coordinate offset from previous state.
     const delta = calculateDelta(angle, linear.distance);

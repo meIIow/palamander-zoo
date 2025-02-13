@@ -11,8 +11,8 @@ import {
   generateCommittedSampleSpec,
 } from './interval-behavior.ts';
 
-const BASELINE_VELOCITY = 720; // 3 rotations / sec
-const BASELINE_ACCEL = 1440; // (full velocity in one direction to the other) / sec
+const BASELINE_VELOCITY = 720; // 3 rotations / second
+const BASELINE_ACCEL = 800; // 8x (full turn -> straight / second)
 
 const baselineLimit: VelocityLimit = {
   velocity: BASELINE_VELOCITY,

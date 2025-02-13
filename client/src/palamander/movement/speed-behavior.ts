@@ -11,9 +11,9 @@ import {
   generateFreneticSampleSpec,
 } from './interval-behavior.ts';
 
-const BASELINE_VELOCITY = 2500; // 25 (Pal Units / Second), ~ 2-10 (pal lengths / sec)
-const BASELINE_ACCEL = 1000; // 10 (Pal Units / Second), ~ 1-4 (pal lengths / sec)
-const BASELINE_DECEL = 2000; // 20 (Pal Units / Second), ~ 2-8 (pal lengths / sec)
+const BASELINE_VELOCITY = 2500; // 25 (Pal Units / Second)
+const BASELINE_ACCEL = 50; // 50% Speed / Second
+const BASELINE_DECEL = 200; // 200% Speed / Second
 
 const baselineLimit: VelocityLimit = {
   velocity: BASELINE_VELOCITY,
