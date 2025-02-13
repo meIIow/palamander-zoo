@@ -38,6 +38,7 @@ const segmentateEelBody: SegmentationFunc = (
     range: 25,
     period: preset.period.relaxed,
     offset: section.offset,
+    acceleration: 4,
   };
   return createSquiggleGradient(parent, segmentation, waveSpec, 15, {
     front: 0.5,
@@ -78,8 +79,9 @@ const segmentateInchwormBody: SegmentationFunc = (
   };
   const waveSpec = {
     range: 10,
-    period: preset.period.deliberate,
+    period: preset.period.relaxed * 4,
     offset: section.offset,
+    acceleration: 20,
   };
   const generateWriggleSpec = (i: number) => [
     createSquiggleSpec(waveSpec, i, section.count * 0.75),

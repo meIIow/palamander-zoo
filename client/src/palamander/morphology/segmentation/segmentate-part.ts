@@ -111,6 +111,7 @@ const segmentateFishTail: SegmentationFunc = (
     range: 30 / count,
     period: preset.period.deliberate,
     offset: section.offset,
+    acceleration: 4,
   };
   const tailWriggle = (i: number) => [createCurlSpec(waveSpec, i)];
   const tail = createDefault(parent, tailSpec, tailWriggle);
@@ -140,6 +141,7 @@ const segmentateFlipper: SegmentationFunc = (
       range: 20,
       period: preset.period.relaxed,
       offset: section.offset,
+      acceleration: 4,
     };
     segment.wriggle = generateCompositeWriggle([createRotationSpec(waveSpec)]);
     curr = segment;
@@ -164,6 +166,7 @@ const segmentateFrogLeg: SegmentationFunc = (
     range: 45,
     period: preset.period.relaxed,
     offset: section.offset,
+    acceleration: 4,
   };
   const upperLeg = createRotation(parent, upperLegSpec, upperLegWave);
 
@@ -173,9 +176,8 @@ const segmentateFrogLeg: SegmentationFunc = (
     angle: parent.bodyAngle.relative + 10 * dir,
   };
   const lowerLegWave = {
+    ...upperLegWave,
     range: 20,
-    period: preset.period.relaxed,
-    offset: section.offset,
   };
   const lowerLeg = createRotation(upperLeg[2], lowerLegSpec, lowerLegWave);
 
@@ -317,6 +319,7 @@ const segmentateNoodleLimb: SegmentationFunc = (
     range: 10,
     period: preset.period.relaxed,
     offset: section.offset,
+    acceleration: 4,
   };
   const segments = createNoodleLimb(
     parent,
@@ -343,6 +346,7 @@ const segmentateRigidLeg: SegmentationFunc = (
     range: 30,
     period: preset.period.deliberate,
     offset: section.offset,
+    acceleration: 4,
   };
   const segments = createRotation(parent, spec, waveSpec);
   return segments;

@@ -51,7 +51,7 @@ const startUpdateLoop = (
         movement.rotational.distance,
         movement.rotational.distance,
         interval,
-        movement.rotational.velocity,
+        movement.linear.velocity,
       );
       const center = calculatePivotCoords(head, pal.pivotIndex);
       const centerDelta = shiftNegative(state.center, center);
