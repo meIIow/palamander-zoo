@@ -4,7 +4,7 @@ import type { Segmentation } from './segmentation.ts';
 import type { SegmentationFunc } from './segmentation-func.ts';
 
 import { createSegment } from '../segment';
-import { generateCompositeWriggle } from '../animation/wriggle';
+import { toWriggle } from '../animation/wriggle';
 import { createCurlSpec, createRotationSpec } from '../animation/wriggle-spec';
 import {
   addCurve,
@@ -117,7 +117,7 @@ const segmentateFishTail: SegmentationFunc = (
   const tail = createDefault(parent, tailSpec, tailWriggle);
   [-1, 1].forEach((i) => {
     const fin = createSegment(section.size * 0.5, 30 * i, 0.5);
-    fin.wriggle = generateCompositeWriggle(tailWriggle(count + 1));
+    fin.wriggle = toWriggle(tailWriggle(count + 1));
     tail[count - 1].children.push(fin);
   });
   return tail;
@@ -143,7 +143,7 @@ const segmentateFlipper: SegmentationFunc = (
       offset: section.offset,
       acceleration: 4,
     };
-    segment.wriggle = generateCompositeWriggle([createRotationSpec(waveSpec)]);
+    segment.wriggle = toWriggle([createRotationSpec(waveSpec)]);
     curr = segment;
   });
   return flipper;

@@ -1,11 +1,7 @@
 import type { Wriggle } from './animation/wriggle.ts';
 import type { Circle } from '../common/circle.ts';
 
-import {
-  compound,
-  syncWriggle,
-  generateCompositeWriggle,
-} from './animation/wriggle.ts';
+import { compound, syncWriggle, toWriggle } from './animation/wriggle.ts';
 import { calculateCenter, createDefaultCircle } from '../common/circle.ts';
 
 type BodyAngle = {
@@ -203,7 +199,7 @@ function createDefaultSegment(
       absolute: 0,
       curveRange: 0,
     },
-    wriggle: generateCompositeWriggle([]),
+    wriggle: toWriggle([]),
     overlap: 0,
     propagationInterval: propagationInterval,
     primary: false,

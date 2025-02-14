@@ -1,11 +1,12 @@
-import { Segment, createSegment } from '../segment.ts';
-import { generateCompositeWriggle } from '../animation/wriggle.ts';
+import type { Segment } from '../segment.ts';
+import type { WriggleSpec, WaveSpec } from '../animation/wriggle-spec.ts';
+
+import { createSegment } from '../segment.ts';
+import { createSuppression, calculateTuck } from '../animation/suppression.ts';
+import { toWriggle } from '../animation/wriggle.ts';
 import {
-  WriggleSpec,
-  WaveSpec,
   createSquiggleSpec,
   createRotationSpec,
-  generateTuckAtSpeed,
   generateSquiggleGradientSpec,
   generateSupressionGradient,
   injectWriggleSupression,
@@ -19,6 +20,7 @@ export type Segmentation = {
   angle: number;
   overlapMult: number;
   curveRange: number;
+  // suppression: Suppression;
 };
 
 // Common preset values for section behavior.
@@ -33,6 +35,17 @@ export const preset = {
     muscley: 10,
   },
 };
+
+// export function createSegmentation(count: number, angle: number): Segmentation {
+//   return {
+//     count,
+//     radius: 100,
+//     taperFactor: 1,
+//     angle,
+//     overlapMult: 0,
+//     curveRange: 0,
+//   };
+// }
 
 // Creates a series of segments with gradually increasing squiggle magnitude, supressed at speed.
 export function createSquiggleGradient(
@@ -68,11 +81,10 @@ export function createNoodleLimb(
 ): Segment[] {
   const generateWiggleSpec = (i: number) => {
     const wiggleSpec = createSquiggleSpec(waveSpec, i, segmentation.count * 2);
-    wiggleSpec.suppress = generateTuckAtSpeed(
-      segmentation.angle,
-      pullTowards,
-      0.5,
-    );
+    wiggleSpec.suppression = {
+      ...createSuppression(waveSpec.range, waveSpec.period),
+      tuck: calculateTuck(segmentation.angle, pullTowards, 0.5),
+    };
     return [wiggleSpec];
   };
   return createDefault(parent, segmentation, generateWiggleSpec);
@@ -105,7 +117,7 @@ export function createDefault(
       segmentation.overlapMult,
     );
     next.bodyAngle.curveRange = segmentation.curveRange;
-    (next.wriggle = generateCompositeWriggle(generateWriggleSpec(i))),
+    (next.wriggle = toWriggle(generateWriggleSpec(i))),
       curr.children.push(next);
     curr = next;
     segments.push(curr);

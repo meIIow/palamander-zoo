@@ -1,27 +1,27 @@
-type WriggleSpec = {
-  range: number; // peak degrees to wriggle up/down
-  period: number; // time (s) to complete one wriggle
+import type { Suppression } from './suppression';
+
+import { calculateDampen } from './suppression';
+
+type WriggleSpec = WaveSpec & {
   i: number; // segment index
   squiggleRate: number; // squigs per section: 0 = no squiggle, 1/(section len) = 1 full squiggle
   synchronize: boolean; // synchonize wave
-  acceleration?: number; // adjusts cycle period based on speed
-  offset?: number; // offsets wriggle by constant amount, repeats every 2 PI
-  suppress?: SpeedSuppression; // dampens wriggle magnitude based on speed magnitude
 };
 
 // Common, raw Wriggle Spec fields.
 type WaveSpec = {
-  range: number;
-  period: number;
-  offset?: number;
-  acceleration?: number;
-  suppress?: SpeedSuppression;
+  range: number; // peak degrees to wriggle up/down
+  period: number; // time (s) to complete one wriggle
+  acceleration?: number; // adjusts cycle period based on speed
+  offset?: number; // offsets wriggle by constant amount, repeats every 2 PI
+  suppression?: Suppression; // dampens wriggle magnitude based on speed magnitude
 };
 
-type SpeedSuppression = (angle: number, speed: number) => number;
 type WriggleSpecGenerator = (i: number) => WriggleSpec[];
-type SpeedSuppressionGenerator = (i: number) => SpeedSuppression;
-const suppressNothing: SpeedSuppression = (angle: number, _: number) => angle;
+type SuppressionGenerator = (
+  i: number,
+  suppression?: Suppression,
+) => Suppression;
 
 /* ------------------------------------------------------------
  * Wriggle Spec Creation Methods
@@ -71,11 +71,11 @@ function createRotationSpec(spec: WaveSpec): WriggleSpec {
 
 function injectWriggleSupression(
   wriggleSpecGenerator: WriggleSpecGenerator,
-  supressionGenerator: SpeedSuppressionGenerator,
+  supressionGenerator: SuppressionGenerator,
 ): WriggleSpecGenerator {
   return (i: number) => {
     return wriggleSpecGenerator(i).map((spec) => {
-      spec.suppress = supressionGenerator(i);
+      spec.suppression = supressionGenerator(i, spec.suppression);
       return spec;
     });
   };
@@ -96,36 +96,22 @@ function generateSquiggleGradientSpec(
   };
 }
 
-function generateTuckAtSpeed(
-  angle: number,
-  tuckTowards: number,
-  tuckFactor: number,
-): SpeedSuppression {
-  let fullTuck = (angle - tuckTowards) * tuckFactor;
-  return (angle: number, speed: number): number =>
-    angle - (fullTuck * speed) / 100;
-}
-
 function generateSupressionGradient(
   count: number,
   range: { front: number; back: number },
-): SpeedSuppressionGenerator {
-  const suppressByI = (i: number) =>
-    range.front + (i * (range.back - range.front)) / Math.max(1, count - 1);
-  return (i: number) => {
-    return (angle: number, speed: number): number =>
-      angle * (1 - (speed / 100) * suppressByI(i));
-  };
+): SuppressionGenerator {
+  return (i: number, suppression?: Suppression) => ({
+    ...(suppression ?? { delta: 0 }),
+    dampen: calculateDampen(i, count, range),
+  });
 }
 
-export type { WriggleSpec, WaveSpec, SpeedSuppression };
+export type { WriggleSpec, WaveSpec };
 export {
   createCurlSpec,
   createSquiggleSpec,
   createRotationSpec,
-  suppressNothing,
   injectWriggleSupression,
   generateSquiggleGradientSpec,
-  generateTuckAtSpeed,
   generateSupressionGradient,
 };
