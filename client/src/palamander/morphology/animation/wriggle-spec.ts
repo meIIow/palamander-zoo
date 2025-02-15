@@ -2,19 +2,19 @@ import type { Suppression } from './suppression';
 
 import { calculateDampen } from './suppression';
 
-type WriggleSpec = WaveSpec & {
-  i: number; // segment index
-  squiggleRate: number; // squigs per section: 0 = no squiggle, 1/(section len) = 1 full squiggle
-  synchronize: boolean; // synchonize wave
-};
-
-// Common, raw Wriggle Spec fields.
+// Common fields for defining Wriggle Specifications.
 type WaveSpec = {
   range: number; // peak degrees to wriggle up/down
   period: number; // time (s) to complete one wriggle
-  acceleration?: number; // adjusts cycle period based on speed
+  acceleration?: number; // adjusts cycle period at speed
   offset?: number; // offsets wriggle by constant amount, repeats every 2 PI
-  suppression?: Suppression; // dampens wriggle magnitude based on speed magnitude
+  suppression?: Suppression; // dampens/tucks wriggle magnitude at speed
+};
+
+type WriggleSpec = WaveSpec & {
+  i: number; // segment index
+  squiggleRate: number; // fraction of a full wriggle each segment takes up
+  synchronize: boolean; // synchonize wave
 };
 
 type WriggleSpecGenerator = (i: number) => WriggleSpec[];
@@ -106,7 +106,7 @@ function generateSupressionGradient(
   });
 }
 
-export type { WriggleSpec, WaveSpec };
+export type { WriggleSpec, WaveSpec, WriggleSpecGenerator };
 export {
   createCurlSpec,
   createSquiggleSpec,

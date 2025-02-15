@@ -12,6 +12,8 @@
     "preview": "cd src && vite preview"
   },
   "dependencies": {
+    "@types/clone": "^2.1.4",
+    "clone": "^2.1.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.4.0"

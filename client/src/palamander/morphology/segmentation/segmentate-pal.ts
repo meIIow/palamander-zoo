@@ -5,7 +5,7 @@ import type { SegmentationFunc } from './segmentation-func.ts';
 import { createSegment, createDefaultSegment } from '../segment';
 import { createBranch, createSection, follow } from '../section';
 import { createSquiggleSpec } from '../animation/wriggle-spec';
-import { createDefault, preset } from './segmentation.ts';
+import { createDefault, createSegmentation, preset } from './segmentation.ts';
 
 // An axolotl has a newt body and gilly head.
 const segmentateAxolotl: SegmentationFunc = (
@@ -72,6 +72,7 @@ const segmentateCrawdad: SegmentationFunc = (
 
   // Create carapace.
   const body = createDefault(spacer, {
+    ...createSegmentation(3, 0),
     count: 3,
     radius: section.size * 1.5,
     taperFactor: 1,
@@ -123,6 +124,7 @@ const segmentateFrog: SegmentationFunc = (
     angle: section.angle,
     overlapMult: 1.2,
     curveRange: 5,
+    curve: 0,
     offset: 0,
   };
   const waveSpec = { range: 2, period: preset.period.relaxed };
@@ -158,6 +160,7 @@ const segmentateJellyfish: SegmentationFunc = (
     angle: section.angle,
     overlapMult: 0,
     curveRange: 30 / 5,
+    curve: 0,
     offset: 0,
   };
   for (let i = 0; i < 4; i++) {

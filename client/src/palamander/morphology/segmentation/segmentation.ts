@@ -1,5 +1,10 @@
 import type { Segment } from '../segment.ts';
-import type { WriggleSpec, WaveSpec } from '../animation/wriggle-spec.ts';
+import type {
+  WaveSpec,
+  WriggleSpecGenerator,
+} from '../animation/wriggle-spec.ts';
+
+import clone from 'clone';
 
 import { createSegment } from '../segment.ts';
 import { createSuppression, calculateTuck } from '../animation/suppression.ts';
@@ -20,7 +25,8 @@ export type Segmentation = {
   angle: number;
   overlapMult: number;
   curveRange: number;
-  // suppression: Suppression;
+  curve: number;
+  wriggle?: WriggleSpecGenerator;
 };
 
 // Common preset values for section behavior.
@@ -36,16 +42,42 @@ export const preset = {
   },
 };
 
-// export function createSegmentation(count: number, angle: number): Segmentation {
-//   return {
-//     count,
-//     radius: 100,
-//     taperFactor: 1,
-//     angle,
-//     overlapMult: 0,
-//     curveRange: 0,
-//   };
-// }
+export function createSegmentation(count: number, angle: number): Segmentation {
+  return {
+    count,
+    radius: 100,
+    taperFactor: 1,
+    angle,
+    overlapMult: 0,
+    curveRange: 0,
+    curve: 0,
+  };
+}
+
+// Segments will have gradually increasing squiggle magnitude, supressed at speed.
+export function mixSquiggleGradient(
+  segmentation: Segmentation,
+  waveSpec: WaveSpec,
+  initialRange: number,
+  supressionRange: { front: number; back: number },
+): Segmentation {
+  const mixed = clone(segmentation);
+  const suppressionGenerator = generateSupressionGradient(
+    segmentation.count,
+    supressionRange,
+  );
+  const squiggleGenerator = generateSquiggleGradientSpec(
+    segmentation.count,
+    waveSpec,
+    initialRange,
+    0.2,
+  );
+  mixed.wriggle = injectWriggleSupression(
+    squiggleGenerator,
+    suppressionGenerator,
+  );
+  return mixed;
+}
 
 // Creates a series of segments with gradually increasing squiggle magnitude, supressed at speed.
 export function createSquiggleGradient(
@@ -104,7 +136,7 @@ export function createRotation(
 export function createDefault(
   parent: Segment,
   segmentation: Segmentation,
-  generateWriggleSpec: (i: number) => WriggleSpec[] = (_: number) => [],
+  generateWriggleSpec: WriggleSpecGenerator = (_: number) => [],
 ): Segment[] {
   const segments = [];
   let curr = parent;
@@ -117,8 +149,9 @@ export function createDefault(
       segmentation.overlapMult,
     );
     next.bodyAngle.curveRange = segmentation.curveRange;
-    (next.wriggle = toWriggle(generateWriggleSpec(i))),
-      curr.children.push(next);
+    next.bodyAngle.relative += i * segmentation.curve;
+    next.wriggle = toWriggle(generateWriggleSpec(i));
+    curr.children.push(next);
     curr = next;
     segments.push(curr);
   }
@@ -129,10 +162,36 @@ export function calculateTaper(terminationFactor: number, count: number) {
   return Math.pow(terminationFactor, 1 / Math.max(1, count));
 }
 
-// Curves given segments by a given amount.
-export function addCurve(segments: Segment[], curveAngle: number): Segment[] {
-  segments.forEach((segment, i) => {
-    segment.bodyAngle.relative += i * curveAngle;
-  });
+// // Curves given segments by a given amount.
+// export function addCurve(segments: Segment[], curveAngle: number): Segment[] {
+//   segments.forEach((segment, i) => {
+//     segment.bodyAngle.relative += i * curveAngle;
+//   });
+//   return segments;
+// }
+
+// Converts a Segmentation into its corresponding Segment list.
+export function asSegments(
+  parent: Segment,
+  segmentation: Segmentation,
+): Segment[] {
+  const segments = [];
+  let curr = parent;
+  let radius = segmentation.radius;
+  for (let i = 0; i < segmentation.count; i++) {
+    radius = radius * segmentation.taperFactor;
+    const next = createSegment(
+      radius,
+      segmentation.angle,
+      segmentation.overlapMult,
+    );
+    next.bodyAngle.curveRange = segmentation.curveRange;
+    next.bodyAngle.relative += i * segmentation.curve;
+    next.wriggle =
+      segmentation.wriggle ? toWriggle(segmentation.wriggle(i)) : [];
+    curr.children.push(next);
+    curr = next;
+    segments.push(curr);
+  }
   return segments;
 }

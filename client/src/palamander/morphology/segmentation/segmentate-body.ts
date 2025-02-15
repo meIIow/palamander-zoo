@@ -8,6 +8,7 @@ import {
   calculateTaper,
   createSquiggleGradient,
   preset,
+  createSegmentation,
 } from './segmentation.ts';
 import {
   createBranch,
@@ -27,6 +28,7 @@ const segmentateEelBody: SegmentationFunc = (
 ): Segment[] => {
   const taperFactor = calculateTaper(0.45, section.count);
   const segmentation: Segmentation = {
+    ...createSegmentation(section.count, section.angle),
     count: section.count,
     radius: calculateRadius(parent, section),
     taperFactor,
@@ -70,6 +72,7 @@ const segmentateInchwormBody: SegmentationFunc = (
   section: Section,
 ): Segment[] => {
   const segmentation: Segmentation = {
+    ...createSegmentation(section.count, 0),
     count: section.count,
     radius: calculateRadius(parent, section),
     taperFactor: 1,
