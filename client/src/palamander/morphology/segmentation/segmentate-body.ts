@@ -8,14 +8,9 @@ import {
   calculateTaper,
   createSquiggleGradient,
   preset,
-  createSegmentation,
+  toSegmentation,
 } from './segmentation.ts';
-import {
-  createBranch,
-  createSection,
-  calculateRadius,
-  follow,
-} from '../section';
+import { createBranch, createSection, follow } from '../section';
 import { createSquiggleSpec } from '../animation/wriggle-spec.ts';
 
 /* -----------------------------------------------
@@ -28,11 +23,8 @@ const segmentateEelBody: SegmentationFunc = (
 ): Segment[] => {
   const taperFactor = calculateTaper(0.45, section.count);
   const segmentation: Segmentation = {
-    ...createSegmentation(section.count, section.angle),
-    count: section.count,
-    radius: calculateRadius(parent, section),
+    ...toSegmentation(section, parent),
     taperFactor,
-    angle: section.angle,
     overlapMult: 0.5,
     curveRange: preset.curve.squiggly,
   };
@@ -72,11 +64,8 @@ const segmentateInchwormBody: SegmentationFunc = (
   section: Section,
 ): Segment[] => {
   const segmentation: Segmentation = {
-    ...createSegmentation(section.count, 0),
-    count: section.count,
-    radius: calculateRadius(parent, section),
+    ...toSegmentation(section, parent),
     taperFactor: 1,
-    angle: 0,
     overlapMult: 0.1,
     curveRange: 720 / section.count,
   };

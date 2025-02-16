@@ -62,7 +62,7 @@ const segmentateCurl: SegmentationFunc = (
   section: Section,
 ): Segment[] => {
   const spec: Segmentation = {
-    ...createSegmentation(section.count, section.angle),
+    ...createSegmentation({ count: section.count, angle: section.angle }),
     radius: (parent.circle.radius * section.size) / 100,
     taperFactor: 0.9,
     overlapMult: 0.5,

@@ -72,11 +72,9 @@ const segmentateCrawdad: SegmentationFunc = (
 
   // Create carapace.
   const body = createDefault(spacer, {
-    ...createSegmentation(3, 0),
-    count: 3,
+    ...createSegmentation({ count: 3, angle: section.angle }),
     radius: section.size * 1.5,
     taperFactor: 1,
-    angle: section.angle,
     overlapMult: 1,
     curveRange: 0,
   });

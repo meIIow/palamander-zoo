@@ -1,3 +1,4 @@
+import type { Section } from '../section.ts';
 import type { Segment } from '../segment.ts';
 import type {
   WaveSpec,
@@ -7,6 +8,7 @@ import type {
 import clone from 'clone';
 
 import { createSegment } from '../segment.ts';
+import { calculateRadius } from '../section.ts';
 import { createSuppression, calculateTuck } from '../animation/suppression.ts';
 import { toWriggle } from '../animation/wriggle.ts';
 import {
@@ -42,16 +44,26 @@ export const preset = {
   },
 };
 
-export function createSegmentation(count: number, angle: number): Segmentation {
+export function createSegmentation(seg: Partial<Segmentation>): Segmentation {
   return {
-    count,
+    count: 1,
     radius: 100,
     taperFactor: 1,
-    angle,
-    overlapMult: 0,
+    angle: 0,
+    overlapMult: 0.5,
     curveRange: 0,
     curve: 0,
+    ...seg,
   };
+}
+
+export function toSegmentation(sec: Section, parent: Segment): Segmentation {
+  const segment = {
+    count: sec.count,
+    radius: calculateRadius(parent, sec),
+    angle: sec.angle,
+  };
+  return createSegmentation(segment);
 }
 
 // Segments will have gradually increasing squiggle magnitude, supressed at speed.
