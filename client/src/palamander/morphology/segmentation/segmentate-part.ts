@@ -8,9 +8,11 @@ import { toWriggle } from '../animation/wriggle';
 import { createCurlSpec, createRotationSpec } from '../animation/wriggle-spec';
 import {
   createSegmentation,
-  createNoodleLimb,
   createRotation,
-  createDefault,
+  mixCurl,
+  mixRotation,
+  mixSquiggle,
+  toSegments,
   preset,
 } from './segmentation.ts';
 
@@ -23,33 +25,30 @@ const segmentateClaw: SegmentationFunc = (
   section: Section,
 ): Segment[] => {
   const dir = section.mirror ? -1 : 1;
-  const upperArmSpec: Segmentation = {
+  const upperArmSeg: Segmentation = createSegmentation({
     count: 3,
     radius: section.size * 0.4,
-    taperFactor: 1,
     angle: parent.bodyAngle.relative + 105 * dir,
     overlapMult: 0.3,
-    curveRange: 0,
-    curve: 0,
-  };
-  const upperArmWaveSpec = {
+  });
+  const upperArmWave = {
     range: 30,
     period: preset.period.deliberate,
     offset: section.offset,
     acceleration: 0,
   };
-  const upperArm = createRotation(parent, upperArmSpec, upperArmWaveSpec);
-  const lowerArmSpec: Segmentation = {
-    ...upperArmSpec,
-    angle: upperArmSpec.angle + 45 * dir,
+  const upperArm = createRotation(parent, upperArmSeg, upperArmWave);
+  const lowerArmSeg: Segmentation = {
+    ...upperArmSeg,
+    angle: upperArmSeg.angle + 45 * dir,
   };
-  const lowerArm = createDefault(upperArm[2], lowerArmSpec);
+  const lowerArm = toSegments(upperArm[2], lowerArmSeg);
 
   // Add actual claw.
-  const big = createSegment(section.size * 0.7, lowerArmSpec.angle, 0.2);
+  const big = createSegment(section.size * 0.7, lowerArmSeg.angle, 0.2);
   const small = createSegment(
     section.size * 0.6,
-    lowerArmSpec.angle + 40 * dir,
+    lowerArmSeg.angle + 40 * dir,
     0.2,
   );
   lowerArm[2].children.push(big);
@@ -61,20 +60,19 @@ const segmentateCurl: SegmentationFunc = (
   parent: Segment,
   section: Section,
 ): Segment[] => {
-  const spec: Segmentation = {
+  const segmentation: Segmentation = {
     ...createSegmentation({ count: section.count, angle: section.angle }),
     radius: (parent.circle.radius * section.size) / 100,
     taperFactor: 0.9,
     overlapMult: 0.5,
     curveRange: 360 / section.count,
   };
-  const waveSpec = {
-    range: 120 / spec.count,
+  const wave = {
+    range: 120 / segmentation.count,
     period: preset.period.deliberate,
     offset: section.offset,
   };
-  const generateGentleCurl = (i: number) => [createCurlSpec(waveSpec, i)];
-  const segments = createDefault(parent, spec, generateGentleCurl);
+  const segments = toSegments(parent, mixCurl(segmentation, wave));
   return segments;
 };
 
@@ -82,16 +80,14 @@ const segmentateFeeler: SegmentationFunc = (
   parent: Segment,
   section: Section,
 ): Segment[] => {
-  const spec: Segmentation = {
+  const segmentation: Segmentation = createSegmentation({
     count: 5,
     radius: (parent.circle.radius * 20) / 100,
     taperFactor: 0.9,
     angle: section.angle,
     overlapMult: 0.2,
-    curve: 0,
-    curveRange: 0,
-  };
-  const segments = createDefault(parent, spec);
+  });
+  const segments = toSegments(parent, segmentation);
   return segments;
 };
 
@@ -100,26 +96,23 @@ const segmentateFishTail: SegmentationFunc = (
   section: Section,
 ): Segment[] => {
   const count = section.count;
-  const tailSpec: Segmentation = {
+  const tailSegmentation: Segmentation = createSegmentation({
     count,
     radius: section.size,
     taperFactor: 0.88,
-    angle: 0,
     overlapMult: 0.6,
-    curve: 0,
     curveRange: preset.curve.muscley,
-  };
-  const waveSpec = {
+  });
+  const wave = {
     range: 30 / count,
     period: preset.period.deliberate,
     offset: section.offset,
     acceleration: 4,
   };
-  const tailWriggle = (i: number) => [createCurlSpec(waveSpec, i)];
-  const tail = createDefault(parent, tailSpec, tailWriggle);
+  const tail = toSegments(parent, mixCurl(tailSegmentation, wave));
   [-1, 1].forEach((i) => {
     const fin = createSegment(section.size * 0.5, 30 * i, 0.5);
-    fin.wriggle = toWriggle(tailWriggle(count + 1));
+    fin.wriggle = toWriggle([createCurlSpec(wave, count + 1)]);
     tail[count - 1].children.push(fin);
   });
   return tail;
@@ -156,25 +149,24 @@ const segmentateFrogLeg: SegmentationFunc = (
   section: Section,
 ): Segment[] => {
   const dir = section.mirror ? -1 : 1;
-  const upperLegSpec: Segmentation = {
+  const upperLegSeg: Segmentation = createSegmentation({
     count: 3,
     radius: parent.circle.radius,
     taperFactor: 0.85,
     angle: parent.bodyAngle.relative + 75 * dir,
     overlapMult: 0.3,
-    curve: 0,
     curveRange: 2,
-  };
+  });
   const upperLegWave = {
     range: 45,
     period: preset.period.relaxed,
     offset: section.offset,
     acceleration: 4,
   };
-  const upperLeg = createRotation(parent, upperLegSpec, upperLegWave);
+  const upperLeg = createRotation(parent, upperLegSeg, upperLegWave);
 
-  const lowerLegSpec: Segmentation = {
-    ...upperLegSpec,
+  const lowerLegSeg: Segmentation = {
+    ...upperLegSeg,
     radius: parent.circle.radius * 0.7,
     angle: parent.bodyAngle.relative + 10 * dir,
   };
@@ -182,7 +174,7 @@ const segmentateFrogLeg: SegmentationFunc = (
     ...upperLegWave,
     range: 20,
   };
-  const lowerLeg = createRotation(upperLeg[2], lowerLegSpec, lowerLegWave);
+  const lowerLeg = createRotation(upperLeg[2], lowerLegSeg, lowerLegWave);
 
   // Add frog foot
   const pad = createSegment(
@@ -209,29 +201,28 @@ const segmentateHair: SegmentationFunc = (
   parent: Segment,
   section: Section,
 ): Segment[] => {
-  const spec: Segmentation = {
+  const segmentation: Segmentation = createSegmentation({
     count: section.count,
     radius: (parent.circle.radius * section.size) / 100,
-    taperFactor: 1,
     angle: section.angle,
     overlapMult: 1.25,
     curveRange: 20,
-    curve: 0,
+  });
+  const rotationWave = {
+    range: 5,
+    period: preset.period.relaxed,
+    offset: section.offset,
   };
-  const generateGentleCurl = (i: number) => {
-    return [
-      createRotationSpec({
-        range: 5,
-        period: preset.period.relaxed,
-        offset: section.offset,
-      }),
-      createCurlSpec(
-        { range: 30, period: preset.period.deliberate, offset: section.offset },
-        i,
-      ),
-    ];
+  const curlWave = {
+    range: 30,
+    period: preset.period.deliberate,
+    offset: section.offset,
   };
-  const segments = createDefault(parent, spec, generateGentleCurl);
+  const wrigglingSegmentation = mixRotation(
+    mixCurl(segmentation, curlWave),
+    rotationWave,
+  );
+  const segments = toSegments(parent, wrigglingSegmentation);
   return segments;
 };
 
@@ -240,22 +231,20 @@ const segmentateMandible: SegmentationFunc = (
   section: Section,
 ): Segment[] => {
   const curve = section.angle < 0 ? -10 : 10;
-  const spec: Segmentation = {
+  const segmentation: Segmentation = createSegmentation({
     count: section.count,
     radius: (parent.circle.radius * section.size) / 100,
     taperFactor: 0.8,
     angle: section.angle,
-    overlapMult: 0.5,
-    curveRange: 0,
     curve,
-  };
+  });
   const waveSpec = {
     range: 5,
     period: preset.period.deliberate,
     offset: section.offset,
     acceleration: 0,
   };
-  const segments = createRotation(parent, spec, waveSpec);
+  const segments = createRotation(parent, segmentation, waveSpec);
   return segments;
 };
 
@@ -271,38 +260,34 @@ const segmentateMonkeyArm: SegmentationFunc = (
   const shoulder = createSegment(section.size * 0.7, 130 * dir, 0.6);
   pec.children.push(shoulder);
 
-  const upperArmSpec: Segmentation = {
+  const upperArmSeg: Segmentation = createSegmentation({
     count: 2,
     radius: section.size * 0.45,
     taperFactor: 0.9,
     angle: 75 * dir,
     overlapMult: 0.8,
-    curveRange: 0,
-    curve: 0,
-  };
-  const upperArmWaveSpec = {
+  });
+  const upperArmWave = {
     range: 45,
     period: preset.period.deliberate,
     offset: section.offset,
   };
-  const upperArm = createRotation(shoulder, upperArmSpec, upperArmWaveSpec);
+  const upperArm = createRotation(shoulder, upperArmSeg, upperArmWave);
 
-  const forearmSpec: Segmentation = {
+  const forearmSeg: Segmentation = createSegmentation({
     count: 3,
     radius: section.size * 0.45,
     taperFactor: 0.9,
     angle: -40 * dir,
     overlapMult: 0.8,
-    curve: 0,
-    curveRange: 0,
-  };
+  });
   // Offset by PI because forearm should swing the opposive way as bicep
-  const forearmWaveSpec = {
+  const forearmWave = {
     range: 20,
     period: preset.period.deliberate,
     offset: section.offset + Math.PI,
   };
-  const forearm = createRotation(upperArm[1], forearmSpec, forearmWaveSpec);
+  const forearm = createRotation(upperArm[1], forearmSeg, forearmWave);
 
   // Turn final forearm segment into fist: bigger, with less overlap
   forearm[2].circle.radius = section.size * 0.6;
@@ -314,50 +299,46 @@ const segmentateNoodleLimb: SegmentationFunc = (
   parent: Segment,
   section: Section,
 ): Segment[] => {
-  const spec: Segmentation = {
+  const segmentation: Segmentation = createSegmentation({
     count: section.count,
     radius: (parent.circle.radius * section.size) / 100,
     taperFactor: 0.9,
     angle: section.angle,
-    overlapMult: 0.5,
-    curve: 0,
     curveRange: preset.curve.squiggly,
-  };
-  const noodleWave = {
+  });
+  const wave = {
     range: 10,
     period: preset.period.relaxed,
     offset: section.offset,
     acceleration: 4,
   };
-  const segments = createNoodleLimb(
-    parent,
-    spec,
-    noodleWave,
-    parent.bodyAngle.relative,
-  );
-  return segments;
+  const suppression = { tuckTarget: 0, tuckFactor: 0.5 };
+  const gradient = {
+    wave,
+    increase: 0,
+    suppression,
+  };
+  return toSegments(parent, mixSquiggle(segmentation, gradient));
 };
 
 const segmentateRigidLeg: SegmentationFunc = (
   parent: Segment,
   section: Section,
 ): Segment[] => {
-  const spec: Segmentation = {
+  const segmentation: Segmentation = createSegmentation({
     count: section.count,
     radius: (parent.circle.radius * section.size) / 100,
     taperFactor: 1,
     angle: section.angle,
     overlapMult: 0.2,
-    curveRange: 0,
-    curve: 0,
-  };
+  });
   const waveSpec = {
     range: 30,
     period: preset.period.deliberate,
     offset: section.offset,
     acceleration: 4,
   };
-  const segments = createRotation(parent, spec, waveSpec);
+  const segments = createRotation(parent, segmentation, waveSpec);
   return segments;
 };
 
@@ -366,21 +347,20 @@ const segmentateSimpleLimb: SegmentationFunc = (
   section: Section,
 ): Segment[] => {
   const curve = section.offset % (Math.PI * 2) == 0 ? 15 : -15; // mirror curve
-  const spec: Segmentation = {
+  const segmentation: Segmentation = createSegmentation({
     count: section.count,
     radius: (parent.circle.radius * section.size) / 100,
     taperFactor: 0.9,
     angle: section.angle,
-    overlapMult: 0.5,
     curveRange: 5,
     curve,
-  };
+  });
   const waveSpec = {
     range: 10,
     period: preset.period.relaxed,
     offset: section.offset,
   };
-  const segments = createRotation(parent, spec, waveSpec);
+  const segments = createRotation(parent, segmentation, waveSpec);
   return segments;
 };
 

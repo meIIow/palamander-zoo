@@ -1,23 +1,21 @@
 import type { Section } from '../section.ts';
 import type { Segment } from '../segment.ts';
-import type {
-  WaveSpec,
-  WriggleSpecGenerator,
-} from '../animation/wriggle-spec.ts';
+import type { WriggleGenerator } from '../animation/wriggle-gradient.ts';
+import type { WaveSpec } from '../animation/wriggle-spec.ts';
 
 import clone from 'clone';
 
 import { createSegment } from '../segment.ts';
 import { calculateRadius } from '../section.ts';
-import { createSuppression, calculateTuck } from '../animation/suppression.ts';
 import { toWriggle } from '../animation/wriggle.ts';
 import {
-  createSquiggleSpec,
+  createCurlSpec,
   createRotationSpec,
-  generateSquiggleGradientSpec,
-  generateSupressionGradient,
-  injectWriggleSupression,
 } from '../animation/wriggle-spec.ts';
+import {
+  SquiggleGradient,
+  toSquiggleGenerator,
+} from '../animation/wriggle-gradient.ts';
 
 // Config for a series of segments.
 export type Segmentation = {
@@ -28,7 +26,7 @@ export type Segmentation = {
   overlapMult: number;
   curveRange: number;
   curve: number;
-  wriggle?: WriggleSpecGenerator;
+  wriggleGenerators: WriggleGenerator[];
 };
 
 // Common preset values for section behavior.
@@ -53,6 +51,7 @@ export function createSegmentation(seg: Partial<Segmentation>): Segmentation {
     overlapMult: 0.5,
     curveRange: 0,
     curve: 0,
+    wriggleGenerators: [],
     ...seg,
   };
 }
@@ -66,124 +65,64 @@ export function toSegmentation(sec: Section, parent: Segment): Segmentation {
   return createSegmentation(segment);
 }
 
-// Segments will have gradually increasing squiggle magnitude, supressed at speed.
-export function mixSquiggleGradient(
+// Segments will rotate, pivoting around the parent segment
+export function mixCurl(
   segmentation: Segmentation,
-  waveSpec: WaveSpec,
-  initialRange: number,
-  supressionRange: { front: number; back: number },
+  wave: WaveSpec,
 ): Segmentation {
   const mixed = clone(segmentation);
-  const suppressionGenerator = generateSupressionGradient(
-    segmentation.count,
-    supressionRange,
-  );
-  const squiggleGenerator = generateSquiggleGradientSpec(
-    segmentation.count,
-    waveSpec,
-    initialRange,
-    0.2,
-  );
-  mixed.wriggle = injectWriggleSupression(
-    squiggleGenerator,
-    suppressionGenerator,
-  );
+  const generateCurl = (i: number) => toWriggle([createCurlSpec(wave, i)]);
+  mixed.wriggleGenerators.push(generateCurl);
   return mixed;
 }
 
-// Creates a series of segments with gradually increasing squiggle magnitude, supressed at speed.
-export function createSquiggleGradient(
-  parent: Segment,
-  spec: Segmentation,
-  waveSpec: WaveSpec,
-  initialRange: number,
-  supressionRange: { front: number; back: number },
-): Segment[] {
-  const suppressionGenerator = generateSupressionGradient(
-    spec.count,
-    supressionRange,
-  );
-  const squiggleGenerator = generateSquiggleGradientSpec(
-    spec.count,
-    waveSpec,
-    initialRange,
-    0.2,
-  );
-  const wriggleGenerator = injectWriggleSupression(
-    squiggleGenerator,
-    suppressionGenerator,
-  );
-  return createDefault(parent, spec, wriggleGenerator);
-}
-
-// Creates a noodly limb that pulls inward at high speed.
-export function createNoodleLimb(
-  parent: Segment,
+// Segments will rotate, pivoting around the parent segment
+export function mixRotation(
   segmentation: Segmentation,
-  waveSpec: WaveSpec,
-  pullTowards: number,
-): Segment[] {
-  const generateWiggleSpec = (i: number) => {
-    const wiggleSpec = createSquiggleSpec(waveSpec, i, segmentation.count * 2);
-    wiggleSpec.suppression = {
-      ...createSuppression(waveSpec.range, waveSpec.period),
-      tuck: calculateTuck(segmentation.angle, pullTowards, 0.5),
-    };
-    return [wiggleSpec];
-  };
-  return createDefault(parent, segmentation, generateWiggleSpec);
+  wave: WaveSpec,
+): Segmentation {
+  const mixed = clone(segmentation);
+  const generateRotation = (_: number) => toWriggle([createRotationSpec(wave)]);
+  mixed.wriggleGenerators.push(generateRotation);
+  return mixed;
 }
 
-// Creates a straight line of segments that rotate together.
+// Segments will have gradually changing squiggle magnitude, supressed at speed.
+export function mixSquiggle(
+  segmentation: Segmentation,
+  squigglePartial: Partial<SquiggleGradient>,
+): Segmentation {
+  const mixed = clone(segmentation);
+  if (!squigglePartial.wave) return mixed;
+  const squiggle: SquiggleGradient = {
+    increase: 0, // no squiggle magnitude gradient
+    count: segmentation.count,
+    length: segmentation.count * 2,
+    angle: segmentation.angle,
+    easeFactor: 1, // no easing of first segment
+    wave: squigglePartial.wave,
+    ...squigglePartial,
+  };
+  mixed.wriggleGenerators.push(toSquiggleGenerator(squiggle));
+  return mixed;
+}
+
+// Convenience function to directly create a set of rotating segments.
 export function createRotation(
   parent: Segment,
   segmentation: Segmentation,
-  waveSpec: WaveSpec,
+  wave: WaveSpec,
 ): Segment[] {
-  const generateWriggleSpec = (_: number) => [createRotationSpec(waveSpec)];
-  return createDefault(parent, segmentation, generateWriggleSpec);
-}
-
-// Creates a default series of segments, one after another, from segments spec and wriggle specs.
-export function createDefault(
-  parent: Segment,
-  segmentation: Segmentation,
-  generateWriggleSpec: WriggleSpecGenerator = (_: number) => [],
-): Segment[] {
-  const segments = [];
-  let curr = parent;
-  let radius = segmentation.radius;
-  for (let i = 0; i < segmentation.count; i++) {
-    radius = radius * segmentation.taperFactor;
-    const next = createSegment(
-      radius,
-      segmentation.angle,
-      segmentation.overlapMult,
-    );
-    next.bodyAngle.curveRange = segmentation.curveRange;
-    next.bodyAngle.relative += i * segmentation.curve;
-    next.wriggle = toWriggle(generateWriggleSpec(i));
-    curr.children.push(next);
-    curr = next;
-    segments.push(curr);
-  }
-  return segments;
+  const rotation = mixRotation(segmentation, wave);
+  return toSegments(parent, rotation);
 }
 
 export function calculateTaper(terminationFactor: number, count: number) {
   return Math.pow(terminationFactor, 1 / Math.max(1, count));
 }
 
-// // Curves given segments by a given amount.
-// export function addCurve(segments: Segment[], curveAngle: number): Segment[] {
-//   segments.forEach((segment, i) => {
-//     segment.bodyAngle.relative += i * curveAngle;
-//   });
-//   return segments;
-// }
-
 // Converts a Segmentation into its corresponding Segment list.
-export function asSegments(
+export function toSegments(
   parent: Segment,
   segmentation: Segmentation,
 ): Segment[] {
@@ -199,8 +138,9 @@ export function asSegments(
     );
     next.bodyAngle.curveRange = segmentation.curveRange;
     next.bodyAngle.relative += i * segmentation.curve;
-    next.wriggle =
-      segmentation.wriggle ? toWriggle(segmentation.wriggle(i)) : [];
+    next.wriggle = segmentation.wriggleGenerators
+      .map((generate) => generate(i))
+      .flat();
     curr.children.push(next);
     curr = next;
     segments.push(curr);

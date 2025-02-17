@@ -4,14 +4,13 @@ import type { Segmentation } from './segmentation.ts';
 import type { SegmentationFunc } from './segmentation-func.ts';
 
 import {
-  createDefault,
+  toSegments,
   calculateTaper,
-  createSquiggleGradient,
   preset,
   toSegmentation,
+  mixSquiggle,
 } from './segmentation.ts';
 import { createBranch, createSection, follow } from '../section';
-import { createSquiggleSpec } from '../animation/wriggle-spec.ts';
 
 /* -----------------------------------------------
  * Granular Segmentations: re-usable Body Types
@@ -25,19 +24,22 @@ const segmentateEelBody: SegmentationFunc = (
   const segmentation: Segmentation = {
     ...toSegmentation(section, parent),
     taperFactor,
-    overlapMult: 0.5,
     curveRange: preset.curve.squiggly,
   };
-  const waveSpec = {
-    range: 25,
+  const wave = {
+    range: 20,
     period: preset.period.relaxed,
     offset: section.offset,
     acceleration: 4,
   };
-  return createSquiggleGradient(parent, segmentation, waveSpec, 15, {
-    front: 0.5,
-    back: -0.5,
-  });
+  const suppression = { range: { front: 0.5, back: -0.5 } };
+  const gradient = {
+    wave,
+    increase: 5,
+    easeFactor: 0.2,
+    suppression,
+  };
+  return toSegments(parent, mixSquiggle(segmentation, gradient));
 };
 
 const segmentateFishBody: SegmentationFunc = (
@@ -69,16 +71,14 @@ const segmentateInchwormBody: SegmentationFunc = (
     overlapMult: 0.1,
     curveRange: 720 / section.count,
   };
-  const waveSpec = {
+  const wave = {
     range: 10,
     period: preset.period.relaxed * 4,
     offset: section.offset,
     acceleration: 20,
   };
-  const generateWriggleSpec = (i: number) => [
-    createSquiggleSpec(waveSpec, i, section.count * 0.75),
-  ];
-  const body = createDefault(parent, segmentation, generateWriggleSpec);
+  const gradient = { wave, length: section.count * 0.75 };
+  const body = toSegments(parent, mixSquiggle(segmentation, gradient));
   return [...body];
 };
 

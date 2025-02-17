@@ -4,8 +4,12 @@ import type { SegmentationFunc } from './segmentation-func.ts';
 
 import { createSegment, createDefaultSegment } from '../segment';
 import { createBranch, createSection, follow } from '../section';
-import { createSquiggleSpec } from '../animation/wriggle-spec';
-import { createDefault, createSegmentation, preset } from './segmentation.ts';
+import {
+  createSegmentation,
+  mixSquiggle,
+  toSegments,
+  preset,
+} from './segmentation.ts';
 
 // An axolotl has a newt body and gilly head.
 const segmentateAxolotl: SegmentationFunc = (
@@ -71,7 +75,7 @@ const segmentateCrawdad: SegmentationFunc = (
   head.children.push(spacer);
 
   // Create carapace.
-  const body = createDefault(spacer, {
+  const body = toSegments(spacer, {
     ...createSegmentation({ count: 3, angle: section.angle }),
     radius: section.size * 1.5,
     taperFactor: 1,
@@ -115,21 +119,17 @@ const segmentateFrog: SegmentationFunc = (
   });
 
   const bodyLen = 4;
-  const bodySpec = {
+  const bodySegmentation = createSegmentation({
     count: bodyLen,
     radius: section.size,
     taperFactor: 0.75,
     angle: section.angle,
     overlapMult: 1.2,
     curveRange: 5,
-    curve: 0,
-    offset: 0,
-  };
-  const waveSpec = { range: 2, period: preset.period.relaxed };
-  const generateFrogWiggle = (i: number) => [
-    createSquiggleSpec(waveSpec, i, bodyLen),
-  ];
-  const body = createDefault(head, bodySpec, generateFrogWiggle);
+  });
+  const wave = { range: 2, period: preset.period.relaxed };
+  const gradient = { wave, length: bodyLen };
+  const body = toSegments(head, mixSquiggle(bodySegmentation, gradient));
   const arms = { ...createBranch(section, 'simple-limbs'), count: 5, size: 50 };
   section.branches.push({
     ...arms,
@@ -151,30 +151,25 @@ const segmentateJellyfish: SegmentationFunc = (
 ): Segment[] => {
   const head = createDefaultSegment(section.size);
 
-  const tentacleSpec = {
+  const tentacleSegmentation = createSegmentation({
     count: 5,
     radius: section.size * 0.2,
-    taperFactor: 1,
     angle: section.angle,
     overlapMult: 0,
     curveRange: 30 / 5,
-    curve: 0,
-    offset: 0,
-  };
+  });
   for (let i = 0; i < 4; i++) {
-    const waveSpec = {
+    const wave = {
       range: 20,
       period: preset.period.relaxed,
       offset: section.offset,
     };
-    const generateWriggleSpec = (i: number) => [
-      createSquiggleSpec(waveSpec, i, section.count * 2),
-    ];
+    const gradient = { wave };
     const spawn = -60 + i * 40;
     const root = createSegment(1, spawn, section.size / 20);
 
     head.children.push(root);
-    createDefault(root, tentacleSpec, generateWriggleSpec);
+    toSegments(root, mixSquiggle(tentacleSegmentation, gradient));
   }
 
   return [head];
