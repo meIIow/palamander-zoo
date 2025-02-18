@@ -4,50 +4,13 @@ import { expect, describe, it } from 'vitest';
 
 import { toSquiggleGenerator } from './wriggle-gradient.ts';
 
-// type WriggleComponent = {
-//   // Static fields
-//   offset: number;
-//   acceleration: number;
-//   suppression: Suppression;
-//   progressPerElapsed: number;
-//   range: number;
-//   // Dynamic fields
-//   suppressed: number;
-//   progress: number;
-//   magnitude: number;
-// };
-
-// type WaveSpec = {
-//   range: number; // peak degrees to wriggle up/down
-//   period: number; // time (s) to complete one wriggle
-//   acceleration?: number; // adjusts cycle period at speed
-//   offset?: number; // offsets wriggle by constant amount, repeats every 2 PI
-//   suppression?: Suppression; // dampens/tucks wriggle magnitude at speed
-// };
-
-// type SquiggleGradient = {
-//   wave: WaveSpec;
-//   count: number;
-//   length: number;
-//   angle: number;
-//   easeFactor: number; // factor to dampen range of initial segment
-//   increase: number; // how much range increases between first and last segment
-//   suppression?: SuppressionGradient;
-// };
-
-// type SuppressionGradient = {
-//   range?: { front: number; back: number };
-//   tuckTarget?: number;
-//   tuckFactor?: number;
-// };
-
 describe('SquiggleGradient', () => {
   const basicGradient: SquiggleGradient = {
     wave: {
       range: 30,
       period: 1,
     },
-    count: 1,
+    count: 2,
     length: 2,
     angle: 0,
     easeFactor: 1,
@@ -64,26 +27,120 @@ describe('SquiggleGradient', () => {
       expect(generator(1)[0].range).toEqual(30);
       expect(generator(2)[0].range).toEqual(40);
     });
-    it('when increase is negative', () => {});
-    it('when count is even', () => {});
+    it('when increase is negative', () => {
+      const generator = toSquiggleGenerator({
+        ...basicGradient,
+        count: 3,
+        increase: -20,
+      });
+      expect(generator(0)[0].range).toEqual(40);
+      expect(generator(1)[0].range).toEqual(30);
+      expect(generator(2)[0].range).toEqual(20);
+    });
+    it('when count is even', () => {
+      const generator = toSquiggleGenerator({
+        ...basicGradient,
+        count: 4,
+        increase: 30,
+      });
+      expect(generator(0)[0].range).toEqual(15);
+      expect(generator(1)[0].range).toEqual(25);
+      expect(generator(2)[0].range).toEqual(35);
+      expect(generator(3)[0].range).toEqual(45);
+    });
   });
 
-  it('dampens initial segment range based on easeFactor', () => {});
+  it('dampens only initial segment range based on easeFactor', () => {
+    const generatorNotEased = toSquiggleGenerator({
+      ...basicGradient,
+    });
+    const generatorHalfEased = toSquiggleGenerator({
+      ...basicGradient,
+      easeFactor: 0.5,
+    });
+    const generatorFullyEased = toSquiggleGenerator({
+      ...basicGradient,
+      easeFactor: 0,
+    });
+    expect(generatorNotEased(0)[0].range).toEqual(30);
+    expect(generatorHalfEased(0)[0].range).toEqual(15);
+    expect(generatorFullyEased(0)[0].range).toEqual(0);
+    expect(generatorFullyEased(1)[0].range).toEqual(30); // only dampen initial
+  });
 
-  it('offsets segment waves by inverse of length', () => {});
+  it('spreads full period offset evenly over "length" segments', () => {
+    const generatorResetEveryThirdSegment = toSquiggleGenerator({
+      ...basicGradient,
+      count: 6,
+      length: 3,
+    });
+    // With length = 3, every segment is offset by 1/3 of the (2pi long) period
+    expect(
+      generatorResetEveryThirdSegment(0)[0].offset -
+        generatorResetEveryThirdSegment(1)[0].offset,
+    ).toBeCloseTo((2 * Math.PI) / 3);
+    expect(
+      generatorResetEveryThirdSegment(1)[0].offset -
+        generatorResetEveryThirdSegment(2)[0].offset,
+    ).toBeCloseTo((2 * Math.PI) / 3);
+    expect(
+      generatorResetEveryThirdSegment(2)[0].offset -
+        generatorResetEveryThirdSegment(3)[0].offset,
+    ).toBeCloseTo((2 * Math.PI) / 3);
+  });
 
   describe('suppresses', () => {
     describe('by dampening evenly', () => {
-      it('when count is even', () => {});
-      it('when count is odd', () => {});
+      it('when count is even', () => {
+        const generator = toSquiggleGenerator({
+          ...basicGradient,
+          count: 4,
+          suppression: { range: { front: 0.3, back: -0.3 } },
+        });
+        expect(generator(0)[0].suppression.dampen).toBeCloseTo(0.3);
+        expect(generator(1)[0].suppression.dampen).toBeCloseTo(0.1);
+        expect(generator(2)[0].suppression.dampen).toBeCloseTo(-0.1);
+        expect(generator(3)[0].suppression.dampen).toBeCloseTo(-0.3);
+      });
+      it('when count is odd', () => {
+        const generator = toSquiggleGenerator({
+          ...basicGradient,
+          count: 3,
+          suppression: { range: { front: 0.3, back: -0.3 } },
+        });
+        expect(generator(0)[0].suppression.dampen).toBeCloseTo(0.3);
+        expect(generator(1)[0].suppression.dampen).toBeCloseTo(0);
+        expect(generator(2)[0].suppression.dampen).toBeCloseTo(-0.3);
+      });
     });
     describe('by tucking', () => {
-      it('for tuckFactor when it is specified', () => {});
-      it('halway to angle when tuckFactor is not specified', () => {});
+      it('for tuckFactor when it is specified', () => {
+        const generator = toSquiggleGenerator({
+          ...basicGradient,
+          suppression: { tuckTarget: 30, tuckFactor: 0.4 },
+        });
+        expect(generator(0)[0].suppression.tuck).toBeCloseTo(12);
+      });
+      it('halway to angle when tuckFactor is not specified', () => {
+        const generator = toSquiggleGenerator({
+          ...basicGradient,
+          suppression: { tuckTarget: 30 },
+        });
+        expect(generator(0)[0].suppression.tuck).toBeCloseTo(15);
+      });
     });
     describe('without', () => {
-      it('tucking when tuckAngle is not specified', () => {});
-      it('dampening when range is not specified', () => {});
+      const generator = toSquiggleGenerator({
+        ...basicGradient,
+        suppression: {},
+      });
+      const suppression = generator(0)[0].suppression;
+      it('tucking when tuckAngle is not specified', () => {
+        expect(suppression.tuck).toBeUndefined;
+      });
+      it('dampening when range is not specified', () => {
+        expect(suppression.dampen).toBeUndefined;
+      });
     });
   });
 });
