@@ -51,10 +51,13 @@ function generateTimedSampler(
       countdown -= interval;
       return sampledVal;
     }
+    const sampled = sampleInterval();
+    // If interval is super big (likely because we were away), clip it.
+    interval = Math.min(sampled + countdown, interval);
     const componentPrev = (sampledVal * countdown) / interval;
     sampledVal = sample();
     const component = (sampledVal * (interval - countdown)) / interval;
-    countdown += sampleInterval() - interval;
+    countdown += sampled - interval;
 
     // A weighted average is a reasonable approximation, but not mathematically perfect.
     return component + componentPrev;
