@@ -1,6 +1,6 @@
 import type { Suppression } from './suppression';
 
-// Common fields for defining Wriggle Specifications.
+// Common fields for defining Wriggle specifications.
 type WaveSpec = {
   range: number; // peak degrees to wriggle up/down
   period: number; // time (s) to complete one wriggle
@@ -14,12 +14,6 @@ type WriggleSpec = WaveSpec & {
   squiggleRate: number; // fraction of a full wriggle each segment takes up
   synchronize: boolean; // synchonize wave
 };
-
-type WriggleSpecGenerator = (i: number) => WriggleSpec[];
-
-/* ------------------------------------------------------------
- * Wriggle Spec Creation Methods
- * ------------------------------------------------------------ */
 
 // Creates a wriggle spec to all curl together, like an octopus or a starfish arm.
 // If the range * (section length) >= 360, it will form a circle at (absolute) max curl.
@@ -59,5 +53,5 @@ function createRotationSpec(spec: WaveSpec): WriggleSpec {
   };
 }
 
-export type { WriggleSpec, WaveSpec, WriggleSpecGenerator };
+export type { WriggleSpec, WaveSpec };
 export { createCurlSpec, createSquiggleSpec, createRotationSpec };
