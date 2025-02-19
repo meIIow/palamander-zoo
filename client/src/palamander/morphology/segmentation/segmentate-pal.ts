@@ -259,6 +259,21 @@ const segmentateSeaMonkey: SegmentationFunc = (
   return follow(section, head);
 };
 
+// A snake is a snake.
+const segmentateSnake: SegmentationFunc = (
+  _parent: Segment,
+  section: Section,
+): Segment[] => {
+  const head = { ...createSection('snake-head'), size: section.size };
+  head.branches.push({
+    ...createBranch(section, 'snake-body'),
+    count: 8,
+    index: 1,
+    size: section.size * 0.7,
+  });
+  return follow(section, head);
+};
+
 // A starfish is a starfish.
 const segmentateStarfish: SegmentationFunc = (
   _parent: Segment,
@@ -282,6 +297,20 @@ const segmentateTadpole: SegmentationFunc = (
   return [];
 };
 
+// A wyrm is a worm.
+const segmentateWyrm: SegmentationFunc = (
+  _parent: Segment,
+  section: Section,
+): Segment[] => {
+  const head = createDefaultSegment(section.size);
+  section.branches.push({
+    ...createBranch(section, 'snake-body'),
+    count: 6,
+    size: section.size * 0.9,
+  });
+  return [head];
+};
+
 export const pals = {
   axolotl: segmentateAxolotl,
   caterpillar: segmentateCaterpillar,
@@ -295,6 +324,8 @@ export const pals = {
   octopus: segmentateOctopus,
   'sea-lion': segmentateSeaLion,
   'sea-monkey': segmentateSeaMonkey,
+  snake: segmentateSnake,
   starfish: segmentateStarfish,
   tadpole: segmentateTadpole,
+  wyrm: segmentateWyrm,
 };

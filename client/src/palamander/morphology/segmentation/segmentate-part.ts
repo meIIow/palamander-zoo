@@ -118,6 +118,44 @@ const segmentateFishTail: SegmentationFunc = (
   return tail;
 };
 
+const segmentateFlicker: SegmentationFunc = (
+  parent: Segment,
+  section: Section,
+): Segment[] => {
+  const count = 7;
+  const segmentation: Segmentation = createSegmentation({
+    count,
+    radius: (parent.circle.radius * 15) / 100,
+    taperFactor: 0.95,
+    angle: section.angle + 180,
+    overlapMult: 0.75,
+  });
+  const wave = {
+    range: 30,
+    period: preset.period.frenetic / 2,
+    offset: section.offset,
+    acceleration: 0,
+  };
+  const gradient = {
+    wave,
+    length: count,
+    easeFactor: 0,
+  };
+  const flicker = toSegments(parent, mixSquiggle(segmentation, gradient));
+  [-1, 1].forEach((i) => {
+    const fork = createSegment((parent.circle.radius * 8) / 100, 140 * i, 0.75);
+    fork.children.push(
+      createSegment((parent.circle.radius * 8) / 100, 140 * i, 0.75),
+    );
+    fork.children[0].children.push(
+      createSegment((parent.circle.radius * 8) / 100, 130 * i, 0.75),
+    );
+    // fork.wriggle = toWriggle([createSquiggleSpec(wave, count + 1, 2*count)]);
+    flicker[count - 1].children.push(fork);
+  });
+  return flicker;
+};
+
 const segmentateFlipper: SegmentationFunc = (
   parent: Segment,
   section: Section,
@@ -369,6 +407,7 @@ export const parts = {
   curl: segmentateCurl,
   feeler: segmentateFeeler,
   'fish-tail': segmentateFishTail,
+  flicker: segmentateFlicker,
   flipper: segmentateFlipper,
   'frog-leg': segmentateFrogLeg,
   hair: segmentateHair,

@@ -8,6 +8,7 @@ import {
   calculateTaper,
   preset,
   toSegmentation,
+  mixCurl,
   mixSquiggle,
 } from './segmentation.ts';
 import { createBranch, createSection, follow } from '../section';
@@ -94,9 +95,62 @@ const segmentateNewtBody: SegmentationFunc = (
   return follow(section, body);
 };
 
+const segmentateSnakeBody: SegmentationFunc = (
+  parent: Segment,
+  section: Section,
+): Segment[] => {
+  const bodyCount = section.count * 2;
+  const bodyTaper = calculateTaper(0.9, bodyCount);
+  const bodySeg: Segmentation = {
+    ...toSegmentation(section, parent),
+    count: bodyCount,
+    taperFactor: bodyTaper,
+    overlapMult: 0.75,
+    curveRange: preset.curve.squiggly * 3,
+    override: {
+      propagationInterval: 200,
+    },
+  };
+  const bodyWave = {
+    range: 5,
+    period: preset.period.relaxed * 3,
+    offset: section.offset,
+    acceleration: 12,
+    suppression: {
+      delta: 999999, // do not impose suppression limit
+    },
+  };
+  const suppression = { range: { front: -6, back: -2 } };
+  const gradient = {
+    wave: bodyWave,
+    increase: 5,
+    easeFactor: 0.2,
+    suppression,
+    length: bodyCount / 1.5,
+  };
+  const body = toSegments(parent, mixSquiggle(bodySeg, gradient));
+
+  const tailCount = section.count;
+  const tailTaper = calculateTaper(0.3, tailCount);
+  const tailSeg: Segmentation = {
+    ...bodySeg,
+    count: tailCount,
+    taperFactor: tailTaper,
+    overlapMult: 0.75,
+  };
+  const tailWave = {
+    range: 5,
+    period: preset.period.frenetic,
+    offset: section.offset,
+  };
+  const tail = toSegments(body[bodyCount - 1], mixCurl(tailSeg, tailWave));
+  return [...body, ...tail];
+};
+
 export const bodies = {
   'eel-body': segmentateEelBody,
   'fish-body': segmentateFishBody,
-  'newt-body': segmentateNewtBody,
   'inchworm-body': segmentateInchwormBody,
+  'newt-body': segmentateNewtBody,
+  'snake-body': segmentateSnakeBody,
 };

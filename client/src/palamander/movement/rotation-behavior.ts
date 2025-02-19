@@ -7,7 +7,6 @@ import { VelocityLimit, VelocitySampleSpec } from './velocity.ts';
 import { SampleSpec } from './sample.ts';
 import {
   generateMeasuredSampleSpec,
-  generateFreneticSampleSpec,
   generateCommittedSampleSpec,
 } from './interval-behavior.ts';
 
@@ -40,16 +39,16 @@ const generatePlaceholderRotationBehaviorSpec: VelocitySampleSpecGenerator =
   };
 
 const generateCoilingBehaviorSpec: VelocitySampleSpecGenerator = () => {
-  const velocity = { ...defaultRotationSampleSpec };
+  const velocity = { ...defaultRotationSampleSpec, zero: 0.08 };
   velocity.range.skewMin = 1;
   return {
     limit: {
-      velocity: BASELINE_VELOCITY * 1.5,
-      accel: BASELINE_ACCEL * 3,
-      decel: BASELINE_ACCEL * 3,
+      velocity: BASELINE_VELOCITY * 0.75,
+      accel: BASELINE_ACCEL / 4,
+      decel: BASELINE_ACCEL / 4,
     },
     velocity: velocity,
-    interval: generateFreneticSampleSpec(),
+    interval: generateMeasuredSampleSpec(),
   };
 };
 

@@ -54,8 +54,24 @@ const segmentateMonkeyHead: SegmentationFunc = (
   return [head, neck];
 };
 
+const segmentateSnakeHead: SegmentationFunc = (
+  _parent: Segment,
+  section: Section,
+): Segment[] => {
+  const snout = createSegment(section.size * 0.75, section.angle, 0);
+
+  const head = createSegment(section.size, section.angle, 1);
+  snout.children.push(head);
+
+  const flicker = createBranch(section, 'flicker');
+  section.branches.push(flicker);
+
+  return [snout, head];
+};
+
 export const heads = {
   head: segmentateHead,
   'lion-head': segmentateLionHead,
   'monkey-head': segmentateMonkeyHead,
+  'snake-head': segmentateSnakeHead,
 };

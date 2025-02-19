@@ -27,8 +27,10 @@ const defaultPalList = [
   'crawdad',
   'horshoe-crab',
   'caterpillar',
+  'snake',
   'tadpole',
   'newt-king',
+  'wyrm',
   // 'jelly'
 ];
 
@@ -86,9 +88,9 @@ async function createDefaultPalList(): Promise<Palamander[]> {
 
 function createDefaultPal(): Palamander {
   const palSpec = {
-    type: 'sea-lion',
+    type: 'nematode',
     sectionTree: {
-      type: 'sea-lion',
+      type: 'nematode',
       count: 10,
       index: 0,
       size: 100,
@@ -99,8 +101,8 @@ function createDefaultPal(): Palamander {
       branches: [],
     },
     movementBehavior: {
-      linear: '',
-      rotational: '',
+      linear: 'predatory',
+      rotational: 'coiling',
     },
     suppressMove: { turn: false, speed: false },
     magnification: 20,

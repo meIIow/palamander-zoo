@@ -49,7 +49,7 @@ const generateCautiousBehaviorSpec: VelocitySampleSpecGenerator = () => {
       accel: BASELINE_ACCEL / 1.5,
       decel: BASELINE_DECEL / 1.5,
     },
-    velocity: defaultSpeedSampleSpec,
+    velocity,
     interval: generateMeasuredSampleSpec(),
   };
 };
@@ -64,7 +64,7 @@ const generateDeliberateBehaviorSpec: VelocitySampleSpecGenerator = () => {
       accel: BASELINE_ACCEL / 1.5,
       decel: BASELINE_DECEL / 1.5,
     },
-    velocity: defaultSpeedSampleSpec,
+    velocity,
     interval: generateMeasuredSampleSpec(),
   };
 };
@@ -123,6 +123,21 @@ const generateHoveringBehaviorSpec: VelocitySampleSpecGenerator = () => {
 };
 
 // Slower across the board, but with higher distribution.
+const generatePredatoryBehaviorSpec: VelocitySampleSpecGenerator = () => {
+  const velocity = { ...defaultSpeedSampleSpec, zero: 0.4 };
+  velocity.range.skewMin = 0;
+  return {
+    limit: {
+      velocity: BASELINE_VELOCITY / 1.5,
+      accel: BASELINE_ACCEL / 1.5,
+      decel: BASELINE_DECEL / 1.5,
+    },
+    velocity,
+    interval: generateMeasuredSampleSpec(),
+  };
+};
+
+// Slower across the board, but with higher distribution.
 const generatePushingBehaviorSpec: VelocitySampleSpecGenerator = () => {
   const velocity = { ...defaultSpeedSampleSpec, zero: 0.2 };
   velocity.range.skewMin = 1;
@@ -132,7 +147,7 @@ const generatePushingBehaviorSpec: VelocitySampleSpecGenerator = () => {
       accel: BASELINE_ACCEL / 1.5,
       decel: BASELINE_DECEL / 1.5,
     },
-    velocity: defaultSpeedSampleSpec,
+    velocity,
     interval: generateMeasuredSampleSpec(),
   };
 };
@@ -146,6 +161,7 @@ const speedMap: BehaviorMap = {
   flitting: generateFlittingBehaviorSpec,
   floating: generateFloatingBehaviorSpec,
   hovering: generateHoveringBehaviorSpec,
+  predatory: generatePredatoryBehaviorSpec,
   pushing: generatePushingBehaviorSpec,
 };
 

@@ -27,6 +27,7 @@ export type Segmentation = {
   curveRange: number;
   curve: number;
   wriggleGenerators: WriggleGenerator[];
+  override?: Partial<Segment>;
 };
 
 // Common preset values for section behavior.
@@ -131,11 +132,10 @@ export function toSegments(
   let radius = segmentation.radius;
   for (let i = 0; i < segmentation.count; i++) {
     radius = radius * segmentation.taperFactor;
-    const next = createSegment(
-      radius,
-      segmentation.angle,
-      segmentation.overlapMult,
-    );
+    const next = {
+      ...createSegment(radius, segmentation.angle, segmentation.overlapMult),
+      ...(segmentation.override ?? {}),
+    };
     next.bodyAngle.curveRange = segmentation.curveRange;
     next.bodyAngle.relative += i * segmentation.curve;
     next.wriggle = segmentation.wriggleGenerators
