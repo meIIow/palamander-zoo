@@ -46,7 +46,7 @@ const segmentateEqual: SegmentationFunc = (
   const between = range / (section.count - 1);
   for (let i = 0; i < section.count; i++) {
     const angle = next.angle - range / 2 + i * between;
-    const offset = stagger ? next.offset + ((29 * i) % 17) : section.offset; // random-ish bump
+    const offset = stagger ? next.offset + ((29 * i) % 17) : section.offset * i; // random-ish bump
     const child = { ...deepClone(next), angle, offset };
     section.branches.push(child);
   }

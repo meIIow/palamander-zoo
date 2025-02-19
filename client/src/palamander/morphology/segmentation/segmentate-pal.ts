@@ -150,29 +150,11 @@ const segmentateJellyfish: SegmentationFunc = (
   section: Section,
 ): Segment[] => {
   const head = createDefaultSegment(section.size);
-
-  const tentacleSegmentation = createSegmentation({
-    count: 5,
-    radius: section.size * 0.2,
-    angle: section.angle,
-    overlapMult: 0,
-    curveRange: 30 / 5,
-  });
-  for (let i = 0; i < 4; i++) {
-    const wave = {
-      range: 20,
-      period: preset.period.relaxed,
-      offset: section.offset,
-    };
-    const gradient = { wave };
-    const spawn = -60 + i * 40;
-    const root = createSegment(1, spawn, section.size / 20);
-
-    head.children.push(root);
-    toSegments(root, mixSquiggle(tentacleSegmentation, gradient));
-  }
-
-  return [head];
+  const medulla = createSegment(section.size * 0.75, section.angle, 2.66);
+  head.children.push(medulla);
+  medulla.children.push(createSegment(section.size * 0.75, section.angle, 2));
+  follow(section, { ...createBranch(section, 'tentacles'), index: 1 });
+  return [head, medulla];
 };
 
 // A horshoe crab is a horseshoe crab.
@@ -189,6 +171,18 @@ const segmentateHorshoeCrab: SegmentationFunc = (
   });
   follow(section, { ...createBranch(section, 'feeler'), index: 0 });
   return [head, body];
+};
+
+// The nautilus is a submarine.
+const segmentateNautilus: SegmentationFunc = (
+  _parent: Segment,
+  section: Section,
+): Segment[] => {
+  const hull = createDefaultSegment(section.size);
+  const pods = { ...createBranch(section, 'pods'), size: section.size * 0.5 };
+  section.branches.push(pods);
+  section.branches.push(createBranch(section, 'propellers'));
+  return [hull];
 };
 
 // A newt is a tadpole with noodle limbs.
@@ -317,8 +311,9 @@ export const pals = {
   centipede: segmentateCentipede,
   crawdad: segmentateCrawdad,
   frog: segmentateFrog,
-  jellyfish: segmentateJellyfish,
+  jelly: segmentateJellyfish,
   'horshoe-crab': segmentateHorshoeCrab,
+  nautilus: segmentateNautilus,
   newt: segmentateNewt,
   'newt-king': segmentateNewtKing,
   octopus: segmentateOctopus,

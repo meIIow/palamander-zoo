@@ -31,7 +31,8 @@ const defaultPalList = [
   'tadpole',
   'newt-king',
   'wyrm',
-  // 'jelly'
+  'jelly',
+  'nautilus',
 ];
 
 function hydrate(
@@ -88,9 +89,9 @@ async function createDefaultPalList(): Promise<Palamander[]> {
 
 function createDefaultPal(): Palamander {
   const palSpec = {
-    type: 'nematode',
+    type: 'nautilus',
     sectionTree: {
-      type: 'nematode',
+      type: 'nautilus',
       count: 10,
       index: 0,
       size: 100,
@@ -101,8 +102,8 @@ function createDefaultPal(): Palamander {
       branches: [],
     },
     movementBehavior: {
-      linear: 'predatory',
-      rotational: 'coiling',
+      linear: 'flitting',
+      rotational: 'curious',
     },
     suppressMove: { turn: false, speed: false },
     magnification: 20,

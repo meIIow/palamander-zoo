@@ -3,6 +3,7 @@ import type { Segment } from '../segment.ts';
 import type { Segmentation } from './segmentation.ts';
 import type { SegmentationFunc } from './segmentation-func.ts';
 
+import { createBranch } from '../section';
 import { createSegment } from '../segment';
 import { toWriggle } from '../animation/wriggle';
 import { createCurlSpec, createRotationSpec } from '../animation/wriggle-spec';
@@ -359,6 +360,41 @@ const segmentateNoodleLimb: SegmentationFunc = (
   return toSegments(parent, mixSquiggle(segmentation, gradient));
 };
 
+const segmentatePod: SegmentationFunc = (
+  parent: Segment,
+  section: Section,
+): Segment[] => {
+  const dir = section.mirror ? -1 : 1;
+  const pod = createSegment(section.size, section.angle + 75 * dir, 0.25);
+  parent.children.push(pod);
+  section.branches.push(createBranch(section, 'propellers'));
+  return [pod];
+};
+
+const segmentatePropeller: SegmentationFunc = (
+  parent: Segment,
+  section: Section,
+): Segment[] => {
+  const segmentation: Segmentation = createSegmentation({
+    count: section.count,
+    radius: (parent.circle.radius * section.size) / 100,
+    taperFactor: 1,
+    angle: section.angle,
+    overlapMult: 0.5,
+  });
+  const wave = {
+    range: 30,
+    period: preset.period.relaxed,
+    offset: section.offset,
+    acceleration: 5,
+  };
+  const gradient = {
+    wave,
+    length: section.count + 1.5,
+  };
+  return toSegments(parent, mixSquiggle(segmentation, gradient));
+};
+
 const segmentateRigidLeg: SegmentationFunc = (
   parent: Segment,
   section: Section,
@@ -402,6 +438,31 @@ const segmentateSimpleLimb: SegmentationFunc = (
   return segments;
 };
 
+const segmentateTentacle: SegmentationFunc = (
+  parent: Segment,
+  section: Section,
+): Segment[] => {
+  const segmentation: Segmentation = createSegmentation({
+    count: section.count,
+    radius: (parent.circle.radius * section.size) / 100,
+    taperFactor: 0.9,
+    angle: section.angle,
+    overlapMult: 0,
+    curveRange: preset.curve.squiggly,
+  });
+  const wave = {
+    range: 40,
+    period: preset.period.relaxed,
+    offset: section.offset,
+  };
+  const gradient = {
+    wave,
+    length: section.count * 3,
+    increase: 0,
+  };
+  return toSegments(parent, mixSquiggle(segmentation, gradient));
+};
+
 export const parts = {
   claw: segmentateClaw,
   curl: segmentateCurl,
@@ -414,6 +475,9 @@ export const parts = {
   mandible: segmentateMandible,
   'monkey-arm': segmentateMonkeyArm,
   'noodle-limb': segmentateNoodleLimb,
+  pod: segmentatePod,
+  propeller: segmentatePropeller,
   'rigid-leg': segmentateRigidLeg,
   'simple-limb': segmentateSimpleLimb,
+  tentacle: segmentateTentacle,
 };

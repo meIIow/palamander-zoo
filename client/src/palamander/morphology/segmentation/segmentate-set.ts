@@ -106,6 +106,20 @@ const segmentateGills: SegmentationFunc = (
   return follow(section, equal);
 };
 
+const segmentateTentacles: SegmentationFunc = (
+  _parent: Segment,
+  section: Section,
+): Segment[] => {
+  const equal = {
+    ...createSection('equal'),
+    count: 10,
+    angle: 35,
+    mirror: false,
+  };
+  equal.next = { ...replace(section), type: 'tentacle', count: 8, size: 35 };
+  return follow(section, equal);
+};
+
 const segmentateMandibles: SegmentationFunc = (
   _parent: Segment,
   section: Section,
@@ -130,6 +144,31 @@ const segmentateMonkeyArms: SegmentationFunc = (
   return follow(section, pair);
 };
 
+const segmentatePods: SegmentationFunc = (
+  _parent: Segment,
+  section: Section,
+): Segment[] => {
+  const pair = { ...createSection('pair'), mirror: true };
+  pair.next = { ...replace(section), type: 'pod' };
+  return follow(section, pair);
+};
+
+const segmentatePropellers: SegmentationFunc = (
+  _parent: Segment,
+  section: Section,
+): Segment[] => {
+  const count = 3; // # of blades
+  const equal = {
+    ...createSection('equal'),
+    count,
+    angle: 0,
+    offset: (Math.PI * 2) / count,
+    mirror: true,
+  };
+  equal.next = { ...replace(section), type: 'propeller', count: 6, size: 20 };
+  return follow(section, equal);
+};
+
 const segmentateNoodleLimbs: SegmentationFunc = (
   _parent: Segment,
   section: Section,
@@ -145,7 +184,7 @@ const segmentateOctoArms: SegmentationFunc = (
 ): Segment[] => {
   const equal = {
     ...createSection('equal'),
-    count: 6,
+    count: 6, // hexo arms
     angle: 80,
     mirror: false,
   };
@@ -183,7 +222,10 @@ export const sets = {
   'monkey-arms': segmentateMonkeyArms,
   'noodle-limbs': segmentateNoodleLimbs,
   'nubby-legs': segmentateNubbyLegs,
+  pods: segmentatePods,
+  propellers: segmentatePropellers,
   'octo-arms': segmentateOctoArms,
   'simple-limbs': segmentateSimpleLimbs,
   'starfish-arms': segmentateStarfishArms,
+  tentacles: segmentateTentacles,
 };

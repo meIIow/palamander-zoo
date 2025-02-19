@@ -98,9 +98,9 @@ const generateFloatingBehaviorSpec: VelocitySampleSpecGenerator = () => {
   velocity.range.skewMin = 1;
   return {
     limit: {
-      velocity: BASELINE_VELOCITY / 3,
-      accel: BASELINE_ACCEL / 5,
-      decel: BASELINE_ACCEL / 5,
+      velocity: BASELINE_VELOCITY / 5,
+      accel: BASELINE_ACCEL / 8,
+      decel: BASELINE_ACCEL / 8,
     },
     velocity,
     interval: generateCommittedSampleSpec(),
