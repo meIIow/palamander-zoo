@@ -35,11 +35,9 @@ const defaultPalList = [
   'nautilus',
 ];
 
-function hydrate(
-  spec: PalamanderSpec,
-  mod: PalModifier = createFallbackMod(),
-): Palamander {
+function hydrate(spec: PalamanderSpec, mod?: PalModifier): Palamander {
   const body = segmentate(spec.sectionTree);
+  mod = { ...createFallbackMod(), ...mod };
   return {
     type: spec.type,
     behavior: spec.movementBehavior,
@@ -54,10 +52,13 @@ function createPalList(specs: PalamanderSpec[]): Palamander[] {
   return specs.map((spec) => hydrate(spec));
 }
 
-function hydratePalMap(specMap: Dict<PalamanderSpec>): Dict<Palamander> {
+function hydratePalMap(
+  specMap: Dict<PalamanderSpec>,
+  modMap?: Dict<PalModifier>,
+): Dict<Palamander> {
   return Object.fromEntries(
     Object.entries(specMap)
-      .map(([type, spec]) => [type, hydrate({ ...spec, type })])
+      .map(([type, spec]) => [type, hydrate({ ...spec, type }, modMap?.[type])])
       .filter(([type, _]) => defaultPalList.includes(type as string)),
   );
 }
@@ -141,8 +142,17 @@ async function readDefaultPalSpecMap(): Promise<Dict<PalamanderSpec>> {
   return palSpecs;
 }
 
+async function readDefaultPalModMap(): Promise<Dict<PalModifier>> {
+  const rawData = await fetch('./../mods.json');
+  const palMods: Dict<PalModifier> = JSON.parse(await rawData.text());
+  return palMods;
+}
+
 async function readDefaultPalMap(): Promise<Dict<Palamander>> {
-  return hydratePalMap(await readDefaultPalSpecMap());
+  return hydratePalMap(
+    await readDefaultPalSpecMap(),
+    await readDefaultPalModMap(),
+  );
 }
 
 async function readDefaultPalList(): Promise<Palamander[]> {

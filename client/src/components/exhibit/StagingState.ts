@@ -24,7 +24,7 @@ const initStagingState = () => ({
   selected: -1,
 });
 
-const initMod = () => ({
+const initMod = (mod?: PalModifier) => ({
   override: createNoopOverride(),
   factor: createNoopMovementFactor(),
   updateInterval: 50,
@@ -32,6 +32,7 @@ const initMod = () => ({
   magnification: 100,
   color: '#000000', // black
   opacity: 1,
+  ...mod,
 });
 
 const cloneStagingState = (staging: StagingState) => ({
@@ -136,7 +137,7 @@ function set(
   if (type != prevType) {
     staged[staging.selected] = {
       pal: palIndex < 0 ? undefined : { ...pals[palIndex] },
-      mod: initMod(),
+      mod: initMod(pals[palIndex].mod),
     };
   }
   return {

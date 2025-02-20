@@ -1,5 +1,7 @@
 import json
 
+# Pal Spec Configuration
+
 def createDefaultSection(type: str):
   return {
     'type': type,
@@ -57,7 +59,41 @@ pals = {
 for type in pals:
   pals[type] = configurePalamanderSpec(type, *pals[type])
 
-# print(pals)
-
 with open('./../client/public/pals.json', 'w') as f:
   f.write(json.dumps(pals))
+
+
+# Pal Modifier Configuration
+
+def configurePalamanderMods(type: str, color: str, opacity: int):
+  return {
+    'color': color,
+    'opacity': opacity,
+  }
+
+mods = {
+  # type: (color, opacity)
+  'axolotl': ('#F096C8', 0.9),
+  'caterpillar': ('#48E628', 1),
+  'centipede': ('#6F0606', 1),
+  'crawdad': ('#273663', 1),
+  'frog': ('#5EC328', 1),
+  'horshoe-crab': ('#2A2727', 1),
+  'jelly': ('#3ED1E5', 0.5),
+  'wyrm': ('#7E2020', 0.8),
+  'nautilus': ('#E37B35', 1),
+  'newt': ('#000000', 0.9),
+  'newt-king': ('#000000', 0.9),
+  'octopus': ('#A10EB4', 1),
+  'sea-monkey': ('#453030', 1),
+  'sea-lion': ('#C7CA21', 1),
+  'snake': ('#1E3012', 1),
+  'tadpole': ('#264804', 0.9),
+  'starfish': ('#F07ABF', 1),
+}
+
+for type in mods:
+  mods[type] = configurePalamanderMods(type, *mods[type])
+
+with open('./../client/public/mods.json', 'w') as f:
+  f.write(json.dumps(mods))
