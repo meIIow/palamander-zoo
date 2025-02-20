@@ -22,7 +22,7 @@ export const createFallbackMod = () => ({
   motion: 1,
   updateInterval: 50,
   magnification: 100,
-  color: 'teal',
+  color: 'black',
   opacity: 1,
 });
 

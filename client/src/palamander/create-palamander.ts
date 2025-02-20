@@ -16,23 +16,23 @@ type PalamanderSpec = {
 };
 
 const defaultPalList = [
-  'axolotl',
-  'newt',
-  'frog',
-  'centipede',
+  'axolittl',
+  'munchkin',
+  'decipede',
+  'crawpa',
+  'prince',
+  'bocce-crab',
+  'jelly',
+  'wyrm',
+  'nautilus',
+  'palamander',
+  'newt-king',
+  'hexapus',
   'sea-monkey',
   'sea-lion',
-  'starfish',
-  'octopus',
-  'crawdad',
-  'horshoe-crab',
-  'caterpillar',
-  'snake',
-  'tadpole',
-  'newt-king',
-  'wyrm',
-  'jelly',
-  'nautilus',
+  'serpent',
+  'pollywog',
+  'novafish',
 ];
 
 function hydrate(spec: PalamanderSpec, mod?: PalModifier): Palamander {
@@ -69,7 +69,7 @@ async function createDefaultPalList(): Promise<Palamander[]> {
       type,
       sectionTree: {
         type,
-        count: type == 'axolotl' ? 15 : 10,
+        count: type == 'axolittl' ? 15 : 10,
         index: 0,
         size: 100,
         angle: 0,
@@ -82,7 +82,7 @@ async function createDefaultPalList(): Promise<Palamander[]> {
         linear: '',
         rotational: '',
       },
-      magnification: (type == 'crawdad' ? 10 : 20) / 2,
+      magnification: (type == 'crawdpa' ? 10 : 20) / 2,
     };
   });
   return createPalList(specs);
@@ -114,9 +114,9 @@ function createDefaultPal(): Palamander {
 
 function createAxolotl(): Palamander {
   const palSpec = {
-    type: 'axolotl',
+    type: 'axolittl',
     sectionTree: {
-      type: 'axolotl',
+      type: 'axolittl',
       count: 15,
       index: 0,
       size: 100,

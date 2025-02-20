@@ -15,8 +15,11 @@ type DetailsProps = {
   release: () => void;
 };
 
+function typeToName(type: string): string {
+  return type.replace('-', ' ').toLocaleUpperCase();
+}
+
 function Details({ pal, bio, index, count, shift, release }: DetailsProps) {
-  console.log('bio', bio);
   const buttonPlaceholder = <div className="h-full aspect-square" />;
   const prev =
     index <= 0 ? buttonPlaceholder : (
@@ -30,7 +33,7 @@ function Details({ pal, bio, index, count, shift, release }: DetailsProps) {
     <div className="w-full h-full">
       <div className="flex w-full h-8 justify-evenly">
         {prev}
-        <div className="w-1/3 text-center">{pal.type}</div>
+        <div className="w-1/3 text-center">{typeToName(pal.type)}</div>
         {next}
       </div>
       <div
