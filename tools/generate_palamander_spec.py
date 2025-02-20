@@ -43,7 +43,7 @@ pals = {
   'crawdad': ('pushing', 'wary', 5),
   'frog': ('flitting', 'curious', 10),
   'horshoe-crab': ('flitting', 'curious', 10),
-  'jelly': ('float', 'curious', 10),
+  'jelly': ('hovering', 'curious', 10),
   'wyrm': ('cautious', 'coiling', 6),
   'nautilus': ('flitting', 'wary', 10),
   'newt': ('flitting', 'twirling', 10),
@@ -97,3 +97,30 @@ for type in mods:
 
 with open('./../client/public/mods.json', 'w') as f:
   f.write(json.dumps(mods))
+
+
+# Pal Text
+
+bio = {
+  # type: text
+  'axolotl': 'He is so much more than a cute lil’ guy. He’s also a squiggly boy - a sweetie pie - a winsome fellow. A cherub too. If they only knew his multitudes…',
+  'caterpillar': 'This insatiable hunger. This gnawing emptiness. Sunlight bleeds through hole-munched leaves. Flowers starve and wither as you feast. And still - it is not enough.',
+  'centipede': 'Technically a ventipede - but who can count that high anyway? Kids love ‘em. Cobblers love ‘em. Entomologists love ‘em. I… just can’t get past those scuttling legs.',
+  'crawdad': 'Your omnipotent Crawpa. Around the world… to the moon… beyond the stars… into this tangle of nylon net. You’d follow him anywhere - you chewy morsel, you.',
+  'frog': 'A brash young heir who ran afoul of the voodoo queen. He’s always been slimy, cold, and ugly. Now the bayou rings with his desperate plea: “ribbit!?”',
+  'horshoe-crab': 'Predates its namesake lawn game by a mere 250 million years. You may not like it, but this is what peak performance looks like.',
+  'jelly': 'It was time to hang up the gloves for good. He could float, he could sting - but Coach was right. He was just too soft. He lacked that animalistic instinct.',
+  'wyrm': 'What lurks in the bowels of the earth? Formless nightmares of festering malice. Agents of the abyss. Fragments of unfathomable Before. And also - these chummy goobers.',
+  'nautilus': 'Observer detected. Assessing threat level. Sapience… confirmed. Morality… insufficient. Danger… immeasurable. Engage protocol 9. Weapon system online. Target locked.',
+  'newt': 'It’s not easy being eponymous. The expectations. The pressure. The scrutiny. It’s enough to make you… flit joyfully across a computer screen.',
+  'newt-king': 'Heavy is the head that wears the crown. Good thing there is strength in numbers. For real though - are you sure this water’s safe to drink?',
+  'octopus': 'Don’t feel inadequate, my hexapedal friend. Six is plenty - even rounding up. Eight is probably too much anyway. No I’m not “just saying” that!',
+  'sea-monkey': 'They lock eyes through the glass. Shamu’s captive heart beats free. Koko drinks in every curve. Is this love – or madness? It hardly matters.',
+  'sea-lion': 'You have won. Take my claws and fangs. My hide and paws. My strength, my speed, my freedom. Shape me to your will. Just please - spare this tired king his Pride.',
+  'snake': '“You snake!” Blood pumps hot - then cold - with betrayal. Eyes dim. One jaw unclenches - another unhinges. At last, a gentle whisssper: “well, what did you exssspect?”',
+  'tadpole': 'The human condition writ small. Dry Land – the impossible dream of a limbless, lungless fool. Must we change our very selves to conquer it?',
+  'starfish': 'Starfish or sea stars are star-shaped echinoderms belonging to the class Asteroidea. They are found from the intertidal zone down to abyssal depths, at 6,000m below the surface.',
+}
+
+with open('./../client/public/bio.json', 'w') as f:
+  f.write(json.dumps(bio))

@@ -8,13 +8,15 @@ import { generateBoundedDisplayRange } from '../../palamander/palamander-range.t
 
 type DetailsProps = {
   pal: Palamander;
+  bio: string;
   index: number;
   count: number;
   shift: (index: number) => void;
   release: () => void;
 };
 
-function Details({ pal, index, count, shift, release }: DetailsProps) {
+function Details({ pal, bio, index, count, shift, release }: DetailsProps) {
+  console.log('bio', bio);
   const buttonPlaceholder = <div className="h-full aspect-square" />;
   const prev =
     index <= 0 ? buttonPlaceholder : (
@@ -44,7 +46,7 @@ function Details({ pal, index, count, shift, release }: DetailsProps) {
           />
         </div>
       </div>
-      <div className="pal-bio">Lorem ipsum</div>
+      <div className="pal-bio p-1 text-xs font-sans text-justify">{bio}</div>
     </div>
   );
 }

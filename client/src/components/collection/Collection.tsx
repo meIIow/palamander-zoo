@@ -1,4 +1,5 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
+
 import DeckView from '../common/DeckView.tsx';
 import Details from './Details.tsx';
 import PrimaryFilter from '../common/PrimaryFilter.tsx';
@@ -10,6 +11,15 @@ function Collection() {
   const [chosen, setChosen] = useState(-1); // chosen index
   const [expand, setExpand] = useState(false); // chosen index
   const pals = useContext(FilteredPalContext);
+  const [bios, setBios] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    (async () => {
+      const rawData = await fetch('./../bio.json');
+      const bios: Record<string, string> = JSON.parse(await rawData.text());
+      setBios(bios);
+    })();
+  }, []);
 
   const choose = (type: string): void => {
     setChosen(pals.findIndex((pal) => pal.type == type));
@@ -22,6 +32,7 @@ function Collection() {
     chosen >= 0 && chosen < pals.length ?
       <Details
         pal={pals[chosen]}
+        bio={bios[pals[chosen].type]}
         index={chosen}
         count={pals.length}
         release={release}
