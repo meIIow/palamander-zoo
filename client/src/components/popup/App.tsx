@@ -19,8 +19,8 @@ import {
 import { readDefaultPalMap } from '../../palamander/create-palamander.ts';
 import { reduceColorFilter } from '../common/filter-context.ts';
 
-const BG_COLLECTION = 'bg-teal-600';
-const BG_EXHIBIT = 'bg-cyan-600';
+const BG_COLLECTION = 'bg-gradient-to-bl from-cyan-200 to-teal-900';
+const BG_EXHIBIT = 'bg-cyan-100';
 
 const styleTab = (showCollection: boolean) => ({
   background: showCollection ? BG_COLLECTION : BG_EXHIBIT,
@@ -66,13 +66,15 @@ function App() {
 
   const styler: TabStyler = styleTab(showCollection);
   return (
-    <div className={`max-w-[360px] h-svh flex flex-col ${styler.background}`}>
-      <div
-        className={`basis-12 grow-0 shrink-0 items-stretch ${styler.sliver}`}
-      >
+    <div
+      className={`max-w-[360px] h-svh overflow-hidden flex flex-col ${styler.background}`}
+    >
+      <div className={`basis-6 grow-0 shrink-0 items-stretch ${styler.sliver}`}>
         {<Tab styler={styler} set={setShowCollection} />}
       </div>
-      <div className={`grow items-stretch ${styler.background} p-4`}>
+      <div
+        className={`flex-auto overflow-hidden items-stretch ${styler.background} p-4`}
+      >
         <PalContext.Provider value={pals}>
           <FilteredPalContext.Provider value={filtered}>
             <FilterContext.Provider value={{ filter, dispatch }}>

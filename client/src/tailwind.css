@@ -16,3 +16,9 @@
     aspect-ratio: 10 / 7;
   }
 }
+
+/* @layer base {
+  html {
+    @apply text-teal-950;
+  }
+} */

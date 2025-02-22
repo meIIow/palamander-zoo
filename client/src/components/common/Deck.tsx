@@ -54,7 +54,7 @@ function Deck({
     );
 
   return (
-    <div className="grid grid-cols-1 240:grid-cols-2 360:grid-cols-3">
+    <div className="grid grid-cols-1 240:grid-cols-2 m-2">
       {blankCard}
       {cards}
     </div>

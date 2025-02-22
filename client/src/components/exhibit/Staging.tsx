@@ -45,7 +45,7 @@ function Staging({ pal, active, selected, color, select, hover }: CardProps) {
   const size = active || hovered ? 'size-full' : 'size-11/12';
   return (
     <div
-      className="aspect-square flex justify-center items-center bg-slate-500"
+      className="aspect-square flex justify-center items-center"
       style={{ cursor: 'pointer' }}
     >
       <div

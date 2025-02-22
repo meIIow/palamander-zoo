@@ -23,7 +23,7 @@ import {
 } from './../../extension/storage.ts';
 import { getStagingCardColor } from '../common/card-color.ts';
 
-const BG_EXHIBIT_SECT = 'bg-cyan-500';
+const BG_EXHIBIT_SECT = '';
 
 function Exhibit() {
   const [staging, setStaging] = useReducer(reduceStaging, initStagingState());
@@ -85,7 +85,7 @@ function Exhibit() {
     : null;
 
   return (
-    <div className="flex flex-col w-full bg-purple-500 gap-4">
+    <div className="flex flex-col w-full gap-4">
       <div
         className={`w-full flex justify-evenly basis-8 grow-0 shrink-0 ${BG_EXHIBIT_SECT}`}
       >

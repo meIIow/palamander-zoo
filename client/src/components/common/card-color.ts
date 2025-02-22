@@ -5,9 +5,9 @@ export type CardColor = {
 
 export function getStagingCardColor(): CardColor[] {
   return [
-    { passive: 'bg-teal-50', active: 'bg-teal-100' },
-    { passive: 'bg-cyan-50', active: 'bg-cyan-100' },
-    { passive: 'bg-sky-50', active: 'bg-sky-100' },
+    { passive: 'bg-teal-100', active: 'bg-teal-200' },
+    { passive: 'bg-cyan-100', active: 'bg-cyan-200' },
+    { passive: 'bg-sky-100', active: 'bg-sky-200' },
   ];
 }
 

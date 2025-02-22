@@ -5,7 +5,7 @@ import Details from './Details.tsx';
 import PrimaryFilter from '../common/PrimaryFilter.tsx';
 import { FilteredPalContext } from '../common/pal-context.ts';
 
-const BG_COLLECTION_SECT = 'bg-teal-500';
+const BG_COLLECTION_SECT = '';
 
 function Collection() {
   const [chosen, setChosen] = useState(-1); // chosen index
@@ -41,14 +41,13 @@ function Collection() {
     : <DeckView choose={choose} expand={expand} />;
 
   return (
-    <div className="flex flex-col w-full bg-purple-500 gap-4">
+    <div className="flex flex-col size-full gap-4">
       <div
         className={`w-full flex flex-col basis-20 grow-0 shrink-0 ${BG_COLLECTION_SECT}`}
       >
         <div className={`flex justify-evenly flex-1`}>
           <div>Specimens</div>
           <div>Chimeras</div>
-          <div>Hatchery</div>
         </div>
         <div className={`flex justify-stretch flex-1`}>
           <div
@@ -62,7 +61,7 @@ function Collection() {
           </div>
         </div>
       </div>
-      <div className={`grow-0 overflow-y-auto ${BG_COLLECTION_SECT}`}>
+      <div className={`flex-auto overflow-hidden ${BG_COLLECTION_SECT}`}>
         {content}
       </div>
     </div>

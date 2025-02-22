@@ -84,7 +84,7 @@ function Card({ pal, choose, upper, lower, expand, color, cursor }: CardProps) {
 
   return (
     <div
-      className="aspect-square flex justify-center items-center bg-slate-500"
+      className="aspect-square flex justify-center items-center"
       onClick={() => choose(pal?.type ?? '')}
       style={{ cursor: cursor }}
     >
