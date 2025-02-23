@@ -14,7 +14,7 @@ function DeckView({ choose, expand }: ViewDeckProps) {
   const toLower = (pal: Palamander) => <PalamanderFilter type={pal.type} />;
   const cursor = 'zoom-in';
   return (
-    <div className="h-full overflow-y-auto rounded-md bg-black/25">
+    <div className="h-full overflow-y-auto rounded-md shade">
       <Deck
         choose={choose}
         toUpper={toUpper}

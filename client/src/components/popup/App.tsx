@@ -6,10 +6,10 @@ import Exhibit from '../exhibit/Exhibit.tsx';
 import { FilterContext, PalFiltersContext } from '../common/filter-context.ts';
 import { PalContext, FilteredPalContext } from '../common/pal-context.ts';
 
-import type { TabStyler } from './Tab.tsx';
 import type { PalamanderFilters } from '../common/color-filter.ts';
 import type { Palamander } from '../../palamander/palamander.ts';
 
+import { Section } from './Tab.tsx';
 import {
   initColorFilter,
   filterPals,
@@ -19,21 +19,20 @@ import {
 import { readDefaultPalMap } from '../../palamander/create-palamander.ts';
 import { reduceColorFilter } from '../common/filter-context.ts';
 
-const BG_COLLECTION = 'bg-gradient-to-bl from-cyan-200 to-teal-900';
-const BG_EXHIBIT = 'bg-cyan-100';
-
-const styleTab = (showCollection: boolean) => ({
-  background: showCollection ? BG_COLLECTION : BG_EXHIBIT,
-  sliver: !showCollection ? BG_COLLECTION : BG_EXHIBIT,
-  backgroundCol: BG_COLLECTION,
-  backgroundExh: BG_EXHIBIT,
-  borderCol: showCollection ? 'border-r-2' : 'border-b-2',
-  borderExh: !showCollection ? 'border-l-2' : 'border-b-2',
-});
+function renderSection(section: Section) {
+  switch (section) {
+    case Section.Collection:
+      return <Collection />;
+    case Section.Exhibit:
+      return <Exhibit />;
+    default:
+      return null;
+  }
+}
 
 function App() {
   const [pals, setPals] = useState<Array<Palamander>>([]);
-  const [showCollection, setShowCollection] = useState(true);
+  const [section, setSection] = useState<Section>(Section.Collection);
   const [filter, dispatch] = useReducer(reduceColorFilter, initColorFilter());
   const [filters, setFilters] = useState<PalamanderFilters>({});
 
@@ -64,24 +63,20 @@ function App() {
     });
   };
 
-  const styler: TabStyler = styleTab(showCollection);
+  // const styler: TabStyler = styleTab(showCollection);
   return (
     <div
-      className={`max-w-[360px] h-svh overflow-hidden flex flex-col ${styler.background}`}
+      className={`max-w-[360px] h-svh overflow-hidden flex flex-col bg-gradient-to-bl from-cyan-500 to-teal-500`}
     >
-      <div className={`basis-6 grow-0 shrink-0 items-stretch ${styler.sliver}`}>
-        {<Tab styler={styler} set={setShowCollection} />}
+      <div className={`basis-6 grow-0 shrink-0 items-stretch`}>
+        {<Tab section={section} set={setSection} />}
       </div>
-      <div
-        className={`flex-auto overflow-hidden items-stretch ${styler.background} p-4`}
-      >
+      <div className={`flex-auto overflow-hidden items-stretch p-4`}>
         <PalContext.Provider value={pals}>
           <FilteredPalContext.Provider value={filtered}>
             <FilterContext.Provider value={{ filter, dispatch }}>
               <PalFiltersContext.Provider value={{ filters, set }}>
-                {showCollection ?
-                  <Collection />
-                : <Exhibit />}
+                {renderSection(section)}
               </PalFiltersContext.Provider>
             </FilterContext.Provider>
           </FilteredPalContext.Provider>

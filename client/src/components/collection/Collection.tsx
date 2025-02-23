@@ -2,10 +2,8 @@ import { useState, useContext, useEffect } from 'react';
 
 import DeckView from '../common/DeckView.tsx';
 import Details from './Details.tsx';
-import PrimaryFilter from '../common/PrimaryFilter.tsx';
+import Dashboard from './Dashboard.tsx';
 import { FilteredPalContext } from '../common/pal-context.ts';
-
-const BG_COLLECTION_SECT = '';
 
 function Collection() {
   const [chosen, setChosen] = useState(-1); // chosen index
@@ -42,28 +40,14 @@ function Collection() {
 
   return (
     <div className="flex flex-col size-full gap-4">
-      <div
-        className={`w-full flex flex-col basis-20 grow-0 shrink-0 ${BG_COLLECTION_SECT}`}
-      >
-        <div className={`flex justify-evenly flex-1`}>
-          <div>Specimens</div>
-          <div>Chimeras</div>
-        </div>
-        <div className={`flex justify-stretch flex-1`}>
-          <div
-            className={`items-stretch grow-1`}
-            onClick={() => setExpand((exp) => !exp)}
-          >
-            {expand ? 'Hide' : 'Show'}
-          </div>
-          <div className={`items-stretch grow-5`}>
-            <PrimaryFilter active={chosen < 0 || chosen >= pals.length} />
-          </div>
-        </div>
+      <div className={`w-full flex flex-col basis-20 grow-0 shrink-0`}>
+        <Dashboard
+          chosen={chosen}
+          expand={expand}
+          setExpand={setExpand}
+        ></Dashboard>
       </div>
-      <div className={`flex-auto overflow-hidden ${BG_COLLECTION_SECT}`}>
-        {content}
-      </div>
+      <div className={`flex-auto overflow-hidden`}>{content}</div>
     </div>
   );
 }

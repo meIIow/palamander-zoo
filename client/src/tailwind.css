@@ -15,10 +15,14 @@
   .aspect-golden {
     aspect-ratio: 10 / 7;
   }
+
+  .shade {
+    @apply bg-black/50;
+  }
 }
 
-/* @layer base {
+@layer base {
   html {
-    @apply text-teal-950;
+    @apply text-teal-50;
   }
-} */
+}
