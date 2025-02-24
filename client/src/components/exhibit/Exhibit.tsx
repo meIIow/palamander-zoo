@@ -4,7 +4,7 @@ import Modifier from './Modifier.tsx';
 import Staging from './Staging.tsx';
 import Tank from './Tank.tsx';
 import DeckSelect from '../common/DeckSelect.tsx';
-import PrimaryFilter from './../common/PrimaryFilter.tsx';
+import PrimaryFilter from '../filter/PrimaryFilter.tsx';
 
 import type { PalModifier } from '../../palamander/palamander-modifier.ts';
 

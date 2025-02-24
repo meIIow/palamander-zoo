@@ -3,10 +3,10 @@ import { useState, useEffect, useReducer } from 'react';
 import Tab from './Tab.tsx';
 import Collection from '../collection/Collection.tsx';
 import Exhibit from '../exhibit/Exhibit.tsx';
-import { FilterContext, PalFiltersContext } from '../common/filter-context.ts';
+import { FilterContext, PalFiltersContext } from '../filter/filter-context.ts';
 import { PalContext, FilteredPalContext } from '../common/pal-context.ts';
 
-import type { PalamanderFilters } from '../common/color-filter.ts';
+import type { PalamanderFilters } from '../filter/color-filter.ts';
 import type { Palamander } from '../../palamander/palamander.ts';
 
 import { Section } from './Tab.tsx';
@@ -15,9 +15,9 @@ import {
   filterPals,
   pullPalamanderFilters,
   syncPalamanderFilters,
-} from '../common/color-filter.ts';
+} from '../filter/color-filter.ts';
 import { readDefaultPalMap } from '../../palamander/create-palamander.ts';
-import { reduceColorFilter } from '../common/filter-context.ts';
+import { reduceColorFilter } from '../filter/filter-context.ts';
 
 function renderSection(section: Section) {
   switch (section) {

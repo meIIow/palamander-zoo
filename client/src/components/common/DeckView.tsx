@@ -1,6 +1,6 @@
 import Deck from './Deck.tsx';
 
-import PalamanderFilter from './PalamanderFilter.tsx';
+import PalamanderFilter from '../filter/PalamanderFilter.tsx';
 
 import type { Palamander } from '../../palamander/palamander.ts';
 

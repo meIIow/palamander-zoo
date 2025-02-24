@@ -1,4 +1,4 @@
-import { Palamander } from '../../palamander/palamander';
+import { Palamander } from '../../palamander/palamander.ts';
 import storage from '../../utilities/storage.ts';
 
 const FILTER_COLORS = ['red', 'green', 'blue', 'purple'] as const;

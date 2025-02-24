@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { BsEyeFill, BsEyeSlashFill } from 'react-icons/bs';
 
-import PrimaryFilter from '../common/PrimaryFilter.tsx';
+import PrimaryFilter from '../filter/PrimaryFilter.tsx';
 import { FilteredPalContext } from '../common/pal-context.ts';
 
 type ControlsProps = {
