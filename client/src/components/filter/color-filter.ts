@@ -1,19 +1,34 @@
 import { Palamander } from '../../palamander/palamander.ts';
 import storage from '../../utilities/storage.ts';
 
-const FILTER_COLORS = ['red', 'green', 'blue', 'purple'] as const;
-type FilterColors = (typeof FILTER_COLORS)[number];
-type ColorFilter = {
-  [color in FilterColors]: boolean;
+enum FilterColor {
+  Red,
+  Green,
+  Blue,
+  Purple,
+}
+
+// const FILTER_COLORS = ['red', 'green', 'blue', 'purple'] as const;
+// type FilterColors = (typeof FILTER_COLORS)[number];
+type ColorFilter = Record<FilterColor, boolean>;
+type ColorFilterAction =
+  | { type: 'CLEAR' }
+  | { type: 'TOGGLE'; color: FilterColor };
+type PalamanderFilters = { [type: string]: ColorFilter };
+type ColorToggle = (type: string, color: FilterColor) => void;
+type ColorStyle = {
+  bg: string;
 };
 
-type ColorFilterAction = { type: 'CLEAR' } | { type: 'TOGGLE'; color: string };
-
-type PalamanderFilters = { [type: string]: ColorFilter };
-type ColorToggle = (type: string, color: string) => void;
-
 async function pullPalamanderFilters(): Promise<PalamanderFilters> {
-  return (await storage.sync.get(['pal-filters']))['pal-filters'] ?? {};
+  const saved: PalamanderFilters =
+    (await storage.sync.get(['pal-filters']))['pal-filters'] ?? {};
+  return Object.fromEntries(
+    Object.entries(saved).map(([type, filter]) => [
+      type,
+      asColorFilter(filter),
+    ]),
+  );
 }
 
 async function syncPalamanderFilters(
@@ -25,7 +40,41 @@ async function syncPalamanderFilters(
 }
 
 function initColorFilter(): ColorFilter {
-  return { red: false, green: false, blue: false, purple: false };
+  return {
+    [FilterColor.Red]: false,
+    [FilterColor.Green]: false,
+    [FilterColor.Blue]: false,
+    [FilterColor.Purple]: false,
+  };
+}
+
+function enumerateColors(): FilterColor[] {
+  return Object.values(FilterColor).filter(
+    (color) => typeof color !== 'string',
+  );
+}
+
+function asColorFilter(filter: Object): ColorFilter {
+  return Object.fromEntries(
+    Object.entries({ ...initColorFilter(), ...filter }).filter(
+      ([color, _]) => color in FilterColor,
+    ),
+  ) as ColorFilter;
+}
+
+function styleColor(color: FilterColor): ColorStyle {
+  switch (color) {
+    case FilterColor.Red:
+      return { bg: 'red' };
+    case FilterColor.Green:
+      return { bg: 'green' };
+    case FilterColor.Blue:
+      return { bg: 'blue' };
+    case FilterColor.Purple:
+      return { bg: 'purple' };
+    default:
+      return { bg: 'black' };
+  }
 }
 
 function filterPals(
@@ -33,22 +82,26 @@ function filterPals(
   filters: PalamanderFilters,
   filter: ColorFilter,
 ): Palamander[] {
-  if (!Object.values(filter).reduce((pred, val) => val || pred, false))
-    return pals;
+  // Do not filter if all colors are inactive.
+  if (!Object.values(filter).reduce((p, v) => v || p, false)) return pals;
+  // Include pals that match any active filters.
   return pals.filter((pal) => {
     if (!(pal.type in filters)) return false;
-    return Object.entries(filters[pal.type]).reduce((acc, [color, set]) => {
-      if (!(color in filter)) return acc;
-      return acc || (set && filter[color as keyof typeof filter]);
+    const palFilter = filters[pal.type];
+    return enumerateColors().reduce((acc, color) => {
+      if (!(color in filter) || !(color in palFilter)) return acc;
+      return acc || (palFilter[color] && filter[color]);
     }, false);
   });
 }
 
 export type { ColorFilter, ColorFilterAction, PalamanderFilters, ColorToggle };
 export {
-  FILTER_COLORS,
-  initColorFilter,
+  FilterColor,
+  enumerateColors,
   filterPals,
-  syncPalamanderFilters,
+  initColorFilter,
   pullPalamanderFilters,
+  styleColor,
+  syncPalamanderFilters,
 };

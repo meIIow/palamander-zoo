@@ -6,7 +6,7 @@ import Exhibit from '../exhibit/Exhibit.tsx';
 import { FilterContext, PalFiltersContext } from '../filter/filter-context.ts';
 import { PalContext, FilteredPalContext } from '../common/pal-context.ts';
 
-import type { PalamanderFilters } from '../filter/color-filter.ts';
+import type { FilterColor, PalamanderFilters } from '../filter/color-filter.ts';
 import type { Palamander } from '../../palamander/palamander.ts';
 
 import { Section } from './Tab.tsx';
@@ -51,12 +51,11 @@ function App() {
   }, []);
 
   const filtered = filterPals(pals, filters, filter);
-  const set = async (type: string, color: string) => {
+  const set = async (type: string, color: FilterColor) => {
     setFilters((filters) => {
       const filtersCopy = { ...filters }; // shallow, but we won't modify
       const typeFilter = { ...(filters[type] ?? initColorFilter()) };
-      typeFilter[color as keyof typeof typeFilter] =
-        !typeFilter[color as keyof typeof typeFilter];
+      typeFilter[color] = !typeFilter[color];
       filtersCopy[type] = typeFilter;
       syncPalamanderFilters(filtersCopy); // a bit sketchy not to await
       return filtersCopy;

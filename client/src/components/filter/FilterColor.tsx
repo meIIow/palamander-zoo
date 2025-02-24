@@ -1,7 +1,9 @@
+import { FilterColor as FilterColorEnum, styleColor } from './color-filter.ts';
+
 type FilterProps = {
-  color: string;
+  color: FilterColorEnum;
   active: boolean;
-  toggle: (color: string) => void;
+  toggle: (color: FilterColorEnum) => void;
 };
 
 function generateEmptyGradient(color: string): string {
@@ -10,9 +12,10 @@ function generateEmptyGradient(color: string): string {
 }
 
 function FilterColor({ color, active, toggle }: FilterProps) {
-  const filled: React.CSSProperties = { backgroundColor: color };
+  const bg = styleColor(color).bg;
+  const filled: React.CSSProperties = { backgroundColor: bg };
   const empty: React.CSSProperties = {
-    background: generateEmptyGradient(color),
+    background: generateEmptyGradient(bg),
   };
 
   const style = active ? filled : empty;

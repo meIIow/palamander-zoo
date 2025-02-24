@@ -1,9 +1,12 @@
-import { ColorFilter, FILTER_COLORS } from './color-filter.ts';
+import type { ColorFilter } from './color-filter.ts';
+import type { FilterColor as FilterColorEnum } from './color-filter.ts';
+
+import { enumerateColors } from './color-filter.ts';
 import FilterColor from './FilterColor.tsx';
 
 type FiltersProps = {
   filter: ColorFilter;
-  toggle: (color: string) => void;
+  toggle: (color: FilterColorEnum) => void;
   extras: { [text: string]: () => void };
 };
 
@@ -17,7 +20,7 @@ function Filter({ filter, toggle, extras }: FiltersProps) {
   });
   return (
     <div className="flex size-full justify-evenly items-stretch bg-blue-500">
-      {FILTER_COLORS.map((color) => {
+      {enumerateColors().map((color) => {
         return (
           <div className="flex bg-red-500 flex-1 justify-center items-center">
             <FilterColor

@@ -1,13 +1,16 @@
 import { useContext } from 'react';
+
+import type { FilterColor } from './color-filter.ts';
+
 import Filter from './Filter.tsx';
 import { FilterContext } from './filter-context.ts';
 
 function PrimaryFilter({ active }: { active: boolean }) {
   const { filter, dispatch } = useContext(FilterContext);
-  const toggle: (color: string) => void =
+  const toggle: (color: FilterColor) => void =
     active ?
-      (color: string) => dispatch({ type: 'TOGGLE', color })
-    : (_: string) => {};
+      (color: FilterColor) => dispatch({ type: 'TOGGLE', color })
+    : (_: FilterColor) => {};
   const extras: { [text: string]: () => void } =
     active ?
       { clear: () => dispatch({ type: 'CLEAR' }) }

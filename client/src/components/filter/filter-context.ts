@@ -1,11 +1,12 @@
 import { createContext } from 'react';
-import {
-  ColorFilter,
-  initColorFilter,
-  PalamanderFilters,
-} from './color-filter.ts';
 
-type ColorFilterAction = { type: 'CLEAR' } | { type: 'TOGGLE'; color: string };
+import type { ColorFilter, PalamanderFilters } from './color-filter.ts';
+
+import { FilterColor, initColorFilter } from './color-filter.ts';
+
+type ColorFilterAction =
+  | { type: 'CLEAR' }
+  | { type: 'TOGGLE'; color: FilterColor };
 
 type FilterContextValue = {
   filter: ColorFilter;
@@ -19,11 +20,11 @@ const FilterContext = createContext<FilterContextValue>(filterContextDefault);
 
 type PalFiltersContextValue = {
   filters: PalamanderFilters;
-  set: (type: string, color: string) => void;
+  set: (type: string, color: FilterColor) => void;
 };
 const palFiltersContextDefault = {
   filters: {},
-  set: (_: string, __: string) => {},
+  set: (_: string, __: FilterColor) => {},
 };
 const PalFiltersContext = createContext<PalFiltersContextValue>(
   palFiltersContextDefault,
@@ -39,7 +40,7 @@ function reduceColorFilter(
     case 'TOGGLE':
       return {
         ...filters,
-        [action.color]: !filters[action.color as keyof typeof filters],
+        [action.color]: !filters[action.color],
       };
     default:
       return { ...filters };
