@@ -1,4 +1,5 @@
 import { useContext } from 'react';
+import { BsEyeFill, BsEyeSlashFill } from 'react-icons/bs';
 
 import PrimaryFilter from '../common/PrimaryFilter.tsx';
 import { FilteredPalContext } from '../common/pal-context.ts';
@@ -9,7 +10,7 @@ type ControlsProps = {
   setExpand: (value: React.SetStateAction<boolean>) => void;
 };
 
-function Controls({ chosen, expand, setExpand }: ControlsProps) {
+function Dashboard({ chosen, expand, setExpand }: ControlsProps) {
   const pals = useContext(FilteredPalContext);
   return (
     <div className={`flex flex-col`}>
@@ -22,7 +23,9 @@ function Controls({ chosen, expand, setExpand }: ControlsProps) {
           className={`items-stretch grow-1`}
           onClick={() => setExpand((exp) => !exp)}
         >
-          {expand ? 'Hide' : 'Show'}
+          {expand ?
+            <BsEyeSlashFill />
+          : <BsEyeFill />}
         </div>
         <div className={`items-stretch grow-5`}>
           <PrimaryFilter active={chosen < 0 || chosen >= pals.length} />
@@ -32,4 +35,4 @@ function Controls({ chosen, expand, setExpand }: ControlsProps) {
   );
 }
 
-export default Controls;
+export default Dashboard;
