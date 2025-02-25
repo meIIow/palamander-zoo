@@ -26,7 +26,7 @@ type CardProps = {
 const setPalStatic = (pal: Palamander): Palamander => {
   return {
     ...pal,
-    mod: { ...pal.mod, override: createPointedOverride(270) },
+    mod: { ...pal.mod, override: createPointedOverride(300) },
   };
 };
 
@@ -50,8 +50,8 @@ function Card({ pal, choose, upper, lower, expand, color, cursor }: CardProps) {
   const [initial, setInitial] = useState(true);
   const setPalMotion =
     initial ? setPalStatic
-    : hovered ? stopPalSpinning
-    : setPalSpinning;
+    : hovered ? setPalSpinning
+    : stopPalSpinning;
   const registerExpanded = (expanded: boolean) => setExpanded(expanded);
   const registerHover = (hover: boolean) => {
     setHovered((_) => hover);

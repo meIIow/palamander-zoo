@@ -33,12 +33,12 @@ export const createNoopOverride = () => ({
 
 export const createPointedOverride = (angle: number) => ({
   freeze: false,
-  move: { linear: { velocity: 0 }, rotational: {}, angle },
+  move: { linear: { velocity: 20, distance: 0 }, rotational: {}, angle },
 });
 
 export const createStillOverride = () => ({
   freeze: false,
-  move: { linear: { velocity: 0 }, rotational: { velocity: 0 } },
+  move: { linear: { velocity: 20, distance: 0 }, rotational: { velocity: 0 } },
 });
 
 export const createSpinOverride = (spin: number) => ({
