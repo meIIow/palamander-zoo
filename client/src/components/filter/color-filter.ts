@@ -8,17 +8,12 @@ enum FilterColor {
   Purple,
 }
 
-// const FILTER_COLORS = ['red', 'green', 'blue', 'purple'] as const;
-// type FilterColors = (typeof FILTER_COLORS)[number];
 type ColorFilter = Record<FilterColor, boolean>;
 type ColorFilterAction =
   | { type: 'CLEAR' }
   | { type: 'TOGGLE'; color: FilterColor };
 type PalamanderFilters = { [type: string]: ColorFilter };
 type ColorToggle = (type: string, color: FilterColor) => void;
-type ColorStyle = {
-  bg: string;
-};
 
 async function pullPalamanderFilters(): Promise<PalamanderFilters> {
   const saved: PalamanderFilters =
@@ -62,18 +57,19 @@ function asColorFilter(filter: Object): ColorFilter {
   ) as ColorFilter;
 }
 
-function styleColor(color: FilterColor): ColorStyle {
+function styleColor(color: FilterColor): string {
+  // Cannot construct Tailwind style programatically - must enumerate fully.
   switch (color) {
     case FilterColor.Red:
-      return { bg: 'red' };
+      return 'ring-red-500 peer-checked:bg-red-500';
     case FilterColor.Green:
-      return { bg: 'green' };
+      return 'ring-green-500 peer-checked:bg-green-500';
     case FilterColor.Blue:
-      return { bg: 'blue' };
+      return 'ring-blue-500 peer-checked:bg-blue-500';
     case FilterColor.Purple:
-      return { bg: 'purple' };
+      return 'ring-purple-500 peer-checked:bg-purple-500';
     default:
-      return { bg: 'black' };
+      return 'ring-black peer-checked:bg-black';
   }
 }
 

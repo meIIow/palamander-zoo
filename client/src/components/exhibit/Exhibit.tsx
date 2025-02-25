@@ -4,7 +4,7 @@ import Modifier from './Modifier.tsx';
 import Staging from './Staging.tsx';
 import Tank from './Tank.tsx';
 import DeckSelect from '../common/DeckSelect.tsx';
-import PrimaryFilter from '../filter/PrimaryFilter.tsx';
+import FilterDash from '../filter/FilterDash.tsx';
 
 import type { PalModifier } from '../../palamander/palamander-modifier.ts';
 
@@ -64,7 +64,7 @@ function Exhibit() {
     !isSelected ?
       <Tank pals={staged} />
     : <div>
-        <PrimaryFilter active={true} />
+        <FilterDash active={true} expand={false} />
         <DeckSelect
           choose={(key: string) => setStaging({ type: 'SET', pals, key })}
         />

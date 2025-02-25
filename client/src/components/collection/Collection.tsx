@@ -2,7 +2,7 @@ import { useState, useContext, useEffect } from 'react';
 
 import DeckView from '../common/DeckView.tsx';
 import Details from './Details.tsx';
-import Dashboard from './Dashboard.tsx';
+import FilterDash from '../filter/FilterDash.tsx';
 import { FilteredPalContext } from '../common/pal-context.ts';
 
 function Collection() {
@@ -39,13 +39,13 @@ function Collection() {
     : <DeckView choose={choose} expand={expand} />;
 
   return (
-    <div className="flex flex-col size-full gap-4">
+    <div className="flex flex-col size-full gap-x-4">
       <div className={`w-full flex flex-col basis-20 grow-0 shrink-0`}>
-        <Dashboard
-          chosen={chosen}
+        <FilterDash
+          active={chosen < 0 || chosen >= pals.length}
           expand={expand}
           setExpand={setExpand}
-        ></Dashboard>
+        />
       </div>
       <div className={`flex-auto overflow-hidden`}>{content}</div>
     </div>

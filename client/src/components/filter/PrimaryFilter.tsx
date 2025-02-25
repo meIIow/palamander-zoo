@@ -2,7 +2,8 @@ import { useContext } from 'react';
 
 import type { FilterColor } from './color-filter.ts';
 
-import Filter from './Filter.tsx';
+import ColorToggles from './ColorToggles.tsx';
+import { ColorToggleSpec } from './ColorToggles.tsx';
 import { FilterContext } from './filter-context.ts';
 
 function PrimaryFilter({ active }: { active: boolean }) {
@@ -11,13 +12,13 @@ function PrimaryFilter({ active }: { active: boolean }) {
     active ?
       (color: FilterColor) => dispatch({ type: 'TOGGLE', color })
     : (_: FilterColor) => {};
-  const extras: { [text: string]: () => void } =
-    active ?
-      { clear: () => dispatch({ type: 'CLEAR' }) }
-    : { locked: () => {} };
   return (
     <div className="size-full">
-      <Filter filter={filter} toggle={toggle} extras={extras} />
+      <ColorToggles
+        filter={filter}
+        spec={ColorToggleSpec.Medium}
+        toggle={toggle}
+      />
     </div>
   );
 }
