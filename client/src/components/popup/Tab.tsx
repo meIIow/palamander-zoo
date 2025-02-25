@@ -19,24 +19,26 @@ function Tab({ section, set }: TabProps) {
 
   return (
     <div className={`size-full flex shade border-b-teal-950`}>
-      <div
+      <button
         className={`flex-1 text-center ${styler[Section.Collection]}`}
         onClick={() => set((_) => Section.Collection)}
       >
         Collection
-      </div>
-      <div
+      </button>
+      <button
         className={`flex-1 text-center ${styler[Section.Exhibit]}`}
         onClick={() => set((_) => Section.Exhibit)}
       >
         Exhibit
-      </div>
-      <div
-        className={`flex-1 text-center ${styler[Section.Hatchery]}`}
+      </button>
+      <button
+        className={`flex-1 text-center ${styler[Section.Hatchery]} cursor-not-allowed`}
+        disabled={true}
+        title="coming soon!"
         onClick={() => set((_) => Section.Hatchery)}
       >
         Hatchery
-      </div>
+      </button>
     </div>
   );
 }

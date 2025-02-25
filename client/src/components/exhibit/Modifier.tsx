@@ -44,7 +44,7 @@ function Modifier({ mod, category, change, customize, color }: ModifierProps) {
   }
 
   return (
-    <div className={`flex flex-col items-stretch ${color}`}>
+    <div className={`flex flex-col items-stretch ${color} rounded-b-md`}>
       <div className="flex justify-evenly">
         {createModificationToggle(ModifierCategory.Rendering, change)}
         {createModificationToggle(ModifierCategory.Image, change)}
