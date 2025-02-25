@@ -39,8 +39,8 @@ function Collection() {
     : <DeckView choose={choose} expand={expand} />;
 
   return (
-    <div className="flex flex-col size-full gap-x-4">
-      <div className={`w-full flex flex-col basis-20 grow-0 shrink-0`}>
+    <div className="size-full flex flex-col items-stretch gap-x-4">
+      <div className={`w-full flex flex-col grow-0`}>
         <FilterDash
           active={chosen < 0 || chosen >= pals.length}
           expand={expand}

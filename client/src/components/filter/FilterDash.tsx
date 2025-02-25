@@ -17,7 +17,7 @@ function Dashboard({ active, expand, setExpand }: FilterDashProps) {
     );
   return (
     <div
-      className={`rounded-md flex shade ${active ? '' : 'pointer-events-none opacity-75'}`}
+      className={`rounded-t-md flex shade ${active ? '' : 'pointer-events-none opacity-75'}`}
     >
       <div className={`flex flex-col gap-2 flex-auto justify-evenly`}>
         <div className={`flex flex-row justify-evenly`}>

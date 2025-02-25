@@ -23,8 +23,6 @@ import {
 } from './../../extension/storage.ts';
 import { getStagingCardColor } from '../common/card-color.ts';
 
-const BG_EXHIBIT_SECT = '';
-
 function Exhibit() {
   const [staging, setStaging] = useReducer(reduceStaging, initStagingState());
   const [modifier, setModifier] = useState(ModifierCategory.Image);
@@ -63,59 +61,54 @@ function Exhibit() {
   const selection =
     !isSelected ?
       <Tank pals={staged} />
-    : <div>
-        <FilterDash active={true} expand={false} />
-        <DeckSelect
-          choose={(key: string) => setStaging({ type: 'SET', pals, key })}
-        />
+    : <div className="flex flex-col flex-auto gap-0 overflow-hidden">
+        <div className={`w-full flex flex-col basis-1 shrink-1`}>
+          <FilterDash active={true} expand={false} />
+        </div>
+        <div className={`flex-auto overflow-hidden size-full`}>
+          <DeckSelect
+            choose={(key: string) => setStaging({ type: 'SET', pals, key })}
+          />
+        </div>
       </div>;
 
   const customizer =
     isActive && !isSelected && staged[staging.active] ?
-      <Modifier
-        type={staging.staged[staging.active].pal?.type ?? 'empty'}
-        mod={staging.staged[staging.active].mod}
-        category={modifier}
-        change={(category: ModifierCategory) => setModifier(category)}
-        customize={(mod: PalModifier) =>
-          setStaging({ type: 'MODIFY', index: staging.active, mod })
-        }
-        color={getStagingCardColor()[staging.active].active}
-      />
+      <div className="flex-auto">
+        <Modifier
+          type={staging.staged[staging.active].pal?.type ?? 'empty'}
+          mod={staging.staged[staging.active].mod}
+          category={modifier}
+          change={(category: ModifierCategory) => setModifier(category)}
+          customize={(mod: PalModifier) =>
+            setStaging({ type: 'MODIFY', index: staging.active, mod })
+          }
+          color={getStagingCardColor()[staging.active].active}
+        />
+      </div>
     : null;
 
   return (
-    <div className="flex flex-col w-full gap-4">
-      <div
-        className={`w-full flex justify-evenly basis-8 grow-0 shrink-0 ${BG_EXHIBIT_SECT}`}
-      >
+    <div className="flex items-stretch overflow-hidden flex-col size-full gap-x-4 gap-y-2">
+      <div className={`w-full flex justify-evenly basis-8 grow-0 shrink-0`}>
         <button
-          className="rounded-full w-1/6 bg-slate-50"
+          className="rounded-full w-1/6 shade"
           onClick={() => toggleShow(show)}
         >
           {show ? 'hide' : 'show'}
         </button>
-        <button
-          className="rounded-full w-1/6 bg-slate-50"
-          onClick={() => syncShow()}
-        >
+        <button className="rounded-full w-1/6 shade" onClick={() => syncShow()}>
           sync
         </button>
-        <button
-          className="rounded-full w-1/6 bg-slate-50"
-          onClick={() => syncShow()}
-        >
+        <button className="rounded-full w-1/6 shade" onClick={() => syncShow()}>
           load
         </button>
-        <button
-          className="rounded-full w-1/6 bg-slate-50"
-          onClick={() => syncShow()}
-        >
+        <button className="rounded-full w-1/6 shade" onClick={() => syncShow()}>
           save
         </button>
       </div>
-      <div className={`grow-0 ${BG_EXHIBIT_SECT}`}>
-        <div className="grid grid-cols-1 240:grid-cols-2 360:grid-cols-3">
+      <div className={`flex flex-col flex-auto overflow-hidden`}>
+        <div className="grow-0 grid grid-cols-1 240:grid-cols-2 360:grid-cols-3">
           {staging.staged.map(({ pal }, i) => {
             return (
               <Staging
