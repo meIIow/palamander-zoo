@@ -137,7 +137,7 @@ function set(
   if (type != prevType) {
     staged[staging.selected] = {
       pal: palIndex < 0 ? undefined : { ...pals[palIndex] },
-      mod: initMod(pals[palIndex].mod),
+      mod: initMod(pals[palIndex]?.mod),
     };
   }
   return {
