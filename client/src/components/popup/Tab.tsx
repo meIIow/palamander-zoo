@@ -13,7 +13,6 @@ function Tab({ section, set }: TabProps) {
   const styler = Object.fromEntries(
     Object.values(Section).map((s) => {
       const style = section == s ? 'underline' : '';
-      console.log(style);
       return [s, style];
     }),
   );
