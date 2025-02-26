@@ -1,15 +1,17 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useRef, useContext, useEffect } from 'react';
 
 import DeckView from '../common/DeckView.tsx';
 import Details from './Details.tsx';
 import FilterDash from '../filter/FilterDash.tsx';
 import { FilteredPalContext } from '../common/pal-context.ts';
+import { ContainerContext } from '../common/container-context.ts';
 
 function Collection() {
   const [chosen, setChosen] = useState(-1); // chosen index
   const [expand, setExpand] = useState(false); // chosen index
   const pals = useContext(FilteredPalContext);
   const [bios, setBios] = useState<Record<string, string>>({});
+  const containerRef = useRef(null);
 
   useEffect(() => {
     (async () => {
@@ -36,7 +38,9 @@ function Collection() {
         release={release}
         shift={shift}
       />
-    : <DeckView choose={choose} expand={expand} />;
+    : <ContainerContext.Provider value={containerRef.current}>
+        <DeckView choose={choose} expand={expand} />
+      </ContainerContext.Provider>;
 
   return (
     <div className="size-full flex flex-col items-stretch gap-x-4">
@@ -47,7 +51,9 @@ function Collection() {
           setExpand={setExpand}
         />
       </div>
-      <div className={`flex-auto overflow-hidden`}>{content}</div>
+      <div className={`flex-auto overflow-hidden`} ref={containerRef}>
+        {content}
+      </div>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 
 import Nook from './Nook.tsx';
 import PalamanderView from '../palamander/PalamanderView.tsx';
@@ -12,6 +12,8 @@ import {
   createSpinOverride,
 } from '../../palamander/palamander-modifier.ts';
 import { CardColor } from './card-color.ts';
+import useVisibility from './useVisibility.tsx';
+import { ContainerContext } from './container-context.ts';
 
 type CardProps = {
   pal?: Palamander;
@@ -44,14 +46,28 @@ const setPalSpinning = (pal: Palamander): Palamander => {
   };
 };
 
+const setPalFrozen = (pal: Palamander): Palamander => {
+  return {
+    ...pal,
+    mod: {
+      ...pal.mod,
+      override: { ...createPointedOverride(300), freeze: true },
+    },
+  };
+};
+
 function Card({ pal, choose, upper, lower, expand, color, cursor }: CardProps) {
   const [hovered, setHovered] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [initial, setInitial] = useState(true);
+  const [elementRef, isVisible] = useVisibility(useContext(ContainerContext));
+
   const setPalMotion =
-    initial ? setPalStatic
+    !isVisible ? setPalFrozen
+    : initial ? setPalStatic
     : hovered ? setPalSpinning
     : stopPalSpinning;
+
   const registerExpanded = (expanded: boolean) => setExpanded(expanded);
   const registerHover = (hover: boolean) => {
     setHovered((_) => hover);
@@ -87,6 +103,7 @@ function Card({ pal, choose, upper, lower, expand, color, cursor }: CardProps) {
       className="aspect-square flex justify-center items-center"
       onClick={() => choose(pal?.type ?? '')}
       style={{ cursor: cursor }}
+      ref={elementRef}
     >
       <div
         className={`relative hover:size-full size-11/12 rounded-lg overflow-hidden`}

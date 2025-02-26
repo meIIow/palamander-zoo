@@ -1,4 +1,4 @@
-import { useState, useReducer, useEffect, useContext } from 'react';
+import { useState, useRef, useReducer, useEffect, useContext } from 'react';
 
 import Modifier from './Modifier.tsx';
 import Staging from './Staging.tsx';
@@ -15,6 +15,7 @@ import {
 } from './StagingState.ts';
 import { ModifierCategory } from './Modifier.tsx';
 import { PalContext } from '../common/pal-context.ts';
+import { ContainerContext } from '../common/container-context.ts';
 import {
   show as showPal,
   visible,
@@ -27,6 +28,7 @@ function Exhibit() {
   const [staging, setStaging] = useReducer(reduceStaging, initStagingState());
   const [modifier, setModifier] = useState(ModifierCategory.Image);
   const [show, setShow] = useState(false);
+  const containerRef = useRef(null);
   const pals = useContext(PalContext);
 
   useEffect(() => {
@@ -65,10 +67,15 @@ function Exhibit() {
         <div className={`w-full flex flex-col basis-1 shrink-1`}>
           <FilterDash active={true} expand={false} />
         </div>
-        <div className={`flex-auto overflow-hidden size-full`}>
-          <DeckSelect
-            choose={(key: string) => setStaging({ type: 'SET', pals, key })}
-          />
+        <div
+          className={`flex-auto overflow-hidden size-full`}
+          ref={containerRef}
+        >
+          <ContainerContext.Provider value={containerRef.current}>
+            <DeckSelect
+              choose={(key: string) => setStaging({ type: 'SET', pals, key })}
+            />
+          </ContainerContext.Provider>
         </div>
       </div>;
 
