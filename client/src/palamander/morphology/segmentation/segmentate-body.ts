@@ -48,7 +48,7 @@ const segmentateFishBody: SegmentationFunc = (
   section: Section,
 ): Segment[] => {
   const tail = {
-    ...createSection('fish-tail'),
+    ...createSection('lobster-tail'),
     count: 6,
     size: section.size * 0.75,
   };

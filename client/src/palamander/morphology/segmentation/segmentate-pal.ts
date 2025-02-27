@@ -85,7 +85,7 @@ const segmentateCrawdad: SegmentationFunc = (
 
   // Process tail, legs, antennae and claws as children.
   section.branches.push({
-    ...createSection('fish-tail'),
+    ...createSection('lobster-tail'),
     count: 3,
     index: 4,
     size: section.size * 1.5,
@@ -190,8 +190,8 @@ const segmentateNewt: SegmentationFunc = (
   _parent: Segment,
   section: Section,
 ): Segment[] => {
-  const head = { ...createBranch(section, 'head'), size: 100 };
-  const body = { ...createBranch(section, 'newt-body'), count: 18, size: 60 };
+  const head = { ...createBranch(section, 'snake-head'), size: 80 };
+  const body = { ...createBranch(section, 'newt-body'), count: 14, size: 70 };
   follow(head, body);
   return follow(section, head);
 };
@@ -240,7 +240,7 @@ const segmentateSeaMonkey: SegmentationFunc = (
 ): Segment[] => {
   const head = { ...createSection('monkey-head'), size: section.size };
   const torso = {
-    ...createSection('fish-tail'),
+    ...createSection('lobster-tail'),
     count: 6,
     size: section.size,
   };

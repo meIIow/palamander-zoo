@@ -92,33 +92,6 @@ const segmentateFeeler: SegmentationFunc = (
   return segments;
 };
 
-const segmentateFishTail: SegmentationFunc = (
-  parent: Segment,
-  section: Section,
-): Segment[] => {
-  const count = section.count;
-  const tailSegmentation: Segmentation = createSegmentation({
-    count,
-    radius: section.size,
-    taperFactor: 0.88,
-    overlapMult: 0.6,
-    curveRange: preset.curve.muscley,
-  });
-  const wave = {
-    range: 30 / count,
-    period: preset.period.deliberate,
-    offset: section.offset,
-    acceleration: 4,
-  };
-  const tail = toSegments(parent, mixCurl(tailSegmentation, wave));
-  [-1, 1].forEach((i) => {
-    const fin = createSegment(section.size * 0.5, 30 * i, 0.5);
-    fin.wriggle = toWriggle([createCurlSpec(wave, count + 1)]);
-    tail[count - 1].children.push(fin);
-  });
-  return tail;
-};
-
 const segmentateFlicker: SegmentationFunc = (
   parent: Segment,
   section: Section,
@@ -263,6 +236,33 @@ const segmentateHair: SegmentationFunc = (
   );
   const segments = toSegments(parent, wrigglingSegmentation);
   return segments;
+};
+
+const segmentateLobsterTail: SegmentationFunc = (
+  parent: Segment,
+  section: Section,
+): Segment[] => {
+  const count = section.count;
+  const tailSegmentation: Segmentation = createSegmentation({
+    count,
+    radius: section.size,
+    taperFactor: 0.88,
+    overlapMult: 0.6,
+    curveRange: preset.curve.muscley,
+  });
+  const wave = {
+    range: 30 / count,
+    period: preset.period.deliberate,
+    offset: section.offset,
+    acceleration: 4,
+  };
+  const tail = toSegments(parent, mixCurl(tailSegmentation, wave));
+  [-1, 1].forEach((i) => {
+    const fin = createSegment(section.size * 0.5, 30 * i, 0.5);
+    fin.wriggle = toWriggle([createCurlSpec(wave, count + 1)]);
+    tail[count - 1].children.push(fin);
+  });
+  return tail;
 };
 
 const segmentateMandible: SegmentationFunc = (
@@ -467,12 +467,12 @@ export const parts = {
   claw: segmentateClaw,
   curl: segmentateCurl,
   feeler: segmentateFeeler,
-  'fish-tail': segmentateFishTail,
   flicker: segmentateFlicker,
   flipper: segmentateFlipper,
   'frog-leg': segmentateFrogLeg,
   hair: segmentateHair,
   mandible: segmentateMandible,
+  'lobster-tail': segmentateLobsterTail,
   'monkey-arm': segmentateMonkeyArm,
   'noodle-limb': segmentateNoodleLimb,
   pod: segmentatePod,
