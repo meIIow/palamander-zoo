@@ -92,6 +92,43 @@ const segmentateFeeler: SegmentationFunc = (
   return segments;
 };
 
+const segmentateFishTail: SegmentationFunc = (
+  parent: Segment,
+  section: Section,
+): Segment[] => {
+  const count = section.count;
+  const tailSegmentation: Segmentation = createSegmentation({
+    count,
+    radius: section.size,
+    taperFactor: 0.88,
+    overlapMult: 0.6,
+    curveRange: preset.curve.squiggly,
+  });
+  const wave = {
+    range: 20,
+    period: preset.period.deliberate * 2,
+    offset: section.offset,
+    acceleration: 4,
+  };
+  const tail = toSegments(parent, mixSquiggle(tailSegmentation, { wave }));
+
+  [-1, 1].forEach((dir) => {
+    const sizes = [60, 50, 60, 70, 40, 20];
+    const curve = 15 * dir;
+    let curr = tail[count-1];
+    const flipper = sizes.map((size, i) => {
+      const angle = section.angle + 60 * dir - i * curve;
+      return createSegment((section.size * size) / 100 * 0.75, angle, 1.2);
+    });
+    flipper.forEach((segment) => {
+      curr.children.push(segment);
+      segment.wriggle = curr.wriggle.map((w) => ({ ...w}));
+      curr = segment;
+    });
+  });
+  return tail;
+};
+
 const segmentateFlicker: SegmentationFunc = (
   parent: Segment,
   section: Section,
@@ -140,7 +177,7 @@ const segmentateFlipper: SegmentationFunc = (
   let curr = parent;
   const flipper = sizes.map((size, i) => {
     const angle = section.angle * dir - i * curve;
-    return createSegment((section.size * size) / 100, angle, 1.2);
+    return createSegment((parent.circle.radius * size) / 100, angle, 1.2);
   });
   flipper.forEach((segment) => {
     curr.children.push(segment);
@@ -150,7 +187,7 @@ const segmentateFlipper: SegmentationFunc = (
       offset: section.offset,
       acceleration: 4,
     };
-    segment.wriggle = toWriggle([createRotationSpec(waveSpec)]);
+    segment.wriggle = [ ...parent.wriggle.map((w) => ({ ...w})), ...toWriggle([createRotationSpec(waveSpec)])];
     curr = segment;
   });
   return flipper;
@@ -467,6 +504,7 @@ export const parts = {
   claw: segmentateClaw,
   curl: segmentateCurl,
   feeler: segmentateFeeler,
+  'fish-tail': segmentateFishTail,
   flicker: segmentateFlicker,
   flipper: segmentateFlipper,
   'frog-leg': segmentateFrogLeg,

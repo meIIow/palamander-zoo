@@ -229,7 +229,7 @@ const segmentateSeaLion: SegmentationFunc = (
   section: Section,
 ): Segment[] => {
   const head = { ...createSection('lion-head'), size: section.size };
-  follow(head, createBranch(section, 'fish-body'));
+  follow(head, { ...createBranch(section, 'fish-body'), count: 12 });
   return follow(section, head);
 };
 
@@ -240,7 +240,7 @@ const segmentateSeaMonkey: SegmentationFunc = (
 ): Segment[] => {
   const head = { ...createSection('monkey-head'), size: section.size };
   const torso = {
-    ...createSection('lobster-tail'),
+    ...createSection('fish-tail'),
     count: 6,
     size: section.size,
   };

@@ -48,17 +48,20 @@ const segmentateFishBody: SegmentationFunc = (
   section: Section,
 ): Segment[] => {
   const tail = {
-    ...createSection('lobster-tail'),
-    count: 6,
+    ...createSection('fish-tail'),
+    count: section.count,
     size: section.size * 0.75,
   };
-  const flipper = {
-    ...createSection('flipper'),
-    size: section.size * 0.75,
-    angle: 90,
-    parentIndex: 0,
-  };
-  tail.branches = [flipper, { ...flipper, mirror: true, offset: Math.PI }];
+  [0, 1].forEach((i) => {
+    const flipper = {
+      ...createSection('flipper'),
+      size: section.size * 0.75,
+      angle: 90,
+      index: i*3,
+      offset: i * (Math.PI / 2),
+    };
+    tail.branches = [ ...tail.branches, flipper, { ...flipper, mirror: true, offset: Math.PI }];
+  });
   return follow(section, tail);
 };
 

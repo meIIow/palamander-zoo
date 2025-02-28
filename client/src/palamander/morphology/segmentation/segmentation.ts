@@ -27,6 +27,7 @@ export type Segmentation = {
   curveRange: number;
   curve: number;
   wriggleGenerators: WriggleGenerator[];
+  syncWriggle?: boolean;
   override?: Partial<Segment>;
 };
 
@@ -140,7 +141,8 @@ export function toSegments(
     next.bodyAngle.relative += i * segmentation.curve;
     next.wriggle = segmentation.wriggleGenerators
       .map((generate) => generate(i))
-      .flat();
+      .flat()
+      .concat(segmentation.syncWriggle ? clone(parent.wriggle) : []);
     curr.children.push(next);
     curr = next;
     segments.push(curr);
