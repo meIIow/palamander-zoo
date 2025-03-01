@@ -11,7 +11,8 @@ import {
   mixCurl,
   mixSquiggle,
 } from './segmentation.ts';
-import { createBranch, createSection, follow } from '../section';
+import { createBranch, createSection, follow } from '../section.ts';
+import { createSegment } from '../segment.ts';
 
 /* -----------------------------------------------
  * Granular Segmentations: re-usable Body Types
@@ -55,12 +56,16 @@ const segmentateFishBody: SegmentationFunc = (
   [0, 1].forEach((i) => {
     const flipper = {
       ...createSection('flipper'),
-      size: section.size * 0.75,
+      size: section.size,
       angle: 90,
-      index: i*3,
+      index: i * 3,
       offset: i * (Math.PI / 2),
     };
-    tail.branches = [ ...tail.branches, flipper, { ...flipper, mirror: true, offset: Math.PI }];
+    tail.branches = [
+      ...tail.branches,
+      flipper,
+      { ...flipper, mirror: true, offset: Math.PI },
+    ];
   });
   return follow(section, tail);
 };
@@ -84,6 +89,24 @@ const segmentateInchwormBody: SegmentationFunc = (
   const gradient = { wave, length: section.count * 0.75 };
   const body = toSegments(parent, mixSquiggle(segmentation, gradient));
   return [...body];
+};
+
+const segmentateMonkeyBody: SegmentationFunc = (
+  parent: Segment,
+  section: Section,
+): Segment[] => {
+  const chest = createSegment(section.size * 1.25, section.angle, 0.75);
+  parent.children.push(chest);
+  const tail = {
+    ...createBranch(section, 'fish-tail'),
+    count: 5,
+    size: section.size,
+  };
+  section.branches.push(tail);
+  section.branches.push({
+    ...createBranch(section, 'monkey-arms'),
+  });
+  return [chest];
 };
 
 const segmentateNewtBody: SegmentationFunc = (
@@ -154,6 +177,7 @@ export const bodies = {
   'eel-body': segmentateEelBody,
   'fish-body': segmentateFishBody,
   'inchworm-body': segmentateInchwormBody,
+  'monkey-body': segmentateMonkeyBody,
   'newt-body': segmentateNewtBody,
   'snake-body': segmentateSnakeBody,
 };

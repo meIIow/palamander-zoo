@@ -44,12 +44,16 @@ const segmentateMonkeyHead: SegmentationFunc = (
   const head = createSegment(section.size, section.angle, 0);
 
   [-1, 1].forEach((i) => {
-    const ear = createSegment(section.size * 0.4, 90 * i, 0.6);
+    const ear = createSegment(section.size * 0.45, 90 * i, 0.6);
     head.children.push(ear);
   });
 
-  const neck = createSegment(section.size * 0.4, section.angle, 0.8);
+  const neck = createSegment(section.size * 0.6, section.angle, 1);
   head.children.push(neck);
+
+  const mane = createBranch(section, 'hairdo');
+  mane.angle += 180;
+  section.branches.push(mane);
 
   return [head, neck];
 };

@@ -101,7 +101,7 @@ const segmentateFishTail: SegmentationFunc = (
     count,
     radius: section.size,
     taperFactor: 0.88,
-    overlapMult: 0.6,
+    overlapMult: 1,
     curveRange: preset.curve.squiggly,
   });
   const wave = {
@@ -110,19 +110,20 @@ const segmentateFishTail: SegmentationFunc = (
     offset: section.offset,
     acceleration: 4,
   };
-  const tail = toSegments(parent, mixSquiggle(tailSegmentation, { wave }));
+  const gradient = { wave, easeFactor: 0.5 };
+  const tail = toSegments(parent, mixSquiggle(tailSegmentation, gradient));
 
   [-1, 1].forEach((dir) => {
     const sizes = [60, 50, 60, 70, 40, 20];
     const curve = 15 * dir;
-    let curr = tail[count-1];
+    let curr = tail[count - 1];
     const flipper = sizes.map((size, i) => {
       const angle = section.angle + 60 * dir - i * curve;
-      return createSegment((section.size * size) / 100 * 0.75, angle, 1.2);
+      return createSegment(((section.size * size) / 100) * 0.75, angle, 1.2);
     });
     flipper.forEach((segment) => {
       curr.children.push(segment);
-      segment.wriggle = curr.wriggle.map((w) => ({ ...w}));
+      segment.wriggle = curr.wriggle.map((w) => ({ ...w }));
       curr = segment;
     });
   });
@@ -177,7 +178,11 @@ const segmentateFlipper: SegmentationFunc = (
   let curr = parent;
   const flipper = sizes.map((size, i) => {
     const angle = section.angle * dir - i * curve;
-    return createSegment((parent.circle.radius * size) / 100, angle, 1.2);
+    return createSegment(
+      (parent.circle.radius * size * section.size) / 100 / 100,
+      angle,
+      1.2,
+    );
   });
   flipper.forEach((segment) => {
     curr.children.push(segment);
@@ -187,7 +192,10 @@ const segmentateFlipper: SegmentationFunc = (
       offset: section.offset,
       acceleration: 4,
     };
-    segment.wriggle = [ ...parent.wriggle.map((w) => ({ ...w})), ...toWriggle([createRotationSpec(waveSpec)])];
+    segment.wriggle = [
+      ...parent.wriggle.map((w) => ({ ...w })),
+      ...toWriggle([createRotationSpec(waveSpec)]),
+    ];
     curr = segment;
   });
   return flipper;
@@ -330,17 +338,11 @@ const segmentateMonkeyArm: SegmentationFunc = (
 ): Segment[] => {
   const dir = section.mirror ? -1 : 1;
 
-  const pec = createSegment(section.size * 0.75, 70 * dir, 1);
-  parent.children.push(pec);
-
-  const shoulder = createSegment(section.size * 0.7, 130 * dir, 0.6);
-  pec.children.push(shoulder);
-
   const upperArmSeg: Segmentation = createSegmentation({
     count: 2,
-    radius: section.size * 0.45,
-    taperFactor: 0.9,
-    angle: 75 * dir,
+    radius: section.size * 0.8,
+    taperFactor: 0.8,
+    angle: 115 * dir,
     overlapMult: 0.8,
   });
   const upperArmWave = {
@@ -348,27 +350,34 @@ const segmentateMonkeyArm: SegmentationFunc = (
     period: preset.period.deliberate,
     offset: section.offset,
   };
-  const upperArm = createRotation(shoulder, upperArmSeg, upperArmWave);
+  const upperArm = createRotation(parent, upperArmSeg, upperArmWave);
 
   const forearmSeg: Segmentation = createSegmentation({
-    count: 3,
+    count: 2,
     radius: section.size * 0.45,
     taperFactor: 0.9,
-    angle: -40 * dir,
+    angle: 150 * dir,
     overlapMult: 0.8,
   });
   // Offset by PI because forearm should swing the opposive way as bicep
   const forearmWave = {
-    range: 20,
+    range: 30,
     period: preset.period.deliberate,
-    offset: section.offset + Math.PI,
+    offset: section.offset - Math.PI / 3,
   };
   const forearm = createRotation(upperArm[1], forearmSeg, forearmWave);
 
-  // Turn final forearm segment into fist: bigger, with less overlap
-  forearm[2].circle.radius = section.size * 0.6;
-  forearm[2].overlap = 0.3 * section.size;
-  return [pec, shoulder, ...upperArm, ...forearm];
+  const hand = {
+    ...createBranch(section, 'flipper'),
+    size: section.size * 2,
+    angle: 170,
+    offset: section.offset - Math.PI / 2,
+  };
+  section.next = hand;
+  // // Turn final forearm segment into fist: bigger, with less overlap
+  // forearm[2].circle.radius = section.size * 0.6;
+  // forearm[2].overlap = 0.3 * section.size;
+  return [...upperArm, ...forearm];
 };
 
 const segmentateNoodleLimb: SegmentationFunc = (

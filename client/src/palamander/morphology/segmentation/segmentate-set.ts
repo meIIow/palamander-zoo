@@ -30,6 +30,20 @@ const segmentateClaws: SegmentationFunc = (
   return follow(section, pair);
 };
 
+const segmentateHairdo: SegmentationFunc = (
+  _parent: Segment,
+  section: Section,
+): Segment[] => {
+  const equal = {
+    ...createSection('equal'),
+    count: 12,
+    angle: 180,
+    mirror: false,
+  };
+  equal.next = { ...replace(section), type: 'hair', count: 2, size: 9 };
+  return follow(section, equal);
+};
+
 const segmentateMane: SegmentationFunc = (
   _parent: Segment,
   section: Section,
@@ -139,7 +153,7 @@ const segmentateMonkeyArms: SegmentationFunc = (
   _parent: Segment,
   section: Section,
 ): Segment[] => {
-  const pair = { ...createSection('pair'), mirror: false };
+  const pair = { ...createSection('pair'), mirror: true };
   pair.next = { ...replace(section), type: 'monkey-arm' };
   return follow(section, pair);
 };
@@ -217,6 +231,7 @@ export const sets = {
   'frog-legs': segmentateFrogLegs,
   'gill-pair': segmentateGillPair,
   gills: segmentateGills,
+  hairdo: segmentateHairdo,
   mane: segmentateMane,
   mandibles: segmentateMandibles,
   'monkey-arms': segmentateMonkeyArms,

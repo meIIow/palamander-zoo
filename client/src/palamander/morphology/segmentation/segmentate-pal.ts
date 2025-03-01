@@ -239,17 +239,8 @@ const segmentateSeaMonkey: SegmentationFunc = (
   section: Section,
 ): Segment[] => {
   const head = { ...createSection('monkey-head'), size: section.size };
-  const torso = {
-    ...createSection('fish-tail'),
-    count: 6,
-    size: section.size,
-  };
-  torso.branches.push({
-    ...createSection('monkey-arms'),
-    size: section.size,
-    index: 0,
-  });
-  follow(head, torso);
+  const body = { ...createSection('monkey-body'), size: section.size };
+  follow(head, body);
   return follow(section, head);
 };
 
