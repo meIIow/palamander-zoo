@@ -119,7 +119,7 @@ bio = {
   'sea-lion': 'You have won. Take my claws and fangs. My hide and paws. My strength, my speed, my freedom. Shape me to your will. Just please - spare this tired king his Pride.',
   'serpent': '“You snake!” Blood pumps hot - then cold - with betrayal. Eyes dim. One jaw unclenches - another unhinges. At the end, a gentle whisssper: “well, what did you exssspect?”',
   'pollywog': 'The human condition writ small. Dry Land – the impossible dream of a limbless, lungless fool. Must we change our very selves to conquer it?',
-  'novafish': 'Starfish or sea stars are star-shaped echinoderms belonging to the class Asteroidea. They are found from the intertidal zone down to abyssal depths, at 6,000m below the surface.',
+  'novafish': 'Aspirations bleached by sun and worn by sea. And still she is a star. Her spirit rises with the tide. Thrumming, vibrant, teeming. An ecosystem mesmerized. An intertidal rhapsody.',
 }
 
 with open('./../client/public/bio.json', 'w') as f:
