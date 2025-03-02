@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 
+import type { ContainerRef } from './container-context.ts';
+
 type VisibilityOutput = [
   React.MutableRefObject<null | HTMLDivElement>,
   boolean,
 ];
 
-function useVisibility(container: null | HTMLDivElement): VisibilityOutput {
+function useVisibility(containerRef: ContainerRef): VisibilityOutput {
   const [isVisible, setIsVisible] = useState(false);
   const elementRef = useRef(null);
 
@@ -16,16 +18,17 @@ function useVisibility(container: null | HTMLDivElement): VisibilityOutput {
   };
 
   useEffect(() => {
-    if (!elementRef.current || !container) return;
+    if (!elementRef.current || !containerRef.current) return;
+
     const observer = new IntersectionObserver(evaluateVisibility, {
-      root: container,
+      root: containerRef.current,
     });
     observer.observe(elementRef.current);
 
     return () => {
       if (elementRef.current) observer.unobserve(elementRef.current);
     };
-  }, [container, elementRef]);
+  }, [containerRef, elementRef]); // may be a race case - but seems to work
 
   return [elementRef, isVisible];
 }

@@ -68,10 +68,10 @@ function Exhibit() {
           <FilterDash active={true} expand={false} />
         </div>
         <div
-          className={`flex-auto overflow-hidden size-full`}
+          className={`flex-auto overflow-hidden`}
           ref={containerRef}
         >
-          <ContainerContext.Provider value={containerRef.current}>
+          <ContainerContext.Provider value={containerRef}>
             <DeckSelect
               choose={(key: string) => setStaging({ type: 'SET', pals, key })}
             />

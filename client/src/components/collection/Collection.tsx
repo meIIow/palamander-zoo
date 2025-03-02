@@ -38,7 +38,7 @@ function Collection() {
         release={release}
         shift={shift}
       />
-    : <ContainerContext.Provider value={containerRef.current}>
+    : <ContainerContext.Provider value={containerRef}>
         <DeckView choose={choose} expand={expand} />
       </ContainerContext.Provider>;
 
