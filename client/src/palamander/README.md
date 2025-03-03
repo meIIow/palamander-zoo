@@ -1,12 +1,32 @@
-# Palamander Modules
+# Palamander Module
 
-These modules are a WIP. This code renders various Palamanders with somewhat natural movement.
+This module contains the standalone code that defines a Palamander. It is agnostic of any APIs - it's simply Typescript that creates objects that represent a Pal that can be dynamically updated.
 
-A Palamander consists of segments arranged in a tree rooted at its head. This might seem like a limitation, but the option space is actually quite large and flexible - different segment trees can result in vastly different body types.
+### Organization
+The [./movement](./movement/) sub-directory deals with the overall movement of the whole Pal - specifically, how fast it is moving forward and how fast it is spinning.
 
-Each segment renders as a circle with its location relative to its parent segment. Most of a segment's data is concerned with the exact relationship of where it should exist with respect to its parent segment. In particular, we care about:
+The [./morphology](./morphology) sub-directory deals with the Pal structure and any movement within the Pal (wriggling, twisting due to a turn, etc).
 
-1. Its angle. Should it come out the back of the parent node, creating a straight line of segments? Should it come out a few degrees clockwise? Should this change if the palamander is turning or wiggling? There are several persistent segment values (determined when the segment is initially defined) that help decide these relationships, and some that are based on the current movement state.
-2. Its distance relative to the parent segment. Generally a segment is positioned around the spot where it is tangent to its parent - their edges just barely touch. But this can differ based on persistent values (maybe we want closer segments in order to simulate a carapace) or movement (maybe distances can lengthen when speeding up).
+### Balancing Performance, Complexity and Realism
+Most games run at 30 or 60 FPS - that means rendering an updated image every 17 or 34 ms. This is not a game, but aiming for this approximate range creates smooth, clean movement. As such, we needed to build a framework that allows the runtime (in particular a browser window that's already running a website) to update every segment of every Pal in this time window without introducing significant overhead.
 
-Whenever enough time passes and we decide to update our Palamander's location (simulate its movement), we run an update function over the segments that calculates where each segment should be. Each segment's result cannot be statelessly determined (doing this results in jerky, unnatural-looking movement) - it depends on certain segment values from the single update before.
+At the same time, we want the Pals to move in a satisfying, natural, and flexible way. We need to store enough data and run enough calculations so that their behavior doesn't feel uncanny.
+
+The code in this folder and its sub-directories is the heart of the Palamander Zoo project, and it seeks to find the happy median between these two opposing goals.
+
+### The Palamander Update Loop
+A Palamander's behavior cannot be statelessly determined - if it were, the resulting movement would look jerky and unnatural, with no sense of momentum or acceleration. This means that a full update cycle must complete within our desired frametime period, so that the new Palamander state is ready at the start of the next update.
+
+We also need measures in place when we fall behind our update frequency. Even if this code is generally performant, there could be times during which the browser hits an unrelated bottleneck that pauses us too.
+
+This is not a unique problem - it's a fundamental issue that can be solved with the [game loop](https://gameprogrammingpatterns.com/game-loop.html#the-pattern) design pattern. We've implemented an update loop that appropriately accounts for residual lag in [./palamander.ts](./palamander.ts)
+
+### Center of Mass
+All Pal movement is centered on its center of mass. Any rotations will rotate the body around that point, and any forward movement will translate the center of mass coordinate by an appropriate ammount. Many of the helper functions in [./palamander.ts](./palamander.ts) deal with finding an approximation of the center of mass efficiently and manipulating the Pal accordingly. TODO(mellow): This code likely belongs in a sub-module.
+
+### Tightly-Coupled Entrypoints
+We said above that this code is standalone. That's true for everything except [./create-palamander.ts](./create-palamander.ts). This expects certain Pal type definitions to exist as JSON in a `public` output directory.
+
+In addition [./palamander-range.ts] (./palamander-range.ts) is only relevant if this code is meant to be rendered in-browser.
+
+Think of these two files as convenience wrappers around the `palamander` module that allow us to use it more easily for our purposes. You could easily copy this whole directory into, say, a Node runtime that creates a folder of image files by drawing circles on a canvas. The Pals are just as well suited for this as they are for the React component wrappers this project uses. For the former, though, you'd probably ignore the two files we called out above.
