@@ -14,8 +14,8 @@ The distance from parent to child segment is statically defined based on the loo
 2. Response of this segment to movement. Should these parent-child positions be locked (like for a rigid carapace) or bend (like a newt's body) as a a result of angular momentum?
 3. Background animations for this structure. Pals seem robotic and stiff without some wriggling, particularly when they are not rotating.
 
-Deriving the angle that captures all these factors is a challenge. We have devised a set of parameters and corresponding update logic that calculate the varaious components of a segment's overall angle. These are outlined in detail in the `Segment` type spec and in [./animation](./animation).
+Deriving the angle that captures all these factors is a challenge. We have devised a set of parameters and corresponding update logic that calculate the varaious components of a segment's overall angle. These are outlined in detail in the `Segment` type spec and in [animation](./animation).
 
 ### Describing Sets of Segments
 
-The segment parameters that dictate its angle updates are somewhat granular - it wouldn't make sense to have to define many of these directly at the Pal level. Instead we introduce the `Section` type as a uniform way to describe a set of Segments. We `Segementate` a `Section` into its corresponding `Segment` list. See the modules in [./segmentation](./animation) for details - the full paradigm and motivation is described in the corresponding README.
+The segment parameters that dictate its angle updates are somewhat granular - it wouldn't make sense to have to define many of these directly at the Pal level. Instead we introduce the `Section` type as a uniform way to describe a set of Segments. We `Segementate` a `Section` into its corresponding `Segment` list. See the modules in [segmentation](./animation) for details - the full paradigm and motivation is described in the corresponding README.

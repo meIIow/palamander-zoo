@@ -28,9 +28,9 @@ The `Section` abstraction is central to our approach. It is a type that contains
 2. Specificity. A `Section` should represent some meaningful part of a Palamander, not some generic idea for a set of Segments.
 3. Composability. `Sections` can be composed together in predictable ways where appropriate - into pairs (e.g. frog legs), radial sets (starfish arms), etc.
 
-In terms of implementation, each `Section` breaks down into a tree of branched Sub-`Sections` and returned`Segments`. The logic for actually processing this is pretty tight and contained in [./segmentate.ts](./segmentate.ts).
+In terms of implementation, each `Section` breaks down into a tree of branched Sub-`Sections` and returned`Segments`. The logic for actually processing this is pretty tight and contained in [segmentate.ts](./segmentate.ts).
 
-Although `Sections` themselves adhere to this strict type set, it is useful to have generic, lower-level functions that describe even more flexible ways of creating sets of `Segments`. This is handled by the [./segmentation.ts](./segmentation.ts) module. Many `Sections` configure appropriate parameters and ultimately shell out to the `segmentation.ts` logic to create a granularly-defined lists of segments. That way we can re-use code between `Sections` without convoluting the `Section` type usage by higher-up processes.
+Although `Sections` themselves adhere to this strict type set, it is useful to have generic, lower-level functions that describe even more flexible ways of creating sets of `Segments`. This is handled by the [segmentation.ts](./segmentation.ts) module. Many `Sections` configure appropriate parameters and ultimately shell out to the `segmentation.ts` logic to create a granularly-defined lists of segments. That way we can re-use code between `Sections` without convoluting the `Section` type usage by higher-up processes.
 
 # Segmentate Function Details
 
@@ -43,4 +43,4 @@ An important distinction exists between `primary` and non-`primary` `Segments`, 
 ### Adding new Pals
 All Pal types corresponding to a single top-level `Section` type. 
 
-Defining the structure of a new Pal is as simple as creating a new function in [./segmentate-pal.ts](./segmentate-pal.ts) and adding it to that `segmentation-map`. This function will likely recontextualize that top-level section as a tree of sub-sections - although it might require adding new `Sections` or potentially just initializing `Segments` right there.
+Defining the structure of a new Pal is as simple as creating a new function in [segmentate-pal.ts](./segmentate-pal.ts) and adding it to that `segmentation-map`. This function will likely recontextualize that top-level section as a tree of sub-sections - although it might require adding new `Sections` or potentially just initializing `Segments` right there.
