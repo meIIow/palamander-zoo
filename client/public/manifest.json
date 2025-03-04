@@ -1,6 +1,7 @@
 {
   "name": "Palamander Zoo",
-  "version": "0.0",
+  "version": "0.1.0",
+  "version_name": "0.1.0 beta",
   "manifest_version": 3,
   "action": {
     "default_title": "Collect Aquatic Buddies!"
