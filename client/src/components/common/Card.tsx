@@ -22,7 +22,7 @@ type CardProps = {
   lower?: JSX.Element;
   expand: boolean;
   color: CardColor;
-  cursor: string;
+  // cursor: string;
 };
 
 const setPalStatic = (pal: Palamander): Palamander => {
@@ -56,7 +56,7 @@ const setPalFrozen = (pal: Palamander): Palamander => {
   };
 };
 
-function Card({ pal, choose, upper, lower, expand, color, cursor }: CardProps) {
+function Card({ pal, choose, upper, lower, expand, color }: CardProps) {
   const [hovered, setHovered] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [initial, setInitial] = useState(true);
@@ -100,9 +100,8 @@ function Card({ pal, choose, upper, lower, expand, color, cursor }: CardProps) {
 
   return (
     <div
-      className="aspect-square flex justify-center items-center"
+      className="aspect-square flex justify-center items-center cursor-pointer"
       onClick={() => choose(pal?.type ?? '')}
-      style={{ cursor: cursor }}
       ref={elementRef}
     >
       <div

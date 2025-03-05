@@ -15,18 +15,9 @@ type DeckProps = {
   blank?: boolean;
   expand: boolean;
   color?: CardColor;
-  cursor: string;
 };
 
-function Deck({
-  choose,
-  toUpper,
-  toLower,
-  blank,
-  expand,
-  color,
-  cursor,
-}: DeckProps) {
+function Deck({ choose, toUpper, toLower, blank, expand, color }: DeckProps) {
   const pals = useContext(FilteredPalContext);
 
   color = color ?? getDefaultCardColor();
@@ -42,14 +33,13 @@ function Deck({
             lower={toLower?.call('', pal)}
             expand={expand}
             color={color}
-            cursor={cursor}
           />
         </div>
       ));
   const blankCard =
     !blank ? null : (
       <div key={'blank'}>
-        <Card choose={choose} expand={expand} color={color} cursor={cursor} />
+        <Card choose={choose} expand={expand} color={color} />
       </div>
     );
 

@@ -11,10 +11,9 @@ type ViewDeckProps = {
 
 function DeckView({ choose, expand }: ViewDeckProps) {
   const toUpper = (pal: Palamander) => (
-    <div>{pal.type.toLocaleLowerCase()}</div>
+    <div className="text-center text-base">{pal.type.toLocaleLowerCase()}</div>
   );
   const toLower = (pal: Palamander) => <PalamanderFilter type={pal.type} />;
-  const cursor = 'zoom-in';
   return (
     <div className="size-full overflow-y-auto rounded-b-md">
       <Deck
@@ -22,7 +21,6 @@ function DeckView({ choose, expand }: ViewDeckProps) {
         toUpper={toUpper}
         toLower={toLower}
         expand={expand}
-        cursor={cursor}
       />
     </div>
   );

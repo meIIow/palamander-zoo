@@ -33,13 +33,12 @@ function Details({ pal, bio, index, count, shift, release }: DetailsProps) {
     <div className="flex flex-col w-full h-full bg-neutral-500/35 rounded-t-md overflow-y-auto gap-1 px-2 py-1">
       <div className="flex flex-none w-full h-8 justify-evenly content-stretch items-stretch">
         <div className="basis-1">{prev}</div>
-        <div className="w-1/3 text-center">{typeToName(pal.type)}</div>
+        <div className="w-1/3 text-center text-lg">{typeToName(pal.type)}</div>
         <div className="basis-1">{next}</div>
       </div>
       <div
-        className="flex justify-center items-center w-full flex-auto bg-neutral-50 rounded-md"
+        className="flex justify-center items-center w-full flex-auto bg-neutral-50 rounded-md cursor-pointer"
         onClick={() => release()}
-        style={{ cursor: 'zoom-out' }}
       >
         <div className="pal-boundry">
           <PalamanderView
