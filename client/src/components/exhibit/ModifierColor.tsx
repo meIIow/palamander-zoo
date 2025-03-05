@@ -2,6 +2,7 @@ import { ChangeEvent } from 'react';
 
 import type { PalModifier } from '../../palamander/palamander-modifier.ts';
 
+import ColorSelector from './../common/ColorSelector.tsx';
 import Range from './../common/Range.tsx';
 import RangeLog from '../common/RangeLog.tsx';
 
@@ -29,12 +30,8 @@ function ModifierColor({ mod, customize }: ModifierProps) {
     });
   };
   return (
-    <div className="flex flex-col items-stretch">
-      <div>
-        Color
-        <input type="color" value={mod.color} onChange={customizeColor} />
-      </div>
-      <div>
+    <div className="flex flex-wrap justify-evenly">
+      <div className="w-5/12">
         <RangeLog
           label={generateFactorLabel('magnification', mod.magnification, true)}
           base={5}
@@ -42,13 +39,16 @@ function ModifierColor({ mod, customize }: ModifierProps) {
           update={customizeMagnification}
         />
       </div>
-      <div>
+      <div className="w-5/12">
         <Range
-          label={() => <div>Opacity</div>}
+          label={() => <div className="text-center text-base">opacity</div>}
           range={{ min: 10, max: 100, step: 5, scale: 100 }}
           value={mod.opacity}
           update={customizeOpacity}
         />
+      </div>
+      <div className="w-5/12">
+        <ColorSelector color={mod.color} customizeColor={customizeColor} />
       </div>
     </div>
   );

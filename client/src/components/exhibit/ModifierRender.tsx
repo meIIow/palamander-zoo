@@ -12,7 +12,7 @@ type ModifierProps = {
 
 const generateUnitLabel = (label: string, units: string, value: number) => {
   return () => (
-    <div>
+    <div className="text-base">
       {label} ({units}): {value}
     </div>
   );
@@ -32,16 +32,16 @@ function ModifierRender({ mod, customize }: ModifierProps) {
     });
   };
   return (
-    <div className="flex flex-col items-stretch">
-      <div>
+    <div className="flex flex-wrap justify-evenly">
+      <div className="w-5/12">
         <RangeLog
-          label={generateFactorLabel('motion', mod.motion, false)}
+          label={generateFactorLabel('motion', mod.motion, false, false)}
           base={5}
           value={mod.motion}
           update={customizeMotion}
         />
       </div>
-      <div>
+      <div className="w-5/12">
         <Range
           label={generateUnitLabel('interval', 'ms', mod.updateInterval)}
           range={{ min: 30, max: 250, step: 20, scale: 1 }}

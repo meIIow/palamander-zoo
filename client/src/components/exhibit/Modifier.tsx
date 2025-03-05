@@ -10,7 +10,6 @@ type ModifierProps = {
   category: ModifierCategory;
   change: (modifier: ModifierCategory) => void;
   customize: (modifier: PalModifier) => void;
-  color: string;
 };
 
 enum ModifierCategory {
@@ -23,15 +22,17 @@ enum ModifierCategory {
 function createModificationToggle(
   modifier: ModifierCategory,
   change: (modifier: ModifierCategory) => void,
+  active: boolean,
 ): JSX.Element {
+  const underlined = active ? 'underline' : '';
   return (
-    <button className="" onClick={() => change(modifier)}>
+    <button className={underlined} onClick={() => change(modifier)}>
       {modifier}
     </button>
   );
 }
 
-function Modifier({ mod, category, change, customize, color }: ModifierProps) {
+function Modifier({ mod, category, change, customize }: ModifierProps) {
   // const [modification, set] = useState<ModifierCategory>(ModifierCategory.None);
 
   let modifier = null;
@@ -44,11 +45,14 @@ function Modifier({ mod, category, change, customize, color }: ModifierProps) {
   }
 
   return (
-    <div className={`flex flex-col items-stretch ${color} rounded-b-md`}>
-      <div className="flex justify-evenly">
-        {createModificationToggle(ModifierCategory.Rendering, change)}
-        {createModificationToggle(ModifierCategory.Image, change)}
-        {createModificationToggle(ModifierCategory.Behavior, change)}
+    <div
+      className={`h-28 flex flex-col items-stretch text-neutral-500/60 rounded-b-md`}
+    >
+      <div className="flex justify-evenly text-lg">
+        {Object.values(ModifierCategory).map((cat) => {
+          if (cat == ModifierCategory.None) return null;
+          return createModificationToggle(cat, change, cat == category);
+        })}
       </div>
       <div>{modifier}</div>
     </div>

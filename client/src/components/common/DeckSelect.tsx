@@ -7,7 +7,7 @@ type SelectDeckProps = {
 function DeckSelect({ choose }: SelectDeckProps) {
   const cursor = 'pointer';
   return (
-    <div className="size-full overflow-y-auto rounded-b-md shade">
+    <div className="size-full overflow-y-auto rounded-b-md">
       <Deck choose={choose} blank={true} expand={false} cursor={cursor} />
     </div>
   );

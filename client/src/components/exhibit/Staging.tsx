@@ -40,7 +40,9 @@ function Staging({ pal, active, selected, color, select, hover }: CardProps) {
       </div>
     );
 
-  const border = selected ? 'border-4' : 'border';
+  // const border = selected ? 'border-x-4 border-t-4 rounded-br-none rounded-bl-none' : '';
+  const border =
+    selected || active || hovered ? 'rounded-br-none rounded-bl-none' : '';
   const colorStyle = active ? color.active : color.passive;
   const size = active || hovered ? 'size-full' : 'size-11/12';
   return (
@@ -49,7 +51,7 @@ function Staging({ pal, active, selected, color, select, hover }: CardProps) {
       style={{ cursor: 'pointer' }}
     >
       <div
-        className={`${border} ${size} relative rounded-lg overflow-hidden ${colorStyle} border-black`}
+        className={`${border} ${size} relative rounded-lg overflow-hidden ${colorStyle} border-sky-200`}
         onMouseEnter={() => registerHover(true)}
         onMouseLeave={() => registerHover(false)}
         onClick={() => select()}

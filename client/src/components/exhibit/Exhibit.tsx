@@ -78,7 +78,7 @@ function Exhibit() {
 
   const customizer =
     isActive && !isSelected && staged[staging.active] ?
-      <div className="flex-auto">
+      <div className="flex-none">
         <Modifier
           type={staging.staged[staging.active].pal?.type ?? 'empty'}
           mod={staging.staged[staging.active].mod}
@@ -87,7 +87,6 @@ function Exhibit() {
           customize={(mod: PalModifier) =>
             setStaging({ type: 'MODIFY', index: staging.active, mod })
           }
-          color={getStagingCardColor()[staging.active].active}
         />
       </div>
     : null;
@@ -96,13 +95,13 @@ function Exhibit() {
     <div className="flex items-stretch overflow-hidden flex-col size-full gap-x-4 gap-y-2">
       <div className={`w-full flex justify-evenly basis-8 grow-0 shrink-0`}>
         <button
-          className="rounded-full w-1/6 button-selected animate-pulse"
+          className={`rounded-full w-1/6 ${show ? 'button' : 'button-emphasized animate-pulse'}`}
           onClick={() => toggleShow(show)}
         >
           {show ? 'hide' : 'show'}
         </button>
         <button
-          className="rounded-full w-1/6 button-selected animate-pulse"
+          className={`rounded-full w-1/6 ${!show ? 'button' : 'button-emphasized animate-pulse'}`}
           onClick={() => syncShow()}
         >
           sync
@@ -138,8 +137,10 @@ function Exhibit() {
             );
           })}
         </div>
-        {selection}
-        {customizer}
+        <div className="flex flex-col flex-auto overflow-hidden p-2 bg-sky-100 gap-1">
+          {selection}
+          {customizer}
+        </div>
       </div>
     </div>
   );

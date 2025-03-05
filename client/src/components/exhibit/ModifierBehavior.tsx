@@ -10,7 +10,7 @@ type ModifierProps = {
 
 const generateBehaviorlabel = (low: string, high: string) => {
   return () => (
-    <div>
+    <div className="text-base text-center">
       {low} {'->'} {high}
     </div>
   );
@@ -48,20 +48,24 @@ function ModifierBehavior({ mod, customize }: ModifierProps) {
       });
   };
   return (
-    <div className="flex flex-col items-stretch justify-center">
-      <div>
+    <div className="flex flex-wrap justify-evenly">
+      <div className="w-5/12">
         <RangeLog
           label={generateBehaviorlabel('lazy', 'zippey')}
           base={2}
           value={mod.factor.linear}
           update={generateCustomizeFactor(modifyLinearFactor)}
         />
+      </div>
+      <div className="w-5/12">
         <RangeLog
           label={generateBehaviorlabel('mellow', 'squirrely')}
           base={2}
           value={mod.factor.rotational}
           update={generateCustomizeFactor(modifyRotationalFactor)}
         />
+      </div>
+      <div className="w-5/12">
         <RangeLog
           label={generateBehaviorlabel('focused', 'hyper')}
           base={2}

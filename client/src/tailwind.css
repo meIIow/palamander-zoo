@@ -39,11 +39,18 @@
     @apply button;
     @apply bg-neutral-500/35;
   }
+
+  .button-emphasized {
+    @apply button;
+    @apply bg-neutral-500/50;
+  }
 }
 
 @layer base {
   html {
     @apply text-white;
-    @apply text-base;
+    /* @apply text-base; */
+    @apply font-sans;
+    /* @apply text-center; */
   }
 }

@@ -24,6 +24,7 @@ function Range({ label, range, value, update }: RangeProps) {
       <div>
         <input
           type="range"
+          className="w-full"
           min={range.min}
           value={value * range.scale}
           max={range.max}
