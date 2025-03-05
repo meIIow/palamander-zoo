@@ -114,7 +114,7 @@ function toggleSelect(staging: StagingState, index: number): StagingState {
   return {
     ...cloneStagingState(staging),
     selected,
-    active: selected,
+    active: index,
   };
 }
 
