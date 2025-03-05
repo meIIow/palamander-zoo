@@ -102,7 +102,7 @@ const segmentateMonkeyBody: SegmentationFunc = (
     count: 5,
     size: section.size,
   };
-  section.branches.push(tail);
+  follow(section, tail);
   section.branches.push({
     ...createBranch(section, 'monkey-arms'),
   });

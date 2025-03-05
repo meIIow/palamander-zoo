@@ -343,7 +343,7 @@ const segmentateMonkeyArm: SegmentationFunc = (
     radius: section.size * 0.8,
     taperFactor: 0.8,
     angle: 115 * dir,
-    overlapMult: 0.8,
+    overlapMult: 1,
   });
   const upperArmWave = {
     range: 45,
@@ -356,12 +356,12 @@ const segmentateMonkeyArm: SegmentationFunc = (
     count: 2,
     radius: section.size * 0.45,
     taperFactor: 0.9,
-    angle: 150 * dir,
+    angle: 155 * dir,
     overlapMult: 0.8,
   });
   // Offset by PI because forearm should swing the opposive way as bicep
   const forearmWave = {
-    range: 30,
+    range: 35,
     period: preset.period.deliberate,
     offset: section.offset - Math.PI / 3,
   };
