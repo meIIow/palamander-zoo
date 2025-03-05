@@ -18,7 +18,9 @@ function Tab({ section, set }: TabProps) {
   );
 
   return (
-    <div className={`size-full flex shade border-b-teal-950`}>
+    <div
+      className={`size-full flex bg-gradient-to-b from-neutral-500/25 to-neutral-500/35 text-white text-xl`}
+    >
       <button
         className={`flex-1 text-center ${styler[Section.Collection]}`}
         onClick={() => set((_) => Section.Collection)}

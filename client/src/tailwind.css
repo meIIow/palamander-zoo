@@ -19,10 +19,31 @@
   .shade {
     @apply bg-black/50;
   }
+
+  .shade-25 {
+    @apply bg-black/25;
+  }
+
+  .button {
+    @apply bg-neutral-500/20;
+    @apply rounded-full;
+    @apply px-2;
+  }
+
+  .button-hover {
+    @apply button;
+    @apply hover:bg-neutral-500/35;
+  }
+
+  .button-selected {
+    @apply button;
+    @apply bg-neutral-500/35;
+  }
 }
 
 @layer base {
   html {
-    @apply text-teal-50;
+    @apply text-white;
+    @apply text-base;
   }
 }

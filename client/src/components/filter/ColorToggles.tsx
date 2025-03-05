@@ -16,7 +16,7 @@ enum ColorToggleSpec {
 
 function ColorToggles({ filter, spec, toggle }: ColorTogglesProps) {
   return (
-    <div className="flex size-full justify-evenly items-stretch">
+    <div className="flex size-full justify-between items-stretch">
       {enumerateColors().map((color) => {
         return (
           <div className="flex flex-1 justify-center items-center m-1">

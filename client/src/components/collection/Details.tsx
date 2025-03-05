@@ -30,14 +30,14 @@ function Details({ pal, bio, index, count, shift, release }: DetailsProps) {
       buttonPlaceholder
     : <Button content={<SlArrowRight />} onClick={() => shift(index + 1)} />;
   return (
-    <div className="w-full h-full shade rounded-md">
-      <div className="flex w-full h-8 justify-evenly">
-        {prev}
+    <div className="flex flex-col w-full h-full bg-neutral-500/35 rounded-t-md overflow-y-auto gap-1 px-2 py-1">
+      <div className="flex flex-none w-full h-8 justify-evenly content-stretch items-stretch">
+        <div className="basis-1">{prev}</div>
         <div className="w-1/3 text-center">{typeToName(pal.type)}</div>
-        {next}
+        <div className="basis-1">{next}</div>
       </div>
       <div
-        className="flex justify-center items-center w-full aspect-square bg-neutral-50"
+        className="flex justify-center items-center w-full flex-auto bg-neutral-50 rounded-md"
         onClick={() => release()}
         style={{ cursor: 'zoom-out' }}
       >
@@ -49,7 +49,9 @@ function Details({ pal, bio, index, count, shift, release }: DetailsProps) {
           />
         </div>
       </div>
-      <div className="pal-bio p-1 text-xs font-sans text-justify">{bio}</div>
+      <div className="pal-bio flex-none p-1 text-xs font-sans text-justify">
+        {bio}
+      </div>
     </div>
   );
 }

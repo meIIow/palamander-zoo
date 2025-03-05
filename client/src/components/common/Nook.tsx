@@ -5,7 +5,7 @@ type NookProps = {
   set: (expand: boolean) => void;
 };
 
-const nookStyle = 'absolute h-6 rounded-sm bg-green-500';
+const nookStyle = 'absolute h-6 bg-sky-200';
 
 function Nook({ content, corner, expand, set }: NookProps) {
   const expansionStyle = expand ? 'z-20 w-full' : 'w-6';
@@ -15,7 +15,9 @@ function Nook({ content, corner, expand, set }: NookProps) {
       onMouseEnter={() => set(true)}
       onMouseLeave={() => set(false)}
     >
-      {expand ? content : null}
+      <div className="bg-neutral-500/40 size-full text-center">
+        {expand ? content : null}
+      </div>
     </div>
   );
 }

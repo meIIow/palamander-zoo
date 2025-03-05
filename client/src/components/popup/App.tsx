@@ -62,15 +62,18 @@ function App() {
     });
   };
 
-  // const styler: TabStyler = styleTab(showCollection);
   return (
     <div
-      className={`max-w-[360px] h-svh overflow-hidden flex flex-col bg-gradient-to-bl from-cyan-500 to-teal-500`}
+      className={`max-w-[360px] h-svh overflow-hidden flex flex-col bg-gradient-to-bl from-sky-200 to-neutral-200`}
     >
-      <div className={`basis-6 grow-0 shrink-0 items-stretch`}>
+      <div className={`basis-8 grow-0 shrink-0 items-stretch`}>
         {<Tab section={section} set={setSection} />}
       </div>
-      <div className={`flex-auto overflow-hidden items-stretch p-4`}>
+      <div
+        className={`basis-2 grow-0 shrink-0 items-stretch bg-gradient-to-b from-neutral-500/35 to-neutral-500/5`}
+      ></div>
+      <div className={`basis-2 grow-0 shrink-0 items-stretch`}></div>
+      <div className={`flex-auto overflow-hidden items-stretch`}>
         <PalContext.Provider value={pals}>
           <FilteredPalContext.Provider value={filtered}>
             <FilterContext.Provider value={{ filter, dispatch }}>

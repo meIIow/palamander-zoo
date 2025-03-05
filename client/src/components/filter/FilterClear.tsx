@@ -6,7 +6,10 @@ import { FilterContext } from './filter-context.ts';
 function FilterClear() {
   const { dispatch } = useContext(FilterContext);
   return (
-    <button onClick={() => dispatch({ type: 'CLEAR' })}>
+    <button
+      className="button aspect-square"
+      onClick={() => dispatch({ type: 'CLEAR' })}
+    >
       <BsBan />
     </button>
   );

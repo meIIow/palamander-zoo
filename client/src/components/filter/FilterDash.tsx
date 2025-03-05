@@ -17,16 +17,18 @@ function Dashboard({ active, expand, setExpand }: FilterDashProps) {
     );
   return (
     <div
-      className={`rounded-t-md flex shade ${active ? '' : 'pointer-events-none opacity-75'}`}
+      className={`rounded-t-md flex ${active ? '' : 'pointer-events-none opacity-50'} px-8`}
     >
       <div className={`flex flex-col gap-2 flex-auto justify-evenly`}>
-        <div className={`flex flex-row justify-evenly`}>
+        <div className={`flex flex-row justify-between mx-2`}>
           <div className={`flex flex-row justify-evenly flex-auto`}>
-            <button className="underline">Specimens</button>
+            <button className="underline button-selected text-lg">
+              Specimens
+            </button>
             <button
               title="coming soon!"
               disabled={true}
-              className="cursor-not-allowed"
+              className="cursor-not-allowed button text-lg"
             >
               Chimeras
             </button>
@@ -37,7 +39,8 @@ function Dashboard({ active, expand, setExpand }: FilterDashProps) {
           <PrimaryFilter active={active} />
         </div>
       </div>
-      <div className={`flex aspect-square justify-center items-center`}>
+      <div className="basis-2" />
+      <div className={`flex justify-center items-center`}>
         <FilterClear />
       </div>
     </div>

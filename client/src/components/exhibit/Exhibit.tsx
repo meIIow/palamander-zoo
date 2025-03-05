@@ -96,18 +96,29 @@ function Exhibit() {
     <div className="flex items-stretch overflow-hidden flex-col size-full gap-x-4 gap-y-2">
       <div className={`w-full flex justify-evenly basis-8 grow-0 shrink-0`}>
         <button
-          className="rounded-full w-1/6 shade"
+          className="rounded-full w-1/6 button-selected animate-pulse"
           onClick={() => toggleShow(show)}
         >
           {show ? 'hide' : 'show'}
         </button>
-        <button className="rounded-full w-1/6 shade" onClick={() => syncShow()}>
+        <button
+          className="rounded-full w-1/6 button-selected animate-pulse"
+          onClick={() => syncShow()}
+        >
           sync
         </button>
-        <button className="rounded-full w-1/6 shade" onClick={() => syncShow()}>
+        <button
+          title="coming soon!"
+          disabled={true}
+          className="cursor-not-allowed rounded-full w-1/6 button"
+        >
           load
         </button>
-        <button className="rounded-full w-1/6 shade" onClick={() => syncShow()}>
+        <button
+          title="coming soon!"
+          disabled={true}
+          className="cursor-not-allowed rounded-full w-1/6 button"
+        >
           save
         </button>
       </div>

@@ -6,7 +6,7 @@ type ButtonProps = {
 function Button({ content, onClick }: ButtonProps) {
   return (
     <button
-      className="flex justify-center items-center rounded-full aspect-square bg-red-300"
+      className="flex size-full justify-center items-center rounded-full aspect-square hover:bg-sky-200"
       onClick={onClick}
     >
       {content}
