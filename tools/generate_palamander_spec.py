@@ -38,12 +38,12 @@ def configurePalamanderSpec(type: str, linear: str, angular: str, mag: int):
 pals = {
   # type: (linear, angular, magnification)
   'axolittl': ('flitting', 'twirling', 10),
-  'munchkin': ('pushing', 'wary', 8),
-  'decipede': ('erratic', 'twirling', 8),
-  'crawpa': ('pushing', 'wary', 5),
+  'jelly': ('hovering', 'wary', 12),
   'prince': ('flitting', 'curious', 10),
+  'serpent': ('predatory', 'coiling', 8),
+  'decipede': ('erratic', 'curious', 8),
+  'crawpa': ('pushing', 'wary', 5),
   'bocce-crab': ('flitting', 'curious', 10),
-  'jelly': ('hovering', 'curious', 10),
   'wyrm': ('cautious', 'coiling', 6),
   'nautilus': ('flitting', 'wary', 10),
   'palamander': ('flitting', 'twirling', 10),
@@ -51,7 +51,7 @@ pals = {
   'hexapus': ('flitting', 'curious', 10),
   'sea-monkey': ('deliberate', 'wary', 10),
   'sea-lion': ('flitting', 'curious', 10),
-  'serpent': ('predatory', 'coiling', 8),
+  'munchkin': ('pushing', 'wary', 7),
   'pollywog': ('flitting', 'twirling', 10),
   'novafish': ('hovering', 'twirling', 10),
 }
@@ -119,7 +119,7 @@ bio = {
   'sea-lion': 'You have won. Take my claws and fangs. My hide and paws. My strength, my speed, my freedom. Shape me to your will. Just please - spare this tired king his Pride.',
   'serpent': '“You snake!” Blood pumps hot - then cold - with betrayal. Eyes dim. One jaw unclenches - another unhinges. At the end, a gentle whisssper: “well, what did you exssspect?”',
   'pollywog': 'The human condition writ small. Dry Land – the impossible dream of a limbless, lungless fool. Must we change our very selves to conquer it?',
-  'novafish': 'Aspirations bleached by sun and worn by sea. And still she is a star. Her spirit rises with the tide. Thrumming, vibrant, teeming. An ecosystem mesmerized. An intertidal rhapsody.',
+  'novafish': 'Aspirations bleached by sun and worn by sea. Still she is a star. The rising tide, her spirit rides. Thrumming, vibrant, teeming. An ecosystem mesmerized. An intertidal rhapsody.',
 }
 
 with open('./../client/public/bio.json', 'w') as f:
