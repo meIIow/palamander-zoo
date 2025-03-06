@@ -12,6 +12,14 @@ It is currently under review for publication on the Google Chrome Extension stor
 ### How do I use it?
 Activating the extension will open the Sidebar - a streamlined UI for viewing, customizing, and choosing Pals.
 
+Follow this guide for a quick overview of available features:
+
+1. ![browse](./resources/instructions-browse.jpg)
+2. ![browse](./resources/instructions-bios.jpg)
+3. ![browse](./resources/instructions-modify.jpg)
+4. ![browse](./resources/instructions-exhibit.jpg)
+5. ![browse](./resources/instructions-follow.jpg)
+
 ### FAQ
 **The Pals are swimming - isn’t this actually a Palamander Aquarium?** <br>
 Precision has its place, sure. Art, on the other hand, is ambiguous. An aquarium IS still a zoo (to satisfy the pedants) - but a zoo can be so much more.
