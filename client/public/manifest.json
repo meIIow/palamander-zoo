@@ -6,7 +6,7 @@
   "action": {
     "default_title": "Collect Aquatic Buddies!"
   },
-  "permissions": ["activeTab", "scripting", "webNavigation", "storage", "sidePanel"],
+  "permissions": ["activeTab", "scripting", "storage", "sidePanel"],
   "background": {
     "service_worker": "assets/worker.js",
     "type": "module"
