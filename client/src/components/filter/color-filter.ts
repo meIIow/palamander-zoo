@@ -1,5 +1,5 @@
 import { Palamander } from '../../palamander/palamander.ts';
-import storage from '../../utilities/storage.ts';
+import storage from '../../util/storage.ts';
 
 enum FilterColor {
   Red,
