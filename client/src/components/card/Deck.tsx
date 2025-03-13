@@ -1,12 +1,12 @@
 import { useContext } from 'react';
 
 import Card from './Card.tsx';
-import { FilteredPalContext } from './pal-context.ts';
+import { FilteredPalContext } from '../common/pal-context.ts';
 
 import type { Palamander } from '../../palamander/palamander.ts';
-import type { CardColor } from './card-color.ts';
+import type { CardColor } from '../common/card-color.ts';
 
-import { getDefaultCardColor } from './card-color.ts';
+import { getDefaultCardColor } from '../common/card-color.ts';
 
 type DeckProps = {
   choose: (type: string) => void;

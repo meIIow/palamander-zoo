@@ -1,6 +1,6 @@
 import { useState, useRef, useContext, useEffect } from 'react';
 
-import DeckView from '../common/DeckView.tsx';
+import DeckView from '../card/DeckView.tsx';
 import Details from './Details.tsx';
 import FilterDash from '../filter/FilterDash.tsx';
 import { FilteredPalContext } from '../common/pal-context.ts';

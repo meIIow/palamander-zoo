@@ -11,9 +11,9 @@ import {
   createStillOverride,
   createSpinOverride,
 } from '../../palamander/palamander-modifier.ts';
-import { CardColor } from './card-color.ts';
-import useVisibility from './useVisibility.tsx';
-import { ContainerContext } from './container-context.ts';
+import { CardColor } from '../common/card-color.ts';
+import useVisibility from '../common/useVisibility.tsx';
+import { ContainerContext } from '../common/container-context.ts';
 
 type CardProps = {
   pal?: Palamander;

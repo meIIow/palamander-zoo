@@ -3,7 +3,7 @@ import { useState, useRef, useReducer, useEffect, useContext } from 'react';
 import Modifier from './Modifier.tsx';
 import Staging from './Staging.tsx';
 import Tank from './Tank.tsx';
-import DeckSelect from '../common/DeckSelect.tsx';
+import DeckSelect from '../card/DeckSelect.tsx';
 import FilterDash from '../filter/FilterDash.tsx';
 
 import type { PalModifier } from '../../palamander/palamander-modifier.ts';
