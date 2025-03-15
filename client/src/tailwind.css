@@ -12,10 +12,6 @@
     width: 100%;
   }
 
-  .aspect-golden {
-    aspect-ratio: 10 / 7;
-  }
-
   .shade {
     @apply bg-black/50;
   }
