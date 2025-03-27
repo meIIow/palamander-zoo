@@ -22,7 +22,7 @@ Follow this guide for a quick overview of available features:
 
 ### FAQ
 **The Pals are swimming - isn’t this actually a Palamander Aquarium?** <br>
-Precision has its place, sure. Art, on the other hand, is ambiguous. An aquarium IS still a zoo (to satisfy the pedants) - but a zoo can be so much more.
+An aquarium is still technically a zoo (to satisfy the pedants). But there's a larger issue here. Math, science, engineering - precision has its place. But art - true art - is ambiguity. Does this zoo harbor creatures - or chaos? I'd rather let you decide.
 
 **Will this slow down my browser?** <br>
 Likely not - but it might. We’re running lots of calculations on lots of circles a lot of times per second. If you frequently see the Pals visibly lagging, you may want to:
