@@ -7,7 +7,7 @@ The open source project for the Palamander Zoo Chrome Extension and its associat
 ### What even is this?
 Palamander Zoo is a lighthearted Chrome Extension for collecting and exhibiting Pals (customizable aquatic buddies).
 
-It is currently under review for publication on the Google Chrome Extension store.
+Download it and try it out here: https://chromewebstore.google.com/detail/palamander-zoo/mmkfiaooffdjglpfgepaojoapfiilmdb
 
 ### How do I use it?
 Activating the extension will open the Sidebar - a streamlined UI for viewing, customizing, and choosing Pals.
