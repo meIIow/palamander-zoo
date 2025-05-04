@@ -14,16 +14,16 @@ Activating the extension will open the Sidebar - a streamlined UI for viewing, c
 
 ### FAQ
 **The Pals are swimming - isn’t this actually a Palamander Aquarium?** <br>
-Precision has its place, sure. Art, on the other hand, is ambiguous. An aquarium IS still a zoo (to satisfy the pedants) - but a zoo can be so much more.
+Zoo is a superset of Aquarium (to satisfy the pedants). Precision has its place - but art is, conversely, ambiguous. Is this a place for creatures - or chaos - or both?
 
 **Will this slow down my browser?** <br>
 Likely not - but it might. We’re running lots of calculations on lots of circles a lot of times per second. If you frequently see the Pals visibly lagging, you may want to:
 * Exhibit only one or two Pals
 * Choose less complex Pals
-* Increase each Pal’s frame rate
+* Increase each Pal’s frame time interval
 
 **How do I turn the Pals off?** <br>
-Simply press ‘ hide’ in the Exhibit tab to prevent Pals from rendering on your screen. Then quickly press ‘show’ again when you feel the crushing weight of your mistake.
+Simply press ‘hide’ in the Exhibit tab to prevent Pals from rendering on your screen. Then quickly press ‘show’ again when you feel the crushing weight of your mistake.
 
 **Does anyone else find these Pals distracting?** <br>
 You mean mesmerizing? Yes. But they are also a *plausible* productivity tool. Let them massage your mind for a minute or two instead of jumping on YouTube or Reddit and losing an hour. Enjoy your visual fidget spinner.
@@ -47,4 +47,4 @@ Chrome Extensions must be written in Javascript - but I'm a fan of static typing
 In a vacuum I may have stuck with a Node/Typescript backend for potential code-reuse, but for this project I wanted to exercise my Python chops with microservice architecture, so I went with FastAPI (over some reasonable alternatives).
 
 ### Can I contribute?
-Feel free to clone this and host your own repo! I'm open to discussing potential new features/fixes and merging in commits - but I largely see this as an individual project.
+Feel free to clone this and host your own repo! I'm open to discussing potential new features/fixes and merging in commits - but I largely see this as an individual/portfolio project.
